@@ -18,7 +18,9 @@ Depending on your installation location, it may be required to run ISBoxer EVE L
 ## Initial configuration
 When you first run ISBoxer EVE Launcher, it may need to be told where the EVE SharedCache folder is. This is automatically detected if possible, but the Browse button can be used to fill it in if needed. Typically this is **C:\ProgramData\CCP\EVE\SharedCache\**.
 
-If using Inner Space, ISBoxer EVE Launcher can also use master Game Profiles for Tranquility and Singularity. These master Game Profiles should be pointed directly at the appropriate bin\exefile.exe file. The "Create one now" button next to each will assist you in creating proper Game Profiles for this purpose.
+*The Game Profile options refer to Inner Space Game Profiles, not to EVE Profiles.*
+
+**If using Inner Space**, ISBoxer EVE Launcher can also use master Game Profiles for Tranquility and Singularity. These master Game Profiles should be pointed directly at the appropriate bin\exefile.exe file. The "Create one now" button next to each will assist you in creating proper Game Profiles for this purpose. 
 
 ## Adding EVE Accounts
 To add an EVE Account to ISBoxer EVE Launcher, click Add Account. A window pops up asking for your EVE login details. Enter your EVE username and password. Your EVE Account password is kept secure, and will not be saved in the settings file by default.

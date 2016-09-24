@@ -24,6 +24,8 @@ If using Inner Space, ISBoxer EVE Launcher can also use master Game Profiles for
 To add an EVE Account to ISBoxer EVE Launcher, click Add Account. A window pops up asking for your EVE login details. Enter your EVE username and password. Your EVE Account password is kept secure, and will not be saved in the settings file by default.
 
 ## Saving EVE Account passwords
+![Screenshot setting up a Master Password](http://i.imgur.com/7KbH007.png)
+
 EVE Account passwords are NOT stored by default. This means that each time you restart ISBoxer EVE Launcher, you will need to re-enter the password. To avoid having to re-enter your EVE Account passwords, you can enable 'Save passwords (securely)'. As soon as you tick this box, a window will pop up asking you to enter a Master Password; this Master Password will securely protect all of your EVE Account passwords, which will then be stored, securely encrypted in the settings file. The Master Password is never stored, and is discarded after creating the encryption key.
 
 When 'Save passwords (securely)' is enabled, launching ISBoxer EVE Launcher will prompt for your Master Password. If you forget the Master Password, click Cancel to skip entering it -- but note that attempting to log in to any EVE Account will again prompt for the password. If you forget or lose your Master Password, un-tick "Save passwords (securely)" to immediately discard any stored passwords, and disable the Master Password. You will need to create a Master Password again when re-enabling this option.

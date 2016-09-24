@@ -92,6 +92,25 @@ namespace ISBoxerEVELauncher.Windows
         private void buttonGo_Click(object sender, RoutedEventArgs e)
         {
             e.Handled = true;
+            if (string.IsNullOrWhiteSpace(Game))
+            {
+                MessageBox.Show("Please enter a Game name before continuing.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Game))
+            {
+                MessageBox.Show("Please enter a Game Profile scheme before continuing. We recommend \"ISBEL - {0}\"");
+                return;
+            }
+
+            if (SelectedItem==null)
+            {
+                MessageBox.Show("Please select a Launch method via the drop-down box before continuing.");
+                return;
+            }
+
+
+
             DialogResult = true;
             this.Close();
         }

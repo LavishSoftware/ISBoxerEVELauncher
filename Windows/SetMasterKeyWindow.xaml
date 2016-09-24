@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ISBoxerEVELauncher.Windows.SetMasterKeyWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ISBoxer EVE Launcher" Width="456" SizeToContent="Height" WindowStartupLocation="CenterOwner">
+        Title="ISBoxer EVE Launcher" Width="456" SizeToContent="Height" WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textPassword}">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Center" TextWrapping="Wrap" FontWeight="Bold" Text="This Master Password will protect all of your saved EVE Account passwords. If you value those passwords, you should take care with this one as well!" Margin="10,5,10,0" />
         <DockPanel DockPanel.Dock="Top" Margin="5">

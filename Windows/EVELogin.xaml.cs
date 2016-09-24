@@ -27,6 +27,11 @@ namespace ISBoxerEVELauncher.Windows
             InitializeComponent();
 
             textAccountName.IsReadOnly = readOnly;
+            if (readOnly)
+                this.textPassword.Focus();
+            else
+                this.textAccountName.Focus();
+
         }
 
         private void buttonGo_Click(object sender, RoutedEventArgs e)

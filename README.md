@@ -54,3 +54,7 @@ For ISBoxer 41, it is recommended to create Account-specific Game Profiles with 
 
 For ISBoxer 42, with Dynamic Launch Mode, ISBoxer EVE Launcher can be left running to avoid entering passwords each time. Account-specific Game Profiles are not necessary in Dynamic Launch Mode. Instead, just select all of the accounts to launch and click "Launch with Inner Space"; the Master Game Profile will be used to launch all of the clients.
 
+# Notes on Security of this and other EVE Launchers
+This EVE Launcher is designed first and foremost to protect your accounts. Your passwords are never kept in memory in plaintext, never stored as the same string twice in your Settings file (all your passwords the same? check the file and you cannot tell), and can only be stored if protected by a Master Password. **This makes the ISBoxer EVE Launcher, as far as we can tell, more secure than the official EVE Launcher**, which indicates that saving the accounts through it is insecure -- we would agree with that.
+
+Other EVE Launchers may insecurely store your EVE Account data. As of my recent review, IsBridgeUp for example stores passwords encrypted, but they are stored alongside the encryption key and related details -- meaning that to steal your EVE Account passwords from IsBridgeUp, all that an attacker requires is its settings file. **ISBoxer EVE Launcher never stores encryption keys (or your Master Password), and your passwords cannot ever be recovered from ISBoxer EVE Launcher's settings file without your Master Password (keep it secret, keep it safe).**

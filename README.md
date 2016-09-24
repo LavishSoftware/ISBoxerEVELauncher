@@ -49,10 +49,28 @@ Finally, select in the drop-down box whether the ISBoxer EVE Launcher instance s
 ## Recommendations for ISBoxer 41
 For ISBoxer 41, it is recommended to create Account-specific Game Profiles with "Perform launch from a new ISBoxer EVE Launcher instance" *enabled*, "Leave new ISBoxer EVE Launcher instance open after launch" *disabled*, and the drop-down configured to launch EVE directly. The Account-specific Game Profiles can then be selected per Character in ISBoxer Toolkit. This will fully enable Character Set launch, at the cost of having to enter your EVE password (or Master Password) each time.
 
-## Rcommendations for ISBoxer 42
+## Recommendations for ISBoxer 42
 *Note: Without Dynamic Launch Mode, see ISBoxer 41 instructions above.*
 
 For ISBoxer 42, with Dynamic Launch Mode, ISBoxer EVE Launcher can be left running to avoid entering passwords each time. Account-specific Game Profiles are not necessary in Dynamic Launch Mode. Instead, just select all of the accounts to launch and click "Launch with Inner Space"; the Master Game Profile will be used to launch all of the clients.
+
+# Command-line parameters
+ISBoxer EVE Launcher supports the following command-line parameters:
+**-dx9** - Enable DirectX 9 mode
+**-dx11** - Enable DirectX 11 mode
+**-singularity** - Enable Singularity server
+**-tranquility** - Enable Tranquility server
+**-innerspace** - Launch via Inner Space (the Game Profile options)
+**-eve** - Launch via directly launching exefile.exe
+**-multiinstance** - Allow multiple ISBoxerEVELauncher.exe instances. Otherwise, the command-line may be passed to an already-running instance, so as to not re-enter passwords.
+**-exit** - Exit ISBoxer EVE Launcher after completing the specified launches (i.e. for use with -multiinstance)
+*Any other parameter will be assumed to be an EVE Account name to be automatically logged in.*
+
+Accounts are all launched after the command line is fully processed for all options, so the order of flag options does not matter.
+
+Examples:
+Launch account1 and account2 via exefile.exe with DirectX 9 and Tranquility server: ISBoxerEVELauncher.exe -dx9 -tranquility -eve account1 account2
+Launch account1 and account2 via Inner Space with DirectX 11 and Singularity server: ISBoxerEVELauncher.exe -dx11 -singularity -innerspace account1 account2
 
 # Notes on Security of this and other EVE Launchers
 This EVE Launcher is designed first and foremost to protect your accounts. Your passwords are never kept in memory in plaintext, never stored as the same string twice in your Settings file (all your passwords the same? check the file and you cannot tell), and can only be stored if protected by a Master Password. **This makes the ISBoxer EVE Launcher, as far as we can tell, more secure than the official EVE Launcher**, which indicates that saving the accounts through it is insecure -- we would agree with that.

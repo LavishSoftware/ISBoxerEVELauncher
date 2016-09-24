@@ -429,6 +429,9 @@ namespace ISBoxerEVELauncher
                     case "-exit":
                         ExitAfterLaunch = true;
                         break;
+                    case "null":
+                        // ignore
+                        break;
                     default:
                         LaunchAccountNames.Add(s);
                         break;
@@ -488,6 +491,9 @@ namespace ISBoxerEVELauncher
                     // if it's another process, don't exit
                     switch (s.ToLowerInvariant())
                     {
+                        case "null":
+                            // ignore...
+                            break;
                         case "-exit":
                             // the -exit is intended for THIS process, not the other one.
                             break;

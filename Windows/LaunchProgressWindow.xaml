@@ -1,0 +1,24 @@
+﻿<Window x:Class="ISBoxerEVELauncher.Windows.LaunchProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ISBoxer EVE Launcher - Launch Progress" SizeToContent="Height" MinWidth="320" Width="540" Name="windowLaunchProgress" WindowStartupLocation="CenterOwner">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+            <TextBlock Text="Delaying" DockPanel.Dock="Left"/>
+            <TextBlock Name="textDelaySeconds" Text="{Binding ElementName=windowLaunchProgress, Path=DelaySeconds}" FontWeight="Bold" DockPanel.Dock="Left" Margin="4,0,4,0"/>
+            <TextBlock Text="seconds..." DockPanel.Dock="Left"/>
+            </DockPanel>
+            <Button DockPanel.Dock="Right" x:Name="buttonCancel" IsCancel="True"  Content="Cancel" HorizontalAlignment="Right" Margin="5,0,5,0" VerticalAlignment="Top" Width="75" Click="buttonCancel_Click" />
+            <CheckBox DockPanel.Dock="Left" Content="Auto-close after successful launch" Margin="0,0,5,0" />
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
+            <TextBlock DockPanel.Dock="Top" FontWeight="Bold" Text="Details..." />
+            <TextBox Name="textDetails" DockPanel.Dock="Bottom" Height="50" />
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="5,0,5,5">
+            <TextBlock DockPanel.Dock="Top" FontWeight="Bold" Text="Characters remaining to launch..." />
+            <ListBox DockPanel.Dock="Top" MinHeight="20" ItemsSource="{Binding ElementName=windowLaunchProgress, Path=Accounts}" />
+        </DockPanel>
+    </DockPanel>
+</Window>

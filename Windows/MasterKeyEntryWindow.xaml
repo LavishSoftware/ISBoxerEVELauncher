@@ -1,0 +1,15 @@
+﻿<Window x:Class="ISBoxerEVELauncher.Windows.MasterKeyEntryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ISBoxer EVE Launcher" Width="456" SizeToContent="Height" WindowStartupLocation="CenterOwner">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,5,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="A Password Master Key is configured and protecting your EVE Accounts." VerticalAlignment="Top"/>
+        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,5,0,0" TextWrapping="Wrap" Text="Please enter your current Master Password for ISBoxer EVE Launcher." VerticalAlignment="Top"/>
+        <PasswordBox DockPanel.Dock="Top" Name="passwordMasterKey" Margin="5" VerticalAlignment="Top"/>
+        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="5,0,5,5" FontStyle="Italic" TextWrapping="Wrap" Text="If you've lost this password, you can perform a reset by un-checking 'Save passwords (secure)', and saved passwords will be discarded." VerticalAlignment="Top"/>
+        <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
+            <Button DockPanel.Dock="Right" Name="buttonGo"  Content="Go" VerticalAlignment="Top" Width="75" Click="buttonGo_Click" IsDefault="True" />
+            <Button DockPanel.Dock="Right" x:Name="buttonCancel" IsCancel="True"  Content="Cancel" HorizontalAlignment="Right" Margin="5,0,5,0" VerticalAlignment="Top" Width="75" Click="buttonCancel_Click" />
+        </DockPanel>
+    </DockPanel>
+</Window>

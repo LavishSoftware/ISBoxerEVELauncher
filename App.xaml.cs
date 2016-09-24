@@ -26,9 +26,17 @@ namespace ISBoxerEVELauncher
             }
         }
 
+
         public static void ReloadGameConfiguration()
         {
-            GameConfiguration = InnerSpaceSettings.Load(ISPath + @"\GameConfiguration.XML");
+            try
+            {
+                GameConfiguration = InnerSpaceSettings.Load(ISPath + @"\GameConfiguration.XML");
+            }
+            catch
+            {
+                GameConfiguration = null;
+            }
         }
 
         public static string DetectedEVESharedCachePath
@@ -483,6 +491,8 @@ namespace ISBoxerEVELauncher
 
         private void ApplicationStart(object sender, StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             CommandLine = e.Args;
 
             if (!TransmitCommandLine())
@@ -500,6 +510,11 @@ namespace ISBoxerEVELauncher
 
                 ProcessCommandLine(CommandLine);
             }
+        }
+
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show("Exception unhandled by ISBoxer EVE Launcher: "+e.ExceptionObject.ToString());
         }
 
     }

@@ -36,6 +36,8 @@ If ISBoxer EVE Launcher does not require password entry (e.g. because it was alr
 ## Creating Account-specific Game Profiles
 To facilitate Inner Space and ISBoxer usage, ISBoxer EVE Launcher can automatically create Game Profiles for each account, to have Inner Space use ISBoxer EVE Launcher. To use this function, first highlight each desired account in the list and click "Create Game Profile". 
 
+![Screenshot creating Account Game Profiles](http://i.imgur.com/zAjHiAX.png)
+
 A "Create Account Game Profiles" window will come up if Accounts are highlighted. A default 'Game' name is entered, and a default 'Game Profile' scheme is provided as well; "{0}" in the Game Profile will be replaced with the account names.
 
 Next, decide if the Game Profile should "Perform launch from a new ISBoxer EVE Launcher instance". If *disabled* (default), an instance of ISBoxer EVE Launcher can be left running, with passwords already prepared; this will be the least annoying launch method. When *enabled*, even if an ISBoxer EVE Launcher was already running, the new instance will do the launch, but will also require password entry. If this option is enabled, "Leave new ISBoxer EVE Launcher instance open after launch" can be enabled as well.

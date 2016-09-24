@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -12,7 +13,8 @@ namespace ISBoxerEVELauncher
     /// This is an IDisposable wrapper for SecureString, which provides secure byte array access
     /// http://codereview.stackexchange.com/questions/107860/converting-a-securestring-to-a-byte-array
     /// </summary>
-    public sealed class SecureStringWrapper : IDisposable
+    
+    public sealed class SecureStringWrapper : CriticalFinalizerObject, IDisposable
     {
         private readonly Encoding encoding;
         private readonly SecureString secureString;
@@ -113,7 +115,7 @@ namespace ISBoxerEVELauncher
     /// <summary>
     /// This is an IDispoable wrapper for secure byte[] arrays, wiping pre-existing data when altered, Disposed or GC'd. It is designed similar to SecureStringWrapper for convenience.
     /// </summary>
-    public sealed class SecureBytesWrapper : IDisposable
+    public sealed class SecureBytesWrapper : CriticalFinalizerObject, IDisposable
     {
         byte[] _Bytes;
         public byte[] Bytes

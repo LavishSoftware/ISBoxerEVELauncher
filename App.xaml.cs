@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -180,6 +181,25 @@ namespace ISBoxerEVELauncher
             Settings.TranquilityGameProfile = App.FindGlobalGameProfile(gpTranquility);
         }
 
+        public static Set FindGameProfileSet(string gameName, string gameProfileName)
+        {
+            if (string.IsNullOrWhiteSpace(gameName) || string.IsNullOrWhiteSpace(gameProfileName))
+                return null;
+
+            if (GameConfiguration == null || GameConfiguration.Sets==null)
+                return null;
+
+            Set gameSet = GameConfiguration.FindSet(gameName);
+            if (gameSet == null)
+                return null;
+
+            Set profilesSet = gameSet.FindSet("Profiles");
+            if (profilesSet == null || profilesSet.Sets == null)
+                return null;
+
+            return profilesSet.FindSet(gameProfileName);
+        }
+
         static Set _GameConfiguration;
         public static Set GameConfiguration { get { return _GameConfiguration; } private set { _GameConfiguration = value; ReloadGameProfiles(); } }
         static ObservableCollection<InnerSpaceGameProfile> _GameProfiles;
@@ -293,6 +313,13 @@ namespace ISBoxerEVELauncher
             if (!System.IO.File.Exists(ISPath+"\\ISBoxer Toolkit.exe"))
             {
                 MessageBox.Show("Using this function while Inner Space is running requires ISBoxer 42 to be installed (but not necessarily running). Please close Inner Space and try again.");
+                return false;
+            }
+
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ISPath + "\\ISBoxer Toolkit.exe");
+            if (fvi.ProductMajorPart<42)
+            {
+                MessageBox.Show("Using this function while Inner Space is running requires ISBoxer 42 to be installed (but not necessarily running), and you appear to be using ISBoxer "+fvi.ProductMajorPart+". Please close Inner Space and try again.");
                 return false;
             }
 

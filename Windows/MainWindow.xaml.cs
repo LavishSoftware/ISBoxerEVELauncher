@@ -57,11 +57,59 @@ namespace ISBoxerEVELauncher.Windows
         public MainWindow()
         {
             InitializeComponent();
+
+            Style itemContainerStyle = new Style(typeof(ListBoxItem));
+            itemContainerStyle.Setters.Add(new Setter(ListBoxItem.AllowDropProperty, true));
+            itemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.PreviewMouseMoveEvent, new MouseEventHandler(s_PreviewMouseMoveEvent)));
+            itemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.DropEvent, new DragEventHandler(listAccounts_Drop)));
+            listAccounts.ItemContainerStyle = itemContainerStyle;
+
             checkSavePasswords.IsChecked = App.Settings.UseMasterKey;
             App.Settings.RequestMasterPassword();
             App.Settings.PropertyChanged += Settings_PropertyChanged;
 
             this.Title += " (v"+VersionString+")";
+        }
+
+        void s_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed)
+                return;
+
+            if (sender is ListBoxItem)
+            {
+                ListBoxItem draggedItem = sender as ListBoxItem;
+                DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
+                draggedItem.IsSelected = true;
+            }
+        }
+
+        void listAccounts_Drop(object sender, DragEventArgs e)
+        {
+            EVEAccount droppedData = e.Data.GetData(typeof(EVEAccount)) as EVEAccount;
+            EVEAccount target = ((ListBoxItem)(sender)).DataContext as EVEAccount;
+
+            int removedIdx = listAccounts.Items.IndexOf(droppedData);
+            int targetIdx = listAccounts.Items.IndexOf(target);
+
+            if (removedIdx == targetIdx)
+                return;
+
+            if (removedIdx < targetIdx)
+            {
+                Accounts.Insert(targetIdx + 1, droppedData);
+                Accounts.RemoveAt(removedIdx);
+            }
+            else
+            {
+                int remIdx = removedIdx + 1;
+                if (Accounts.Count + 1 > remIdx)
+                {
+                    Accounts.Insert(targetIdx, droppedData);
+                    Accounts.RemoveAt(remIdx);
+                }
+            }
+            App.Settings.Store();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -559,6 +607,59 @@ namespace ISBoxerEVELauncher.Windows
             }
         }
 
+        private void TranquilityGameProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // only perform validation if the user is touching the control
+            if (!comboTranquilityGameProfile.IsMouseOver && !comboTranquilityGameProfile.IsFocused  &&!comboTranquilityGameProfile.IsKeyboardFocused)
+                return;
+
+            InnerSpaceGameProfile gp = TranquilityGameProfile;
+            if (gp == null)
+                return;
+
+            switch(gp.Executable)
+            {
+                case RelatedExecutable.EXEFile:
+                    // good
+                    break;
+                case RelatedExecutable.EVELauncher:
+                case RelatedExecutable.InnerSpace:
+                case RelatedExecutable.InvalidGameProfile:
+                case RelatedExecutable.ISBoxerEVELauncher:
+                case RelatedExecutable.Other:
+                    MessageBox.Show("This Game Profile does not appear to point to exefile.exe. Please select a Game Profile that points at exefile.exe, or use 'Create one now' to have one correctly set up for you.");
+                    TranquilityGameProfile = null;
+                    break;
+            }
+
+        }
+
+        private void SingularityGameProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // only perform validation if the user is touching the control
+            if (!comboSingularityGameProfile.IsMouseOver && !comboSingularityGameProfile.IsFocused && !comboSingularityGameProfile.IsKeyboardFocused)
+                return;
+
+            InnerSpaceGameProfile gp = SingularityGameProfile;
+            if (gp == null)
+                return;
+
+            switch (gp.Executable)
+            {
+                case RelatedExecutable.EXEFile:
+                    // good
+                    break;
+                case RelatedExecutable.EVELauncher:
+                case RelatedExecutable.InnerSpace:
+                case RelatedExecutable.InvalidGameProfile:
+                case RelatedExecutable.ISBoxerEVELauncher:
+                case RelatedExecutable.Other:
+                    MessageBox.Show("This Game Profile does not appear to point to exefile.exe. Please select a Game Profile that points at exefile.exe, or use 'Create one now' to have one correctly set up for you.");
+                    SingularityGameProfile = null;
+                    break;
+            }
+
+        }
 
 
     }

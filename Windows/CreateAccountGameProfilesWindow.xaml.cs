@@ -97,7 +97,7 @@ namespace ISBoxerEVELauncher.Windows
                 MessageBox.Show("Please enter a Game name before continuing.");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(Game))
+            if (string.IsNullOrWhiteSpace(GameProfile))
             {
                 MessageBox.Show("Please enter a Game Profile scheme before continuing. We recommend \"ISBEL - {0}\"");
                 return;

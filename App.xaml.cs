@@ -105,6 +105,9 @@ namespace ISBoxerEVELauncher
         }
 
         static string _ISPath = string.Empty;
+        /// <summary>
+        /// Path to Inner Space, which should either be in the registry, or the current folder. Otherwise, the user likely doesn't care about Inner Space integration.
+        /// </summary>
         public static string ISPath
         {
             get 
@@ -232,6 +235,15 @@ namespace ISBoxerEVELauncher
             return found;
         }
  
+        /// <summary>
+        /// Add a Game/Game Profile to Inner Space
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="gameProfileName"></param>
+        /// <param name="executablePath"></param>
+        /// <param name="executableName"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static bool AddGame(string gameName, string gameProfileName, string executablePath, string executableName, string parameters)
         {
             System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("InnerSpace");
@@ -328,6 +340,15 @@ namespace ISBoxerEVELauncher
             return true;
         }
 
+        /// <summary>
+        /// Have Inner Space launch EVE via a specified Game and Game Profile
+        /// </summary>
+        /// <param name="ssoToken"></param>
+        /// <param name="gameName"></param>
+        /// <param name="gameProfileName"></param>
+        /// <param name="sisi"></param>
+        /// <param name="dxVersion"></param>
+        /// <returns></returns>
         static public bool Launch(string ssoToken, string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion)
         {
             if (ssoToken == null)
@@ -347,6 +368,14 @@ namespace ISBoxerEVELauncher
             return true;
         }
 
+        /// <summary>
+        /// Launch EVE directly
+        /// </summary>
+        /// <param name="ssoToken"></param>
+        /// <param name="sharedCachePath"></param>
+        /// <param name="sisi"></param>
+        /// <param name="dxVersion"></param>
+        /// <returns></returns>
         static public bool Launch(string ssoToken, string sharedCachePath, bool sisi, DirectXVersion dxVersion)
         {
             if (ssoToken == null)
@@ -478,12 +507,63 @@ namespace ISBoxerEVELauncher
             }
         }
 
+        /// <summary>
+        /// Gets what we think is the "master" ISBoxer EVE Launcher instance
+        /// </summary>
+        /// <param name="ensureMainModule">true if we should be more secure about it (e.g. Master Key transfer), false if we're just passing command-line around</param>
+        /// <returns></returns>
+        static public System.Diagnostics.Process GetMasterInstance(bool ensureMainModule)
+        {
+            System.Diagnostics.Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+
+            IEnumerable<Process> processList = System.Diagnostics.Process.GetProcesses().Where(q => q.NameMatches(currentProcess) && (q.MainWindowHandle!=IntPtr.Zero || q.Id==currentProcess.Id));
+            if (processList == null)
+                return null;
+
+            System.Diagnostics.Process[] processes = processList.ToArray();
+            Array.Sort(processes, (a, b) => a.StartTime > b.StartTime ? 1 : -1);
+            if (processes.Length > 1)
+            {
+                for (int i = 0; i < processes.Length; i++)
+                {
+                    if (processes[i].Id == currentProcess.Id)
+                        continue;
+
+                    // ensure that the Master Instance is indeed this app by checking the module list? (note: if the other process is Administrator, this one also needs to be Administrator)
+                    if (!ensureMainModule)
+                        return processes[i];
+
+                    try
+                    {
+
+                        if (processes[i].MainModule.FileName == System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName)
+                            return processes[i];
+                    }
+                    catch(System.ComponentModel.Win32Exception we)
+                    {
+                        if (we.NativeErrorCode == 5)
+                        {
+                            // this might be the right instance, but since it's Administrator and we're not, we can't use it.
+                            continue;
+                        }
+                        throw;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Transmit the command-line to an already-running Master instance, if one is available
+        /// </summary>
+        /// <returns></returns>
         public bool TransmitCommandLine()
         {
             // check if it's already running.
-            System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName(System.Diagnostics.Process.GetCurrentProcess().ProcessName);
-            Array.Sort(processes, (a, b) => a.StartTime > b.StartTime ? 1 : -1);
-            if (processes.Length > 1)
+
+            System.Diagnostics.Process masterInstance = GetMasterInstance(false);
+
+            if (masterInstance != null)
             {
                 string joinedCommandLine = string.Empty;
                 foreach (string s in CommandLine)
@@ -512,8 +592,9 @@ namespace ISBoxerEVELauncher
                 cds.cbData = buff.Length;
                 cds.lpData = Marshal.AllocHGlobal(buff.Length);
                 Marshal.Copy(buff, 0, cds.lpData, buff.Length);
+                cds.dwData = IntPtr.Zero;
                 cds.cbData = buff.Length;
-                var ret = ISBoxerEVELauncher.Windows.MainWindow.SendMessage(processes[0].MainWindowHandle, ISBoxerEVELauncher.Windows.MainWindow.WM_COPYDATA, 0, ref cds);
+                var ret = ISBoxerEVELauncher.Windows.MainWindow.SendMessage(masterInstance.MainWindowHandle, ISBoxerEVELauncher.Windows.MainWindow.WM_COPYDATA, IntPtr.Zero, ref cds);
                 Marshal.FreeHGlobal(cds.lpData);
 
                 Shutdown();
@@ -540,6 +621,8 @@ namespace ISBoxerEVELauncher
                 Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
                 Current.MainWindow = mainWindow;
                 mainWindow.Show();
+
+                
 
                 ProcessCommandLine(CommandLine);
             }

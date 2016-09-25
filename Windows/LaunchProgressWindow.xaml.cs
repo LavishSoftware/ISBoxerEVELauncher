@@ -95,6 +95,19 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
+
+            // determine if we're waiting on master key transfer...
+            if (App.Settings.UseMasterKey && !App.Settings.HasPasswordMasterKey)
+            {
+                TimeSpan sinceKeyRequested = DateTime.Now - App.Settings.MasterKeyRequested;
+                if (sinceKeyRequested.TotalSeconds < 2)
+                {
+                    // waiting ...
+                    DelaySeconds = (float)Math.Truncate((2 - (float)sinceKeyRequested.TotalSeconds) * 100.0f) / 100.0f;
+                    return;
+                }
+            }
+
             TimeSpan SinceLastLaunch = DateTime.Now - LastLaunch;
             if (SinceLastLaunch.TotalSeconds < App.Settings.LaunchDelay)
             {
@@ -106,6 +119,7 @@ namespace ISBoxerEVELauncher.Windows
             {
                 DelaySeconds = 0;
             }
+
 
             EVEAccount a = Accounts[0];
             EVEAccount.LoginResult lr = EVEAccount.LoginResult.Error;

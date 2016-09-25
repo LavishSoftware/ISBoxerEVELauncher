@@ -49,12 +49,17 @@ namespace ISBoxerEVELauncher.Windows
     {
         public const int WM_COPYDATA = 0x004a;
         [DllImport("User32.dll", SetLastError = true, EntryPoint = "SendMessage")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref COPYDATASTRUCT lParam);
-
+        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
+        [DllImport("User32.dll", SetLastError = true, EntryPoint = "SendMessage")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+//        [DllImport("User32.dll", SetLastError = true, EntryPoint = "PostMessage")]
+//        public static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("User32.dll")]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
         [DllImport("user32")]
         public static extern bool ChangeWindowMessageFilterEx(IntPtr hWnd, uint msg, ChangeWindowMessageFilterExAction action, ref CHANGEFILTERSTRUCT changeInfo);
 
-        public MainWindow()
+       public MainWindow()
         {
             InitializeComponent();
 
@@ -65,12 +70,13 @@ namespace ISBoxerEVELauncher.Windows
             listAccounts.ItemContainerStyle = itemContainerStyle;
 
             checkSavePasswords.IsChecked = App.Settings.UseMasterKey;
-            App.Settings.RequestMasterPassword();
+
             App.Settings.PropertyChanged += Settings_PropertyChanged;
 
             this.Title += " (v"+VersionString+")";
         }
 
+        #region Drag and drop for Accounts list
         void s_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed)
@@ -111,18 +117,57 @@ namespace ISBoxerEVELauncher.Windows
             }
             App.Settings.Store();
         }
+        #endregion
+
+        /// <summary>
+        /// Enables a specified message to be sent to the window from non-Administrator processes
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        static bool EnableWindowMessage(HwndSource source, uint msg)
+        {
+            CHANGEFILTERSTRUCT filterStatus = new CHANGEFILTERSTRUCT();
+            filterStatus.size = (uint)Marshal.SizeOf(filterStatus);
+            filterStatus.info = 0;
+            return ChangeWindowMessageFilterEx(source.Handle, msg, ChangeWindowMessageFilterExAction.Allow, ref filterStatus);
+        }
+
+        public bool RequestMasterKey()
+        {
+            if (App.Settings.UseMasterKey && (App.Settings.PasswordMasterKey == null || !App.Settings.PasswordMasterKey.HasData))
+            {
+
+                System.Diagnostics.Process masterInstance = App.GetMasterInstance(true);
+                if (masterInstance == null)
+                    return false;
+
+                if (masterInstance.MainWindowHandle == null)
+                    return false;
+
+                KeyTransmitter.RequestMasterKey(this, masterInstance.MainWindowHandle, masterInstance);
+                App.Settings.MasterKeyRequested = DateTime.Now;
+                return true;
+            }
+
+            return false;
+        }
 
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
+
+
             HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
 
-            CHANGEFILTERSTRUCT filterStatus = new CHANGEFILTERSTRUCT();
-            filterStatus.size = (uint)Marshal.SizeOf(filterStatus);
-            filterStatus.info = 0;
-            ChangeWindowMessageFilterEx(source.Handle, WM_COPYDATA, ChangeWindowMessageFilterExAction.Allow, ref filterStatus);
+            // enable WM_COPYDATA from non-Administrator
+            EnableWindowMessage(source,WM_COPYDATA);
 
             source.AddHook(WndProc);
+
+            if (!RequestMasterKey())
+                App.Settings.RequestMasterPassword();
+
         }
 
 
@@ -131,16 +176,86 @@ namespace ISBoxerEVELauncher.Windows
             // Handle messages...
             switch(msg)
             {
+                    /*
+                case WM_REQUESTMASTERKEY:
+                    {
+                        handled = true;
+                        // lParam should be a window handle to transmit back to
+                        int processId = 0;
+                        GetWindowThreadProcessId(lParam, out processId);
+
+                        System.Diagnostics.Process newInstance = System.Diagnostics.Process.GetProcessById(processId);
+                        // ensure this is the same app, otherwise we might be leaking ...
+                        if (newInstance==null || newInstance.MainModule.FileName!=System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName)
+                        {
+                            // different thing, sorry.
+                            return IntPtr.Zero;
+                        }
+
+                        // do we even have a master key?
+                        if (!App.Settings.HasPasswordMasterKey)
+                        {
+                            // ... no...
+                            return IntPtr.Zero;
+                        }
+
+                        // ok i guess we're good. start by sending DH public key
+                        KeyTransmitter.TransmitPublicKey(lParam, newInstance);
+                        return new IntPtr(1);
+                    }
+                    break;
+                    /**/
                 case WM_COPYDATA:
-                    
+                    handled = true;
                     COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
-                    byte[] buff = new byte[cds.cbData];
-                    Marshal.Copy(cds.lpData, buff, 0, cds.cbData);
-                    string receivedString = Encoding.Unicode.GetString(buff, 0, cds.cbData);
+                    switch((long)cds.dwData)
+                    {
+                        case 0:
+                            byte[] buff = new byte[cds.cbData];
+                            Marshal.Copy(cds.lpData, buff, 0, cds.cbData);
+                            string receivedString = Encoding.Unicode.GetString(buff, 0, cds.cbData);
 
-                    //MessageBox.Show("Processing " + receivedString);
-                    App.ProcessCommandLine(receivedString);
+                            //MessageBox.Show("Processing " + receivedString);
+                            App.ProcessCommandLine(receivedString);
+                            break;
+                        case 10:
+                        case 11:
+                        case 12:
+                            {
+                                int processId = 0;
+                                GetWindowThreadProcessId(wParam, out processId);
 
+                                if (processId == 0)
+                                    return IntPtr.Zero;
+
+                                System.Diagnostics.Process newInstance = System.Diagnostics.Process.GetProcessById(processId);
+                                // ensure this is the same app, otherwise we might be leaking ...
+
+                                try
+                                {
+                                    if (newInstance == null || newInstance.MainModule.FileName != System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName)
+                                    {
+                                        // different thing, sorry.
+                                        return IntPtr.Zero;
+                                    }
+                                }
+                                catch(System.ComponentModel.Win32Exception we)
+                                {
+                                    if (we.NativeErrorCode == 5)
+                                    {
+                                        // other instance is Administrator and we are not; cannot confirm main module
+                                        return IntPtr.Zero;
+                                    }
+                                    MessageBox.Show("Error=" + we.NativeErrorCode);
+                                    throw;
+                                }
+                                /**/
+
+                                KeyTransmitter.ReceiveTransmission(this,wParam, newInstance, cds);
+                            }
+                            break;
+                    }
+                    
                     break;
             }
 

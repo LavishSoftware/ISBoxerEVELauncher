@@ -20,6 +20,7 @@ namespace ISBoxerEVELauncher
         {
             Accounts = new ObservableCollection<EVEAccount>();
             EULAAccepted = DateTime.MinValue;
+            MasterKeyRequested = DateTime.MinValue;
             EVESharedCachePath = App.DetectedEVESharedCachePath;
             _LaunchDelay = 2;
         }
@@ -153,6 +154,14 @@ namespace ISBoxerEVELauncher
             }
         }
 
+        DateTime _MasterKeyRequested;
+        /// <summary>
+        /// The time Master Key was requested from the master ISBoxer EVE Launcher instance
+        /// </summary>
+        [XmlIgnore]
+        public DateTime MasterKeyRequested { get { return _MasterKeyRequested; } set { _MasterKeyRequested = value; OnPropertyChanged("MasterKeyRequested"); } }
+
+
         /// <summary>
         /// This is used to generate the Master Key Check, along with an IV and the Master Key
         /// </summary>
@@ -172,7 +181,7 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public bool RequestMasterPassword()
         {
-            if (App.Settings.UseMasterKey && (PasswordMasterKey==null || !PasswordMasterKey.HasData))
+            if (UseMasterKey && (PasswordMasterKey==null || !PasswordMasterKey.HasData))
             {
                 Windows.MasterKeyEntryWindow mkew = new Windows.MasterKeyEntryWindow();
                 mkew.ShowDialog();
@@ -243,31 +252,7 @@ namespace ISBoxerEVELauncher
                     }
                 }
 
-
-                byte[] masterKeyCheckIV = Convert.FromBase64String(MasterKeyCheckIV);
-
-                using (SecureBytesWrapper sbwPreHash = new SecureBytesWrapper())
-                {
-                    byte[] plaintextBytes = Encoding.Unicode.GetBytes(MasterKeyCheckPlaintext);
-                    sbwPreHash.Bytes = new byte[masterKeyCheckIV.Length + plaintextBytes.Length + sbwKey.Bytes.Length];
-
-                    System.Buffer.BlockCopy(masterKeyCheckIV, 0, sbwPreHash.Bytes, 0, masterKeyCheckIV.Length);
-                    System.Buffer.BlockCopy(plaintextBytes, 0, sbwPreHash.Bytes, masterKeyCheckIV.Length, plaintextBytes.Length);
-                    System.Buffer.BlockCopy(sbwKey.Bytes, 0, sbwPreHash.Bytes, masterKeyCheckIV.Length + plaintextBytes.Length, sbwKey.Bytes.Length);
-
-                    using (SHA256Managed sha = new SHA256Managed())
-                    {
-                        // convert to Base64 and this is our check
-                        if (!MasterKeyCheck.Equals(Convert.ToBase64String(sha.ComputeHash(sbwPreHash.Bytes))))
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                PasswordMasterKey = new SecureBytesWrapper();
-                PasswordMasterKey.CopyBytes(sbwKey.Bytes);
-                return true;
+                return TryPasswordMasterKey(sbwKey.Bytes);
             }
         }
 
@@ -306,6 +291,42 @@ namespace ISBoxerEVELauncher
                 account.EncryptPassword();
             }
             Store();
+        }
+
+        /// <summary>
+        /// Determine if this is the correct Master Key, by testing with MasterKeyCheck and friends. If it is, keep the Master Key.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public bool TryPasswordMasterKey(byte[] bytes)
+        {
+            if (string.IsNullOrEmpty(MasterKeyCheck) || string.IsNullOrEmpty(MasterKeyCheckIV))
+                return false;
+
+            byte[] masterKeyCheckIV = Convert.FromBase64String(MasterKeyCheckIV);
+
+            using (SecureBytesWrapper sbwPreHash = new SecureBytesWrapper())
+            {
+                byte[] plaintextBytes = Encoding.Unicode.GetBytes(MasterKeyCheckPlaintext);
+                sbwPreHash.Bytes = new byte[masterKeyCheckIV.Length + plaintextBytes.Length + bytes.Length];
+
+                System.Buffer.BlockCopy(masterKeyCheckIV, 0, sbwPreHash.Bytes, 0, masterKeyCheckIV.Length);
+                System.Buffer.BlockCopy(plaintextBytes, 0, sbwPreHash.Bytes, masterKeyCheckIV.Length, plaintextBytes.Length);
+                System.Buffer.BlockCopy(bytes, 0, sbwPreHash.Bytes, masterKeyCheckIV.Length + plaintextBytes.Length, bytes.Length);
+
+                using (SHA256Managed sha = new SHA256Managed())
+                {
+                    // convert to Base64 and this is our check
+                    if (!MasterKeyCheck.Equals(Convert.ToBase64String(sha.ComputeHash(sbwPreHash.Bytes))))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            PasswordMasterKey = new SecureBytesWrapper();
+            PasswordMasterKey.CopyBytes(bytes);
+            return true;
         }
 
         /// <summary>

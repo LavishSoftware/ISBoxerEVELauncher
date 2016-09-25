@@ -8,6 +8,26 @@ namespace ISBoxerEVELauncher
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Check if a process name matches, ignoring any ".vshost" extension from Visual Studio debugging...
+        /// </summary>
+        /// <param name="processA"></param>
+        /// <param name="processB"></param>
+        /// <returns></returns>
+        public static bool NameMatches(this System.Diagnostics.Process processA, System.Diagnostics.Process processB)
+        {
+            string cleanA = processA.ProcessName.ToLowerInvariant().Replace(".vshost", string.Empty);
+            string cleanB = processB.ProcessName.ToLowerInvariant().Replace(".vshost", string.Empty);
+
+            return cleanA == cleanB;
+        }
+
+        /// <summary>
+        ///  Trim matching quotes if the input begins and ends with the given quote character
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="quote"></param>
+        /// <returns></returns>
         public static string TrimMatchingQuotes(this string input, char quote)
         {
             if ((input.Length >= 2) &&
@@ -17,6 +37,12 @@ namespace ISBoxerEVELauncher
             return input;
         }
 
+        /// <summary>
+        /// Split a string with command-line rules (spaces, quotes, escaping with \)
+        /// </summary>
+        /// <param name="commandLine"></param>
+        /// <param name="splitter"></param>
+        /// <returns></returns>
         public static IEnumerable<string> SplitCommandLine(this string commandLine, char splitter = ' ')
         {
             bool inQuotes = false;

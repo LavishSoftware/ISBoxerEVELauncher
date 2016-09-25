@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extensions.cs" />
+    <Compile Include="KeyTransmitter.cs" />
     <Compile Include="Launchers.cs" />
     <Compile Include="Windows\AuthenticatorChallengeWindow.xaml.cs">
       <DependentUpon>AuthenticatorChallengeWindow.xaml</DependentUpon>

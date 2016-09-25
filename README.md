@@ -1,5 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 
+# Recent changes
+Version 1.0.0.5 adds a simple way to stop re-entering the Master Password each time ISBoxer EVE Launcher is launched. Just keep a "master" ISBoxer EVE Launcher instance running, with the Master Password already entered.
+
 # ISBoxerEVELauncher
 An EVE Launcher supporting Inner Space and ISBoxer, and directly launching EVE. Secure password storage and 2-factor authentication are supported.
 

@@ -55,16 +55,27 @@ For ISBoxer 41, it is recommended to create Account-specific Game Profiles with 
 
 Here is a step-by-step description of updating your ISBoxer 41 Character Set to use ISBoxer EVE Launcher:
 1. Launch ISBoxer EVE Launcher for the first time
+
 2. In ISBoxer EVE Launcher, configure the EVE SharedCache path if needed
+
 3. Create a master Tranquility (or Singularity) Game Profile using the "Create one now" button next to the drop-down. This new Game Profile will launch exefile.exe directly.
+
 4. Add EVE Online Accounts to ISBoxer EVE Launcher using the Add Account button
+
 5. Optional: If you do not want to enter passwords each time, tick "Save passwords (securely)". This will ask for a Master Password which is then used to protect your EVE passwords.
+
 6. Close Inner Space if it is running. This will make sure you don't have to do Step 7 twice under any circumstance...
+
 7. Select all EVE Accounts in the list and select "Create Game Profile". Tick "Perform launch from a new ISBoxer EVE Launcher instance". Do not tick "Leave new ISBoxer EVE Launcher instance open after launch". Set the drop-down box to "Launch EVE client directly". Click "Go"! (Remember the Game name and Game Profile schemes for the next step!)
+
 8. You can launch Inner Space again now if you want. The new Game and Game Profiles should be successfully added.
+
 9. Back in ISBoxer Toolkit, in the top left pane under Characters, select each Character and find the "Game" and "Game Profile" drop-down boxes in the bottom right pane. The Game and Game Profile need to be updated to match what was added in Step 6.
+
 10. Export to Inner Space
+
 11. Optional: If you have enabled "Save passwords (securely)" in Step 5, run an instance of ISBoxer EVE Launcher as Administrator now. This will act as a "master" ISBoxer EVE Launcher instance, which will allow the new instances to not ask you for the Master Password each time!
+
 12. Launch your ISBoxer Character Set!
 
 ## Recommendations for ISBoxer 42

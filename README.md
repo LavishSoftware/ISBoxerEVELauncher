@@ -103,8 +103,10 @@ ISBoxer EVE Launcher supports the following command-line parameters:
 Accounts are all launched after the command line is fully processed for all options, so the order of flag options does not matter.
 
 Examples:
-Launch account1 and account2 via exefile.exe with DirectX 9 and Tranquility server: ISBoxerEVELauncher.exe -dx9 -tranquility -eve account1 account2
-Launch account1 and account2 via Inner Space with DirectX 11 and Singularity server: ISBoxerEVELauncher.exe -dx11 -singularity -innerspace account1 account2
+
+1. Launch account1 and account2 via exefile.exe with DirectX 9 and Tranquility server: ISBoxerEVELauncher.exe -dx9 -tranquility -eve account1 account2
+
+2. Launch account1 and account2 via Inner Space with DirectX 11 and Singularity server: ISBoxerEVELauncher.exe -dx11 -singularity -innerspace account1 account2
 
 # Notes on Security of this and other EVE Launchers
 This EVE Launcher is designed first and foremost to protect your accounts. Your passwords are never kept in memory in plaintext, never stored as the same string twice in your Settings file (all your passwords the same? check the file and you cannot tell), and can only be stored if protected by a Master Password. **This makes the ISBoxer EVE Launcher, as far as we can tell, more secure than the official EVE Launcher**, which indicates that saving the accounts through it is insecure -- we would agree with that.

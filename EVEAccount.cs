@@ -156,15 +156,18 @@ namespace ISBoxerEVELauncher
                 else
                     rjm.IV = Convert.FromBase64String(EncryptedPasswordIV);
 
-                rjm.Key = App.Settings.PasswordMasterKey.Bytes;
-
-                using (ICryptoTransform encryptor = rjm.CreateEncryptor())
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey,true))
                 {
-                    using (SecureStringWrapper ssw2 = new SecureStringWrapper(password, Encoding.Unicode))
+                    rjm.Key = sbwKey.Bytes;
+
+                    using (ICryptoTransform encryptor = rjm.CreateEncryptor())
                     {
-                        byte[] inblock = ssw2.ToByteArray();
-                        byte[] encrypted = encryptor.TransformFinalBlock(inblock, 0, inblock.Length);
-                        EncryptedPassword = Convert.ToBase64String(encrypted);
+                        using (SecureStringWrapper ssw2 = new SecureStringWrapper(password, Encoding.Unicode))
+                        {
+                            byte[] inblock = ssw2.ToByteArray();
+                            byte[] encrypted = encryptor.TransformFinalBlock(inblock, 0, inblock.Length);
+                            EncryptedPassword = Convert.ToBase64String(encrypted);
+                        }
                     }
                 }
             }
@@ -202,21 +205,24 @@ namespace ISBoxerEVELauncher
             {
                 rjm.IV = Convert.FromBase64String(EncryptedPasswordIV);
 
-                rjm.Key = App.Settings.PasswordMasterKey.Bytes;
-                using (ICryptoTransform decryptor = rjm.CreateDecryptor())
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
                 {
-                    byte[] pass = Convert.FromBase64String(EncryptedPassword);
-
-                    using (SecureBytesWrapper sbw = new SecureBytesWrapper())
+                    rjm.Key = sbwKey.Bytes;
+                    using (ICryptoTransform decryptor = rjm.CreateDecryptor())
                     {
-                        sbw.Bytes = decryptor.TransformFinalBlock(pass, 0, pass.Length);
+                        byte[] pass = Convert.FromBase64String(EncryptedPassword);
 
-                        SecurePassword = new System.Security.SecureString();
-                        foreach (char c in Encoding.Unicode.GetChars(sbw.Bytes))
+                        using (SecureBytesWrapper sbw = new SecureBytesWrapper())
                         {
-                            SecurePassword.AppendChar(c);
+                            sbw.Bytes = decryptor.TransformFinalBlock(pass, 0, pass.Length);
+
+                            SecurePassword = new System.Security.SecureString();
+                            foreach (char c in Encoding.Unicode.GetChars(sbw.Bytes))
+                            {
+                                SecurePassword.AppendChar(c);
+                            }
+                            SecurePassword.MakeReadOnly();
                         }
-                        SecurePassword.MakeReadOnly();
                     }
                 }
             }

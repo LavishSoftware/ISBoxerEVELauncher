@@ -147,8 +147,11 @@ namespace ISBoxerEVELauncher
             {
                 byte[] encryptedMessage;
                 byte[] iv;
-                Encrypt(App.Settings.PasswordMasterKey.Bytes, out encryptedMessage, out iv);
 
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey,true))
+                {
+                    Encrypt(sbwKey.Bytes, out encryptedMessage, out iv);
+                }
                 Windows.COPYDATASTRUCT cds = new Windows.COPYDATASTRUCT();
                 cds.cbData = sizeof(int) + iv.Length + encryptedMessage.Length;
 

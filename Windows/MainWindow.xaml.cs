@@ -410,7 +410,7 @@ namespace ISBoxerEVELauncher.Windows
             cgpw.ShowDialog();
             if (cgpw.DialogResult.HasValue && cgpw.DialogResult.Value)
             {
-                App.AddGame(cgpw.Game, cgpw.GameProfile, filepath + "\\bin", "exefile.exe", "/noconsole");
+                App.AddGame(cgpw.Game, cgpw.GameProfile, System.IO.Path.Combine(filepath, "bin"), "exefile.exe", "/noconsole");
                 App.ReloadGameConfiguration();
                 App.Settings.TranquilityGameProfile = App.FindGlobalGameProfile(new InnerSpaceGameProfile() { Game = cgpw.Game, GameProfile = cgpw.GameProfile });
             }
@@ -429,7 +429,7 @@ namespace ISBoxerEVELauncher.Windows
             cgpw.ShowDialog();
             if (cgpw.DialogResult.HasValue && cgpw.DialogResult.Value)
             {
-                App.AddGame(cgpw.Game, cgpw.GameProfile, filepath + "\\bin", "exefile.exe", "/noconsole /server:Singularity");
+                App.AddGame(cgpw.Game, cgpw.GameProfile, System.IO.Path.Combine(filepath, "bin"), "exefile.exe", "/noconsole /server:Singularity");
                 App.ReloadGameConfiguration();
                 App.Settings.SingularityGameProfile = App.FindGlobalGameProfile(new InnerSpaceGameProfile() { Game = cgpw.Game, GameProfile = cgpw.GameProfile });
             }

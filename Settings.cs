@@ -70,26 +70,26 @@ namespace ISBoxerEVELauncher
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return EVESharedCachePath + "\\tq";
+            return Path.Combine(EVESharedCachePath, "tq");
         }
 
         public string GetTranquilityEXE()
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return GetTranquilityPath() + "\\bin\\exefile.exe";
+            return Path.Combine(GetTranquilityPath(), "bin\\exefile.exe");
         }
         public string GetSingularityPath()
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return EVESharedCachePath + "\\sisi";
+            return Path.Combine(EVESharedCachePath, "sisi");
         }
         public string GetSingularityEXE()
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return GetSingularityPath() + "\\bin\\exefile.exe";
+            return Path.Combine(GetSingularityPath() , "bin\\exefile.exe");
         }
 
         string _MasterKeyCheck;
@@ -135,12 +135,12 @@ namespace ISBoxerEVELauncher
             }
         }
 
-        SecureBytesWrapper _PasswordMasterKey;
+        SecureStringWrapper _PasswordMasterKey;
         /// <summary>
         /// The already-encrypted Master Password. The Password itself is discarded and wiped.
         /// </summary>
         [XmlIgnore]
-        public SecureBytesWrapper PasswordMasterKey 
+        public SecureStringWrapper PasswordMasterKey 
         {
             get
             {
@@ -202,12 +202,14 @@ namespace ISBoxerEVELauncher
                 using (SecureBytesWrapper sbwPreHash = new SecureBytesWrapper())
                 {
                     byte[] plaintextBytes = Encoding.Unicode.GetBytes(MasterKeyCheckPlaintext);
-                    sbwPreHash.Bytes = new byte[rjmIVGenerator.IV.Length + plaintextBytes.Length + PasswordMasterKey.Bytes.Length];
+                    using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                    {
+                        sbwPreHash.Bytes = new byte[rjmIVGenerator.IV.Length + plaintextBytes.Length + sbwKey.Bytes.Length];
 
-                    System.Buffer.BlockCopy(rjmIVGenerator.IV, 0, sbwPreHash.Bytes, 0, rjmIVGenerator.IV.Length);
-                    System.Buffer.BlockCopy(plaintextBytes, 0, sbwPreHash.Bytes, rjmIVGenerator.IV.Length, plaintextBytes.Length);
-                    System.Buffer.BlockCopy(PasswordMasterKey.Bytes, 0, sbwPreHash.Bytes, rjmIVGenerator.IV.Length + plaintextBytes.Length, PasswordMasterKey.Bytes.Length);
-
+                        System.Buffer.BlockCopy(rjmIVGenerator.IV, 0, sbwPreHash.Bytes, 0, rjmIVGenerator.IV.Length);
+                        System.Buffer.BlockCopy(plaintextBytes, 0, sbwPreHash.Bytes, rjmIVGenerator.IV.Length, plaintextBytes.Length);
+                        System.Buffer.BlockCopy(sbwKey.Bytes, 0, sbwPreHash.Bytes, rjmIVGenerator.IV.Length + plaintextBytes.Length, sbwKey.Bytes.Length);
+                    }
                     using (SHA256Managed sha = new SHA256Managed())
                     {
                         // convert to Base64 and this is our check
@@ -256,6 +258,11 @@ namespace ISBoxerEVELauncher
             }
         }
 
+        public void SetPasswordMasterKeyBytes(byte[] bytes)
+        {
+            PasswordMasterKey = SecureStringWrapper.ConvertToHex(bytes);
+        }
+
         /// <summary>
         /// Using the provided Master Password, set the *new* Master Key. Populates Master Key Check, and encrypts+stores already-entered EVE Account passwords
         /// </summary>
@@ -280,8 +287,9 @@ namespace ISBoxerEVELauncher
                         System.Buffer.BlockCopy(MasterKeySalt, 0, sbw.Bytes, 0, MasterKeySalt.Length);
                         System.Buffer.BlockCopy(passwordBytes, 0, sbw.Bytes, MasterKeySalt.Length, passwordBytes.Length);
 
-                        PasswordMasterKey = new SecureBytesWrapper();
-                        PasswordMasterKey.Bytes = sha.ComputeHash(sbw.Bytes);
+                        sbw.Bytes = sha.ComputeHash(sbw.Bytes);
+
+                        SetPasswordMasterKeyBytes(sbw.Bytes);
                     }
                 }
             }
@@ -324,8 +332,7 @@ namespace ISBoxerEVELauncher
                 }
             }
 
-            PasswordMasterKey = new SecureBytesWrapper();
-            PasswordMasterKey.CopyBytes(bytes);
+            SetPasswordMasterKeyBytes(bytes);
             return true;
         }
 

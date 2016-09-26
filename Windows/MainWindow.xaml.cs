@@ -488,6 +488,13 @@ namespace ISBoxerEVELauncher.Windows
                     existingAccount.Username = newAccount.Username;
                     existingAccount.SecurePassword = newAccount.SecurePassword.Copy();
                     existingAccount.EncryptPassword();
+
+                    if (newAccount.SecureCharacterName != null && newAccount.SecureCharacterName.Length > 0)
+                    {
+                        existingAccount.SecureCharacterName = newAccount.SecureCharacterName.Copy();
+                        existingAccount.EncryptCharacterName();
+                    }
+
                     newAccount.Dispose();
                     newAccount = existingAccount;
                 }

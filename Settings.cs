@@ -297,6 +297,7 @@ namespace ISBoxerEVELauncher
             foreach (EVEAccount account in Accounts)
             {
                 account.EncryptPassword();
+                account.EncryptCharacterName();
             }
             Store();
         }
@@ -344,6 +345,7 @@ namespace ISBoxerEVELauncher
             foreach (EVEAccount account in Accounts)
             {
                 account.ClearEncryptedPassword();
+                account.ClearEncryptedCharacterName();
             }
             MasterKeyCheck = null;
             MasterKeyCheckIV = null;

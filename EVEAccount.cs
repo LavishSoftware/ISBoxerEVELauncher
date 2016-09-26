@@ -85,6 +85,7 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public string Username { get { return _Username; } set { _Username = value; OnPropertyChanged("Username"); } }
 
+        #region Password
         System.Security.SecureString _SecurePassword;
         /// <summary>
         /// A Secure (and non-plaintext) representation of the password. This will NOT be stored in XML.
@@ -110,24 +111,7 @@ namespace ISBoxerEVELauncher
         /// The Initialization Vector used to encrypt the password
         /// </summary>
         public string EncryptedPasswordIV { get { return _EncryptedPasswordIV; } set { _EncryptedPasswordIV = value; OnPropertyChanged("EncryptedPasswordIV"); } }
-
-        /// <summary>
-        /// Attempts to prepare the encrypted verison of the currently active SecurePassword
-        /// </summary>
-        public void EncryptPassword()
-        {
-            SetEncryptedPassword(SecurePassword);
-        }
-
-        /// <summary>
-        /// Removes the encrypted password and IV
-        /// </summary>
-        public void ClearEncryptedPassword()
-        {
-            EncryptedPassword = null;
-            EncryptedPasswordIV = null;
-        }
-
+        
         /// <summary>
         /// Sets the encrypted password to the given SecureString, if possible
         /// </summary>
@@ -171,6 +155,24 @@ namespace ISBoxerEVELauncher
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Attempts to prepare the encrypted verison of the currently active SecurePassword
+        /// </summary>
+        public void EncryptPassword()
+        {
+            SetEncryptedPassword(SecurePassword);
+        }
+
+        /// <summary>
+        /// Removes the encrypted password and IV
+        /// </summary>
+        public void ClearEncryptedPassword()
+        {
+            EncryptedPassword = null;
+            EncryptedPasswordIV = null;
         }
 
         /// <summary>
@@ -227,6 +229,153 @@ namespace ISBoxerEVELauncher
                 }
             }
         }
+        #endregion
+
+        #region CharacterName
+        System.Security.SecureString _SecureCharacterName;
+        /// <summary>
+        /// A Secure (and non-plaintext) representation of the CharacterName. This will NOT be stored in XML.
+        /// </summary>
+        [XmlIgnore]
+        public System.Security.SecureString SecureCharacterName { get { return _SecureCharacterName; } set { _SecureCharacterName = value; OnPropertyChanged("SecureCharacterName"); EncryptedCharacterName = null; EncryptedCharacterNameIV = null; } }
+
+        string _EncryptedCharacterName;
+        /// <summary>
+        /// An encrypted version of the CharacterName for the account. It is protected by the CharacterName Master Key. Changing the CharacterName Master Key will wipe this.
+        /// </summary>
+        public string EncryptedCharacterName
+        {
+            get
+            {
+                return _EncryptedCharacterName;
+            }
+            set { _EncryptedCharacterName = value; OnPropertyChanged("EncryptedCharacterName"); }
+        }
+
+        string _EncryptedCharacterNameIV;
+        /// <summary>
+        /// The Initialization Vector used to encrypt the CharacterName
+        /// </summary>
+        public string EncryptedCharacterNameIV { get { return _EncryptedCharacterNameIV; } set { _EncryptedCharacterNameIV = value; OnPropertyChanged("EncryptedCharacterNameIV"); } }
+
+        /// <summary>
+        /// Attempts to prepare the encrypted verison of the currently active SecureCharacterName
+        /// </summary>
+        public void EncryptCharacterName()
+        {
+            SetEncryptedCharacterName(SecureCharacterName);
+        }
+
+        /// <summary>
+        /// Removes the encrypted CharacterName and IV
+        /// </summary>
+        public void ClearEncryptedCharacterName()
+        {
+            EncryptedCharacterName = null;
+            EncryptedCharacterNameIV = null;
+        }
+
+        /// <summary>
+        /// Sets the encrypted CharacterName to the given SecureString, if possible
+        /// </summary>
+        /// <param name="CharacterName"></param>
+        void SetEncryptedCharacterName(System.Security.SecureString CharacterName)
+        {
+            if (!App.Settings.UseMasterKey || CharacterName == null)
+            {
+                ClearEncryptedCharacterName();
+                return;
+            }
+
+            if (!App.Settings.RequestMasterPassword())
+            {
+                System.Windows.MessageBox.Show("Your configured Master Password is required in order to save EVE Account Character Names and passwords. It can be reset or disabled by un-checking 'Save passwords (securely)', and then all currently saved EVE Account Character Names will be lost.");
+                return;
+            }
+
+            using (RijndaelManaged rjm = new RijndaelManaged())
+            {
+                if (string.IsNullOrEmpty(EncryptedCharacterNameIV))
+                {
+                    rjm.GenerateIV();
+                    EncryptedCharacterNameIV = Convert.ToBase64String(rjm.IV);
+                }
+                else
+                    rjm.IV = Convert.FromBase64String(EncryptedCharacterNameIV);
+
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                {
+                    rjm.Key = sbwKey.Bytes;
+
+                    using (ICryptoTransform encryptor = rjm.CreateEncryptor())
+                    {
+                        using (SecureStringWrapper ssw2 = new SecureStringWrapper(CharacterName, Encoding.Unicode))
+                        {
+                            byte[] inblock = ssw2.ToByteArray();
+                            byte[] encrypted = encryptor.TransformFinalBlock(inblock, 0, inblock.Length);
+                            EncryptedCharacterName = Convert.ToBase64String(encrypted);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Decrypts the currently EncryptedCharacterName if possible, populating SecureCharacterName (which can then be used to log in...)
+        /// </summary>
+        public void DecryptCharacterName(bool allowPopup)
+        {
+            if (string.IsNullOrEmpty(EncryptedCharacterName) || string.IsNullOrEmpty(EncryptedCharacterNameIV))
+            {
+                // no CharacterName stored to decrypt.
+                return;
+            }
+            // CharacterName is indeed encrypted
+
+            if (!App.Settings.HasPasswordMasterKey)
+            {
+                // Master CharacterName not yet entered
+                if (!allowPopup)
+                {
+                    // can't ask for it right now
+                    return;
+                }
+
+                // ok, ask for it
+                if (!App.Settings.RequestMasterPassword())
+                {
+                    // not entered. can't decrypt.
+                    return;
+                }
+            }
+            using (RijndaelManaged rjm = new RijndaelManaged())
+            {
+                rjm.IV = Convert.FromBase64String(EncryptedCharacterNameIV);
+
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                {
+                    rjm.Key = sbwKey.Bytes;
+                    using (ICryptoTransform decryptor = rjm.CreateDecryptor())
+                    {
+                        byte[] pass = Convert.FromBase64String(EncryptedCharacterName);
+
+                        using (SecureBytesWrapper sbw = new SecureBytesWrapper())
+                        {
+                            sbw.Bytes = decryptor.TransformFinalBlock(pass, 0, pass.Length);
+
+                            SecureCharacterName = new System.Security.SecureString();
+                            foreach (char c in Encoding.Unicode.GetChars(sbw.Bytes))
+                            {
+                                SecureCharacterName.AppendChar(c);
+                            }
+                            SecureCharacterName.MakeReadOnly();
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
 
         Token _TranquilityToken;
         /// <summary>
@@ -603,16 +752,29 @@ namespace ISBoxerEVELauncher
 
         public LoginResult GetCharacterChallenge(bool sisi, out Token accessToken)
         {
-            Windows.CharacterChallengeWindow ccw = new Windows.CharacterChallengeWindow(this);
-            ccw.ShowDialog();
-            if (!ccw.DialogResult.HasValue || !ccw.DialogResult.Value)
+            // need SecureCharacterName.
+            if (SecureCharacterName == null || SecureCharacterName.Length == 0)
             {
-                SecurePassword = null;
-                accessToken = null;
-                return LoginResult.InvalidCharacterChallenge;
+                DecryptCharacterName(true);
+                if (SecureCharacterName == null || SecureCharacterName.Length == 0)
+                {
+
+                    Windows.CharacterChallengeWindow ccw = new Windows.CharacterChallengeWindow(this);
+                    bool? result = ccw.ShowDialog();
+
+                    if (SecureCharacterName == null || SecureCharacterName.Length == 0)
+                    {
+                        // CharacterName is required, sorry dude
+                        accessToken = null;
+                        SecurePassword = null;
+                        SecureCharacterName = null;
+                        return LoginResult.InvalidCharacterChallenge;
+                    }
+
+                    App.Settings.Store();
+                }
             }
-
-
+            
             string uri = "https://login.eveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
             if (sisi)
             {
@@ -636,8 +798,19 @@ namespace ISBoxerEVELauncher
             req.ContentType = "application/x-www-form-urlencoded";
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {
-                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&RememberCharacterChallenge={1}", Uri.EscapeDataString(ccw.CharacterName), "true"));
-                
+                byte[] body1 = Encoding.ASCII.GetBytes(String.Format("RememberCharacterChallenge={0}&Challenge=", "true"));
+                using (SecureStringWrapper ssw = new SecureStringWrapper(SecureCharacterName, Encoding.ASCII))
+                {
+                    using (SecureBytesWrapper escapedCharacterName = new SecureBytesWrapper())
+                    {
+                        escapedCharacterName.Bytes = System.Web.HttpUtility.UrlEncodeToBytes(ssw.ToByteArray());
+
+                        body.Bytes = new byte[body1.Length + escapedCharacterName.Bytes.Length];
+                        System.Buffer.BlockCopy(body1, 0, body.Bytes, 0, body1.Length);
+                        System.Buffer.BlockCopy(escapedCharacterName.Bytes, 0, body.Bytes, body1.Length, escapedCharacterName.Bytes.Length);
+                    }
+                }
+
                 req.ContentLength = body.Bytes.Length;
                 try
                 {
@@ -658,8 +831,7 @@ namespace ISBoxerEVELauncher
                         default:
                             throw;
                     }
-                }
-                
+                }               
             }
             return GetAccessToken(sisi, req, out accessToken);
         }
@@ -690,6 +862,7 @@ namespace ISBoxerEVELauncher
                     {
                         accessToken = null;
                         SecurePassword = null;
+                        SecureCharacterName = null;
                         return LoginResult.InvalidCharacterChallenge;
                     }
 

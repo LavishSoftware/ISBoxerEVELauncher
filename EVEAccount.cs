@@ -523,7 +523,14 @@ namespace ISBoxerEVELauncher
                     }
                 }
             }
-            return GetAccessToken(sisi, req, out accessToken);
+            try
+            {
+                return GetAccessToken(sisi, req, out accessToken);
+            }
+            catch (System.Net.WebException we)
+            {
+                return GetAccessToken(sisi, out accessToken);
+            }
         }
 
         public LoginResult GetAuthenticatorChallenge(bool sisi, out Token accessToken)

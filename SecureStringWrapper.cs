@@ -38,7 +38,37 @@ namespace ISBoxerEVELauncher
         {
             get
             {
-                return _bytes != null && _bytes.Length > 0;
+                if (_bytes != null)
+                    return _bytes.Length > 0;
+                return secureString.Length > 0;
+            }
+        }
+
+        const string hexChars = "0123456789abcdef";
+        /// <summary>
+        /// Encode an arbitrary byte array as a hexadecimal string, into a SecureString
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static SecureStringWrapper ConvertToHex(byte[] bytes)
+        {
+            using (System.Security.SecureString ss = new System.Security.SecureString())
+            {
+                using (SecureStringWrapper ssw = new SecureStringWrapper(ss))
+                {
+                    // convert to hex
+                    for (int i = 0; i < bytes.Length; i++)
+                    {
+                        char c1 = hexChars[bytes[i] / 16];
+                        char c2 = hexChars[bytes[i] % 16];
+                        ss.AppendChar(c1);
+                        ss.AppendChar(c2);
+
+                    }
+                    ss.MakeReadOnly();
+
+                    return new SecureStringWrapper(ss.Copy());
+                }
             }
         }
 
@@ -138,6 +168,54 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public SecureBytesWrapper()
         {
+        }
+
+        const string hexChars = "0123456789abcdef";
+        static byte[] _hexTable;
+        /// <summary>
+        /// Initialize with byte array via the SecureStringWrapper, but possibly convert from hex string...
+        /// </summary>
+        /// <param name="ssw"></param>
+        /// <param name="convertFromHex"></param>
+        public SecureBytesWrapper(SecureStringWrapper ssw, bool convertFromHex)
+        {
+            if (!convertFromHex)
+            {
+                Bytes = ssw.ToByteArray();
+                return;
+            }
+            if (_hexTable == null)
+            {
+                _hexTable = new byte[256];
+                _hexTable['0'] = 0;
+                _hexTable['1'] = 1;
+                _hexTable['2'] = 2;
+                _hexTable['3'] = 3;
+                _hexTable['4'] = 4;
+                _hexTable['5'] = 5;
+                _hexTable['6'] = 6;
+                _hexTable['7'] = 7;
+                _hexTable['8'] = 8;
+                _hexTable['9'] = 9;
+                _hexTable['a'] = 10;
+                _hexTable['b'] = 11;
+                _hexTable['c'] = 12;
+                _hexTable['d'] = 13;
+                _hexTable['e'] = 14;
+                _hexTable['f'] = 15;
+            }
+
+            using (SecureBytesWrapper temp = new SecureBytesWrapper(ssw,false))
+            {
+                _Bytes = new byte[temp.Bytes.Length / 2];
+                for (int i = 0 ; i < temp.Bytes.Length ; i+=2)
+                {
+                    byte b1 = temp.Bytes[i];
+                    byte b2 = temp.Bytes[i + 1];
+                    _Bytes[i / 2] = (byte)( (_hexTable[b1] * 16) + _hexTable[b2]);
+                }
+
+            }
         }
 
         /// <summary>

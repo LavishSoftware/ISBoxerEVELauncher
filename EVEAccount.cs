@@ -762,7 +762,7 @@ namespace ISBoxerEVELauncher
                     Windows.CharacterChallengeWindow ccw = new Windows.CharacterChallengeWindow(this);
                     bool? result = ccw.ShowDialog();
 
-                    if (SecureCharacterName == null || SecureCharacterName.Length == 0)
+                    if (string.IsNullOrWhiteSpace(ccw.CharacterName))
                     {
                         // CharacterName is required, sorry dude
                         accessToken = null;
@@ -771,6 +771,13 @@ namespace ISBoxerEVELauncher
                         return LoginResult.InvalidCharacterChallenge;
                     }
 
+                    SecureCharacterName = new System.Security.SecureString();
+                    foreach (char c in ccw.CharacterName)
+                    {
+                        SecureCharacterName.AppendChar(c);
+                    }
+                    SecureCharacterName.MakeReadOnly();
+                    EncryptCharacterName();
                     App.Settings.Store();
                 }
             }

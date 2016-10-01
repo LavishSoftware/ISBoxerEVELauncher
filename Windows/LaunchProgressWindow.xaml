@@ -14,7 +14,7 @@
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
             <TextBlock DockPanel.Dock="Top" FontWeight="Bold" Text="Details..." />
-            <TextBox Name="textDetails" DockPanel.Dock="Bottom" Height="50" />
+            <TextBox Name="textDetails" DockPanel.Dock="Bottom" MinHeight="50" />
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="5,0,5,5">
             <TextBlock DockPanel.Dock="Top" FontWeight="Bold" Text="Characters remaining to launch..." />

@@ -363,8 +363,15 @@ namespace ISBoxerEVELauncher
             {
                 cmdLine += " -addparam \"/triPlatform=" + dxVersion.ToString() + "\"";
             }
-            System.Diagnostics.Process.Start(App.ISExecutable, cmdLine);
-
+            try
+            {
+                System.Diagnostics.Process.Start(App.ISExecutable, cmdLine);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Launch failed. executable=" + App.ISExecutable + "; args=" + cmdLine + System.Environment.NewLine + e.ToString());
+                return false;
+            }
             return true;
         }
 
@@ -536,7 +543,7 @@ namespace ISBoxerEVELauncher
                     try
                     {
 
-                        if (processes[i].MainModule.FileName == System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName)
+                        if (processes[i].MainModuleNameMatches(currentProcess))
                             return processes[i];
                     }
                     catch(System.ComponentModel.Win32Exception we)

@@ -23,6 +23,20 @@ namespace ISBoxerEVELauncher
         }
 
         /// <summary>
+        /// Check if a process MainModule FileName matches, ignoring any ".vshost" extension from Visual Studio debugging...
+        /// </summary>
+        /// <param name="processA"></param>
+        /// <param name="processB"></param>
+        /// <returns></returns>
+        public static bool MainModuleNameMatches(this System.Diagnostics.Process processA, System.Diagnostics.Process processB)
+        {
+            string cleanA = processA.MainModule.FileName.ToLowerInvariant().Replace(".vshost", string.Empty);
+            string cleanB = processB.MainModule.FileName.ToLowerInvariant().Replace(".vshost", string.Empty);
+
+            return cleanA == cleanB;
+        }
+
+        /// <summary>
         ///  Trim matching quotes if the input begins and ends with the given quote character
         /// </summary>
         /// <param name="input"></param>

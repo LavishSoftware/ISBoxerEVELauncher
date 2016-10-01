@@ -141,10 +141,18 @@ namespace ISBoxerEVELauncher.Windows
                             AddDetailsLine("Failed to retrieve SSO Token from EVE servers. Aborting!");
                         }
                         break;
+                    case "gameName":
+                        {
+                            AddDetailsLine("Missing appropriate Game Profile. Aborting!");
+                        }
+                        break;
                     case "gameProfileName":
                         {
                             AddDetailsLine("Missing appropriate Game Profile. Aborting!");
                         }
+                        break;
+                    default:
+                        AddDetailsLine(ane.ToString());
                         break;
                 }
             }

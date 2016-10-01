@@ -21,7 +21,7 @@ namespace ISBoxerEVELauncher
         {
             public Session(IntPtr window, System.Diagnostics.Process process)
             {
-                Window = window;
+                RemoteWindow = window;
                 Process = process;
 
                 process.Exited += process_Exited;
@@ -30,7 +30,6 @@ namespace ISBoxerEVELauncher
 
                 DH.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
                 DH.HashAlgorithm = CngAlgorithm.Sha256;
-
                 LocalPublicKey = new SecureBytesWrapper() { Bytes = DH.PublicKey.ToByteArray() };
 
                 // this is generated using the remote public key, which we dont have yet
@@ -49,14 +48,14 @@ namespace ISBoxerEVELauncher
             SecureBytesWrapper LocalPublicKey { get; set; }
             SecureBytesWrapper LocalPrivateKey { get; set; }
 
-            public IntPtr Window { get; set; }
+            public IntPtr RemoteWindow { get; set; }
             public System.Diagnostics.Process Process { get; set; }
 
             public void SetRemotePublicKey(byte[] bytes)
             {
                 using (CngKey remotePublicKey = CngKey.Import(bytes, CngKeyBlobFormat.EccPublicBlob))
                 {
-                    LocalPrivateKey.Bytes = DH.DeriveKeyMaterial(remotePublicKey);
+                    LocalPrivateKey.CopyBytes(DH.DeriveKeyMaterial(remotePublicKey));
                 }
             }
 
@@ -69,11 +68,13 @@ namespace ISBoxerEVELauncher
 
                     // Encrypt the message
                     using (MemoryStream ciphertext = new MemoryStream())
-                    using (CryptoStream cs = new CryptoStream(ciphertext, aes.CreateEncryptor(), CryptoStreamMode.Write))
                     {
-                        cs.Write(secretMessage, 0, secretMessage.Length);
-                        cs.Close();
-                        encryptedMessage = ciphertext.ToArray();
+                        using (CryptoStream cs = new CryptoStream(ciphertext, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                        {
+                            cs.Write(secretMessage, 0, secretMessage.Length);
+                            cs.Close();
+                            encryptedMessage = ciphertext.ToArray();
+                        }
                     }
                 }
             }
@@ -87,11 +88,13 @@ namespace ISBoxerEVELauncher
 
                     // Encrypt the message
                     using (MemoryStream ciphertext = new MemoryStream())
-                    using (CryptoStream cs = new CryptoStream(ciphertext, aes.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        cs.Write(encryptedMessage, 0, encryptedMessage.Length);
-                        cs.Close();
-                        decryptedMessage.Bytes = ciphertext.ToArray();
+                        using (CryptoStream cs = new CryptoStream(ciphertext, aes.CreateDecryptor(), CryptoStreamMode.Write))
+                        {
+                            cs.Write(encryptedMessage, 0, encryptedMessage.Length);
+                            cs.Close();
+                            decryptedMessage.CopyBytes(ciphertext.ToArray());
+                        }
                     }
                 }
             }
@@ -114,7 +117,7 @@ namespace ISBoxerEVELauncher
                 if (ivLength > cds.cbData)
                 {
                     // throw exception .. ?
-                    return;
+                    throw new ApplicationException("Master Key transmission failed: Initialization Vector received incorrectly");
                 }
                 byte[] iv = new byte[ivLength];
                 Buffer.BlockCopy(combinedMessage, sizeof(int), iv, 0, ivLength);
@@ -125,7 +128,10 @@ namespace ISBoxerEVELauncher
                 using (SecureBytesWrapper sbw = new SecureBytesWrapper())
                 {
                     Decrypt(encryptedMessage, iv, sbw);
-                    App.Settings.TryPasswordMasterKey(sbw.Bytes);                    
+                    if (!App.Settings.TryPasswordMasterKey(sbw.Bytes))
+                    {
+                        throw new ApplicationException("Master Key transmission failed: Master Key received incorrectly");
+                    }
                 }
             }
 
@@ -169,22 +175,22 @@ namespace ISBoxerEVELauncher
                 return cds;
             }
 
-            public void TransmitPublicKey(Windows.MainWindow window, bool isRequest)
+            public void TransmitPublicKey(Windows.MainWindow localWindow, bool isRequest)
             {
                 Windows.COPYDATASTRUCT cds = GetPublicKeyTransmission(isRequest);
 
-                HwndSource source = PresentationSource.FromVisual(window) as HwndSource;
+                HwndSource source = PresentationSource.FromVisual(localWindow) as HwndSource;
 
-                Windows.MainWindow.SendMessage(this.Window, Windows.MainWindow.WM_COPYDATA, source.Handle, ref cds);
+                Windows.MainWindow.SendMessage(this.RemoteWindow, Windows.MainWindow.WM_COPYDATA, source.Handle, ref cds);
 
                 Marshal.FreeHGlobal(cds.lpData);
             }
 
-            public void TransmitEncryptedMasterKey(Windows.MainWindow window)
+            public void TransmitEncryptedMasterKey(Windows.MainWindow localWindow)
             {
                 Windows.COPYDATASTRUCT cds = GetEncryptedMasterKeyTransmission();
-                HwndSource source = PresentationSource.FromVisual(window) as HwndSource;
-                Windows.MainWindow.SendMessage(this.Window, Windows.MainWindow.WM_COPYDATA, source.Handle, ref cds);
+                HwndSource source = PresentationSource.FromVisual(localWindow) as HwndSource;
+                Windows.MainWindow.SendMessage(this.RemoteWindow, Windows.MainWindow.WM_COPYDATA, source.Handle, ref cds);
                 Marshal.FreeHGlobal(cds.lpData);
             }
 
@@ -212,7 +218,7 @@ namespace ISBoxerEVELauncher
 
         public static void RequestMasterKey(Windows.MainWindow window, IntPtr remoteWindow, System.Diagnostics.Process remoteProcess)
         {
-            Session session = Sessions.FirstOrDefault(q => q.Window == remoteWindow && q.Process.Id == remoteProcess.Id);
+            Session session = Sessions.FirstOrDefault(q => q.RemoteWindow == remoteWindow && q.Process.Id == remoteProcess.Id);
 
             if (session == null)
             {
@@ -225,7 +231,7 @@ namespace ISBoxerEVELauncher
 
         public static bool ReceiveTransmission(Windows.MainWindow window, IntPtr remoteWindow, System.Diagnostics.Process remoteProcess, Windows.COPYDATASTRUCT cds)
         {
-            Session session = Sessions.FirstOrDefault(q => q.Window == remoteWindow && q.Process.Id == remoteProcess.Id);
+            Session session = Sessions.FirstOrDefault(q => q.RemoteWindow == remoteWindow && q.Process.Id == remoteProcess.Id);
 
             if (session == null)
             {
@@ -236,6 +242,10 @@ namespace ISBoxerEVELauncher
             switch((long)cds.dwData)
             {
                 case 10:
+                    if (!App.Settings.HasPasswordMasterKey)
+                    {
+                        return false;
+                    }
                     session.ReceivePublicKeyTransmission(cds);
                     session.TransmitPublicKey(window,false);
                     session.TransmitEncryptedMasterKey(window);

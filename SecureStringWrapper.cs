@@ -181,7 +181,7 @@ namespace ISBoxerEVELauncher
         {
             if (!convertFromHex)
             {
-                Bytes = ssw.ToByteArray();
+                CopyBytes(ssw.ToByteArray());
                 return;
             }
             if (_hexTable == null)

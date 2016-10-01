@@ -766,7 +766,7 @@ namespace ISBoxerEVELauncher
                     {
                         // CharacterName is required, sorry dude
                         accessToken = null;
-                        SecurePassword = null;
+                      //  SecurePassword = null;
                         SecureCharacterName = null;
                         return LoginResult.InvalidCharacterChallenge;
                     }

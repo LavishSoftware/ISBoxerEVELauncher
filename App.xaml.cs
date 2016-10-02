@@ -235,6 +235,80 @@ namespace ISBoxerEVELauncher
             return found;
         }
  
+        static bool AddGameToXML(string gameName, string gameProfileName, string executablePath, string executableName, string parameters)
+        {
+            // not running, just edit the XML
+            if (GameConfiguration == null)
+            {
+                // no existing XML.
+                return false;
+            }
+
+            Set gameSet = GameConfiguration.FindSet(gameName);
+            if (gameSet == null)
+            {
+                gameSet = new Set(gameName);
+                GameConfiguration.Add(gameSet);
+                gameSet.Add(new Setting("OpenGL", "1"));
+                gameSet.Add(new Setting("Direct3D8", "1"));
+                gameSet.Add(new Setting("Direct3D9", "1"));
+                gameSet.Add(new Setting("Win32I Keyboard", "1"));
+                gameSet.Add(new Setting("Win32I Mouse", "1"));
+                gameSet.Add(new Setting("DirectInput8 Keyboard", "1"));
+                gameSet.Add(new Setting("DirectInput8 Mouse", "1"));
+                gameSet.Add(new Setting("modules", "auto"));
+                gameSet.Add(new Setting("Background Mouse", "1"));
+                gameSet.Add(new Setting("Keystroke Delay", "1"));
+            }
+
+            Set gameProfilesSet = gameSet.FindSet("Profiles");
+            if (gameProfilesSet == null)
+            {
+                gameProfilesSet = new Set("Profiles");
+                gameSet.Add(gameProfilesSet);
+            }
+
+            Set gameProfileSet = gameSet.FindSet(gameProfileName);
+            if (gameProfileSet == null)
+            {
+                gameProfileSet = new Set(gameProfileName);
+                gameProfilesSet.Add(gameProfileSet);
+            }
+
+            Setting setting = gameProfileSet.FindSetting("Executable");
+            if (setting == null)
+                gameProfileSet.Add(new Setting("Executable", executableName));
+            else
+                setting.Value = executableName;
+
+            setting = gameProfileSet.FindSetting("Path");
+            if (setting == null)
+                gameProfileSet.Add(new Setting("Path", executablePath));
+            else
+                setting.Value = executablePath;
+
+            setting = gameProfileSet.FindSetting("Parameters");
+            if (setting == null)
+            {
+                if (!string.IsNullOrEmpty(parameters))
+                    gameProfileSet.Add(new Setting("Parameters", parameters));
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(parameters))
+                    gameProfileSet.Settings.Remove(setting);
+                else
+                    setting.Value = parameters;
+            }
+
+            if (GameProfiles.FirstOrDefault(q => q.GameProfile.Equals(gameProfileName)) == null)
+            {
+                GameProfiles.Add(new InnerSpaceGameProfile() { Game = gameName, GameProfile = gameProfileName });
+            }
+
+            GameConfiguration.Store(ISPath + @"\GameConfiguration.XML");
+            return true;
+        }
         /// <summary>
         /// Add a Game/Game Profile to Inner Space
         /// </summary>
@@ -246,98 +320,49 @@ namespace ISBoxerEVELauncher
         /// <returns></returns>
         public static bool AddGame(string gameName, string gameProfileName, string executablePath, string executableName, string parameters)
         {
-            System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("InnerSpace");
-            if (processes.Length == 0)
+            string isboxerFilename = System.IO.Path.Combine(ISPath,"ISBoxer Toolkit.exe");
+            while (true)
             {
-                // not running, just edit the XML
-                if (GameConfiguration == null)
+                System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("InnerSpace");
+                if (processes.Length == 0)
                 {
-                    // no existing XML.
-                    return false;
+                    if (!AddGameToXML(gameName, gameProfileName, executablePath, executableName, parameters))
+                    {
+                        MessageBox.Show("In order to Add Game for you, ISBoxer EVE Launcher requires that GameConfiguration.XML exist in the Inner Space folder -- looking for: " + isboxerFilename);
+                        return false;
+                    }
                 }
 
-                Set gameSet = GameConfiguration.FindSet(gameName);
-                if (gameSet == null)
+                if (!System.IO.File.Exists(isboxerFilename))
                 {
-                    gameSet = new Set(gameName);
-                    GameConfiguration.Add(gameSet);
-                    gameSet.Add(new Setting("OpenGL", "1"));
-                    gameSet.Add(new Setting("Direct3D8", "1"));
-                    gameSet.Add(new Setting("Direct3D9", "1"));
-                    gameSet.Add(new Setting("Win32I Keyboard", "1"));
-                    gameSet.Add(new Setting("Win32I Mouse", "1"));
-                    gameSet.Add(new Setting("DirectInput8 Keyboard", "1"));
-                    gameSet.Add(new Setting("DirectInput8 Mouse", "1"));
-                    gameSet.Add(new Setting("modules", "auto"));
-                    gameSet.Add(new Setting("Background Mouse", "1"));
-                    gameSet.Add(new Setting("Keystroke Delay", "1"));
-                }
-
-                Set gameProfilesSet = gameSet.FindSet("Profiles");
-                if (gameProfilesSet == null)
-                {
-                    gameProfilesSet = new Set("Profiles");
-                    gameSet.Add(gameProfilesSet);
-                }
-
-                Set gameProfileSet = gameSet.FindSet(gameProfileName);
-                if (gameProfileSet == null)
-                {
-                    gameProfileSet = new Set(gameProfileName);
-                    gameProfilesSet.Add(gameProfileSet);
-                }
-
-                Setting setting = gameProfileSet.FindSetting("Executable");
-                if (setting == null)
-                    gameProfileSet.Add(new Setting("Executable", executableName));
-                else
-                    setting.Value = executableName;
-
-                setting = gameProfileSet.FindSetting("Path");
-                if (setting == null)
-                    gameProfileSet.Add(new Setting("Path", executablePath));
-                else
-                    setting.Value = executablePath;
-
-                setting = gameProfileSet.FindSetting("Parameters");
-                if (setting == null)
-                {
-                    if (!string.IsNullOrEmpty(parameters))
-                        gameProfileSet.Add(new Setting("Parameters", parameters));
+                    switch(MessageBox.Show("ISBoxer EVE Launcher has determined that Inner Space is running. Please Exit Inner Space and click OK to try again, otherwise click Cancel.", "Adding a Game this way requires Inner Space to be closed", MessageBoxButton.OKCancel))
+                    {
+                        case MessageBoxResult.OK:
+                            continue;
+                        case MessageBoxResult.Cancel:
+                            return false;
+                    }
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(parameters))
-                        gameProfileSet.Settings.Remove(setting);
-                    else
-                        setting.Value = parameters;
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(isboxerFilename);
+                    if (fvi.ProductMajorPart < 42)
+                    {
+                        switch (MessageBox.Show("ISBoxer EVE Launcher has determined that Inner Space is running. Please Exit Inner Space and click OK to try again, otherwise click Cancel.", "Adding a Game this way requires Inner Space to be closed", MessageBoxButton.OKCancel))
+                        {
+                            case MessageBoxResult.OK:
+                                continue;
+                            case MessageBoxResult.Cancel:
+                                return false;
+                        }
+                    }
                 }
 
-                if (GameProfiles.FirstOrDefault(q=>q.GameProfile.Equals(gameProfileName))==null)
-                {
-                    GameProfiles.Add(new InnerSpaceGameProfile() { Game=gameName, GameProfile = gameProfileName });
-                }
 
-                GameConfiguration.Store(ISPath + @"\GameConfiguration.XML");
+                string cmdLine = "run isboxer -inituplink;isboxeraddgame \"" + gameName.Replace("\"", "\\\"") + "\" \"" + gameProfileName.Replace("\"", "\\\"") + "\" \"" + executablePath.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\" \"" + executableName.Replace("\"", "\\\"") + "\" \"" + parameters.Replace("\"", "\\\"") + "\"";
+                System.Diagnostics.Process.Start(ISExecutable, cmdLine);
                 return true;
             }
-
-            if (!System.IO.File.Exists(ISPath+"\\ISBoxer Toolkit.exe"))
-            {
-                MessageBox.Show("Using this function while Inner Space is running requires ISBoxer 42 to be installed (but not necessarily running). Please close Inner Space and try again.");
-                return false;
-            }
-
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ISPath + "\\ISBoxer Toolkit.exe");
-            if (fvi.ProductMajorPart<42)
-            {
-                MessageBox.Show("Using this function while Inner Space is running requires ISBoxer 42 to be installed (but not necessarily running), and you appear to be using ISBoxer "+fvi.ProductMajorPart+". Please close Inner Space and try again.");
-                return false;
-            }
-
-            string cmdLine = "run isboxer -inituplink;isboxeraddgame \"" + gameName.Replace("\"", "\\\"") + "\" \"" + gameProfileName.Replace("\"", "\\\"") + "\" \"" + executablePath.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\" \"" + executableName.Replace("\"", "\\\"") + "\" \"" + parameters.Replace("\"", "\\\"") + "\"";
-            System.Diagnostics.Process.Start(ISExecutable, cmdLine);
-            return true;
         }
 
         /// <summary>

@@ -331,6 +331,7 @@ namespace ISBoxerEVELauncher
                         MessageBox.Show("In order to Add Game for you, ISBoxer EVE Launcher requires that GameConfiguration.XML exist in the Inner Space folder -- looking for: " + isboxerFilename);
                         return false;
                     }
+                    return true;
                 }
 
                 if (!System.IO.File.Exists(isboxerFilename))

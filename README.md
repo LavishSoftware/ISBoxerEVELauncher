@@ -57,6 +57,7 @@ Finally, select in the drop-down box whether the ISBoxer EVE Launcher instance s
 For ISBoxer 41, it is recommended to create Account-specific Game Profiles with "Perform launch from a new ISBoxer EVE Launcher instance" *enabled*, "Leave new ISBoxer EVE Launcher instance open after launch" *disabled*, and the drop-down configured to launch EVE directly. The Account-specific Game Profiles can then be selected per Character in ISBoxer Toolkit. This will fully enable Character Set launch, at the cost of having to enter your EVE password (or Master Password) each time. *As of 1.0.0.5: To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
 
 Here is a step-by-step description of updating your ISBoxer 41 Character Set to use ISBoxer EVE Launcher:
+
 1. Launch ISBoxer EVE Launcher for the first time
 
 2. In ISBoxer EVE Launcher, configure the EVE SharedCache path if needed
@@ -82,7 +83,7 @@ Here is a step-by-step description of updating your ISBoxer 41 Character Set to 
 12. Launch your ISBoxer Character Set!
 
 ## Recommendations for ISBoxer 42
-*Note: Without Dynamic Launch Mode, see ISBoxer 41 instructions above.*
+For best results, please see ISBoxer 41 instructions above! ISBoxer 42 introduced a new "Dynamic Launch Mode", which allows additional compatibility for game launchers where needed -- this mode is not necessary when using ISBoxer EVE Launcher.
 
 *As of 1.0.0.5: To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
 

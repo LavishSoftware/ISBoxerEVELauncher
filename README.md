@@ -74,7 +74,7 @@ Here is a step-by-step description of updating your ISBoxer 41 Character Set to 
 
 8. You can launch Inner Space again now if you want. The new Game and Game Profiles should be successfully added.
 
-9. Back in ISBoxer Toolkit, in the top left pane under Characters, select each Character and find the "Game" and "Game Profile" drop-down boxes in the bottom right pane. The Game and Game Profile need to be updated to match what was added in Step 6.
+9. Back in ISBoxer Toolkit, in the top left pane under Characters, select each Character and find the "Game" and "Game Profile" drop-down boxes in the bottom right pane. The Game and Game Profile need to be updated to match what was added in Step 7.
 
 10. Export to Inner Space
 

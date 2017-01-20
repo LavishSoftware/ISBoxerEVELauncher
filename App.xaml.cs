@@ -384,7 +384,7 @@ namespace ISBoxerEVELauncher
             if (gameProfileName == null)
                 throw new ArgumentNullException("gameProfileName");
 
-            string cmdLine = "open \"" + gameName + "\" \"" + gameProfileName + "\" -addparam \"/ssoToken=" + ssoToken + "\"";
+            string cmdLine = "open \"" + gameName + "\" \"" + gameProfileName + "\" -addparam \"/noconsole\" -addparam \"/ssoToken=" + ssoToken + "\"";
             if (dxVersion != DirectXVersion.Default)
             {
                 cmdLine += " -addparam \"/triPlatform=" + dxVersion.ToString() + "\"";

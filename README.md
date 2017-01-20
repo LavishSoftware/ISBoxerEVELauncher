@@ -8,7 +8,7 @@ An EVE Launcher supporting Inner Space and ISBoxer, and directly launching EVE. 
 
 *Neither Inner Space nor ISBoxer are required to use this launcher. Anyone can use it to securely launch their EVE Accounts!*
 
-**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.12.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
+**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.13.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
 
 # Installation
 Un-zip the ISBoxer EVE Launcher.exe file into the location of your choice. If intending to use with Inner Space/ISBoxer, it is recommended to place the file in the Inner Space folder.
@@ -53,10 +53,10 @@ Next, decide if the Game Profile should "Perform launch from a new ISBoxer EVE L
 
 Finally, select in the drop-down box whether the ISBoxer EVE Launcher instance should ultimately launch EVE Directly (noting that, because ISBoxer EVE Launcher will be launched via Inner Space, the EVE instance will also be via Inner Space), or if it should tell Inner Space to then use the Master Game Profile to launch the game.
 
-## Recommendations for ISBoxer 41
-For ISBoxer 41, it is recommended to create Account-specific Game Profiles with "Perform launch from a new ISBoxer EVE Launcher instance" *enabled*, "Leave new ISBoxer EVE Launcher instance open after launch" *disabled*, and the drop-down configured to launch EVE directly. The Account-specific Game Profiles can then be selected per Character in ISBoxer Toolkit. This will fully enable Character Set launch, at the cost of having to enter your EVE password (or Master Password) each time. *As of 1.0.0.5: To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
+## Recommendations for ISBoxer
+When using ISBoxer, it is recommended to create Account-specific Game Profiles with "Perform launch from a new ISBoxer EVE Launcher instance" *enabled*, "Leave new ISBoxer EVE Launcher instance open after launch" *disabled*, and the drop-down configured to launch EVE directly. The Account-specific Game Profiles can then be selected per Character in ISBoxer Toolkit. This will fully enable Character Set launching, at the cost of having to enter your EVE password (or Master Password) each time. *To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
 
-Here is a step-by-step description of updating your ISBoxer 41 Character Set to use ISBoxer EVE Launcher:
+Here is a step-by-step description of updating your ISBoxer Character Set to use ISBoxer EVE Launcher:
 
 1. Launch ISBoxer EVE Launcher for the first time
 
@@ -70,24 +70,19 @@ Here is a step-by-step description of updating your ISBoxer 41 Character Set to 
 
 6. Close Inner Space if it is running. This will make sure you don't have to do Step 7 twice under any circumstance...
 
-7. Select all EVE Accounts in the list and select "Create Game Profile". Tick "Perform launch from a new ISBoxer EVE Launcher instance". Do not tick "Leave new ISBoxer EVE Launcher instance open after launch". Set the drop-down box to "Launch EVE client directly". Click "Go"! (Remember the Game name and Game Profile schemes for the next step!)
+7. Select all EVE Accounts in the list and select "Create Game Profile". **Tick "Perform launch from a new ISBoxer EVE Launcher instance".** Do not tick "Leave new ISBoxer EVE Launcher instance open after launch". **Set the drop-down box to "Launch EVE client directly".** Click "Go"! (Remember the Game name and Game Profile schemes for Step #9!)
 
 8. You can launch Inner Space again now if you want. The new Game and Game Profiles should be successfully added.
 
-9. Back in ISBoxer Toolkit, in the top left pane under Characters, select each Character and find the "Game" and "Game Profile" drop-down boxes in the bottom right pane. The Game and Game Profile need to be updated to match what was added in Step 7.
+9. Back in ISBoxer Toolkit, in the top left pane under Characters, select each Character and find the "Game" and "Game Profile" drop-down boxes in the bottom right pane. **The Game and Game Profile need to be updated to match what was added in Step 7.**
 
 10. Export to Inner Space
 
 11. Optional: If you have enabled "Save passwords (securely)" in Step 5, run an instance of ISBoxer EVE Launcher as Administrator now. This will act as a "master" ISBoxer EVE Launcher instance, which will allow the new instances to not ask you for the Master Password each time!
 
-12. Launch your ISBoxer Character Set!
+12. **Launch your ISBoxer Character Set!** For example, right click Inner Space, and find your team under ISBoxer Character Sets. (Do not click "Launch with Inner Space", at all, if you are intending to use ISBoxer!) If your account-specific Game Profiles are created and assigned, your EVE clients should launch without further interaction with ISBoxer EVE Launcher unless a password (etc) is required.
 
-## Recommendations for ISBoxer 42
-For best results, please see ISBoxer 41 instructions above! ISBoxer 42 introduced a new "Dynamic Launch Mode", which allows additional compatibility for game launchers where needed -- this mode is not necessary when using ISBoxer EVE Launcher.
-
-*As of 1.0.0.5: To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
-
-Account-specific Game Profiles are not necessary in Dynamic Launch Mode. Instead, just select all of the accounts to launch and click "Launch with Inner Space"; the Master Game Profile will be used to launch all of the clients.
+Tip: Most people asking for help so far have missed parts of Step #7, #9, or #12. I've adjusted the text and added emphasis to help you out!
 
 # Command-line parameters
 ISBoxer EVE Launcher supports the following command-line parameters:

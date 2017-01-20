@@ -35,9 +35,13 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ISBEL.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -72,6 +76,9 @@
     <Compile Include="Windows\CreateGameProfileWindow.xaml.cs">
       <DependentUpon>CreateGameProfileWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\EmailChallengeWindow.xaml.cs">
+      <DependentUpon>EmailChallengeWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\EVEEULAWindow.xaml.cs">
       <DependentUpon>EVEEULAWindow.xaml</DependentUpon>
     </Compile>
@@ -100,6 +107,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\CreateGameProfileWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EmailChallengeWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -167,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ISBEL.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -59,6 +59,8 @@ namespace ISBoxerEVELauncher.Windows
         [DllImport("user32")]
         public static extern bool ChangeWindowMessageFilterEx(IntPtr hWnd, uint msg, ChangeWindowMessageFilterExAction action, ref CHANGEFILTERSTRUCT changeInfo);
 
+        public System.Windows.Forms.NotifyIcon NotifyIcon;
+
        public MainWindow()
         {
             InitializeComponent();
@@ -74,7 +76,30 @@ namespace ISBoxerEVELauncher.Windows
             App.Settings.PropertyChanged += Settings_PropertyChanged;
 
             this.Title += " (v"+VersionString+")";
-        }
+
+
+            NotifyIcon = new System.Windows.Forms.NotifyIcon();
+            var iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/ISBoxerEVELauncher;component/ISBEL.ico")).Stream;
+            NotifyIcon.Icon = new System.Drawing.Icon(iconStream);
+
+            NotifyIcon.DoubleClick +=
+                delegate(object sender, EventArgs args)
+                {
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                    NotifyIcon.Visible = false;
+                };       
+       }
+
+       protected override void OnStateChanged(EventArgs e)
+       {
+           if (WindowState == System.Windows.WindowState.Minimized)
+           {
+               this.Hide();
+               NotifyIcon.Visible = true;
+           }
+           base.OnStateChanged(e);
+       }
 
         #region Drag and drop for Accounts list
         void s_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
@@ -470,6 +495,9 @@ namespace ISBoxerEVELauncher.Windows
                             MessageBox.Show("Invalid Character Name entered, or Invalid Username or Password. Account NOT added.");
                             return;
                         }
+                    case EVEAccount.LoginResult.EmailVerificationRequired:
+                        // message already provided
+                        return;
                     default:
                         {
                             MessageBox.Show("Failed to log in: "+lr.ToString()+". Account NOT added.");

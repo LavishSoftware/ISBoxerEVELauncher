@@ -591,6 +591,8 @@ namespace ISBoxerEVELauncher
             InvalidCharacterChallenge,
             InvalidAuthenticatorChallenge,
             EULADeclined,
+            EmailVerificationRequired,
+            TokenFailure,
         }
 
         private static string GetEulaHash(string body)
@@ -613,6 +615,21 @@ namespace ISBoxerEVELauncher
 
 
             return body.Substring(fieldStart, fieldEnd-fieldStart);
+        }
+
+        public LoginResult GetEmailChallenge(bool sisi, string responseBody, out Token accessToken)
+        {
+            Windows.EmailChallengeWindow emailWindow = new Windows.EmailChallengeWindow(responseBody);
+            emailWindow.ShowDialog();
+            if (!emailWindow.DialogResult.HasValue || !emailWindow.DialogResult.Value)
+            {
+                SecurePassword = null;
+                accessToken = null;
+                return LoginResult.EmailVerificationRequired;
+            }
+            SecurePassword = null;
+            accessToken = null;
+            return LoginResult.EmailVerificationRequired;
         }
 
         public LoginResult GetEULAChallenge(bool sisi, string responseBody,  out Token accessToken)
@@ -898,6 +915,11 @@ namespace ISBoxerEVELauncher
                         return GetCharacterChallenge(sisi, out accessToken);
                     }
 
+                    if (responseBody.Contains("Email verification required"))
+                    {
+                        return GetEmailChallenge(sisi, responseBody, out accessToken);
+                    }
+
                     if (responseBody.Contains("form action=\"/Account/Authenticator\""))
                     {
                         return GetAuthenticatorChallenge(sisi, out accessToken);
@@ -908,8 +930,20 @@ namespace ISBoxerEVELauncher
                         return GetEULAChallenge(sisi, responseBody, out accessToken);
                     }
 
-                    //                https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=l4nGki1CTUI7pCQZoIdnARcCLqL6ZGJM1X1tPf1bGKSJxEwP8lk_shS19w3sjLzyCbecYAn05y-Vbs-Jm1d1cw2&token_type=Bearer&expires_in=43200
-                    accessToken = new Token(resp.ResponseUri);
+                    try
+                    {
+                        //                https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=l4nGki1CTUI7pCQZoIdnARcCLqL6ZGJM1X1tPf1bGKSJxEwP8lk_shS19w3sjLzyCbecYAn05y-Vbs-Jm1d1cw2&token_type=Bearer&expires_in=43200
+                        accessToken = new Token(resp.ResponseUri);
+                    }
+                    catch (Exception e)
+                    {
+
+
+                        // can't get the token
+                        accessToken = null;
+                        SecurePassword = null;
+                        return LoginResult.TokenFailure;
+                    }
 
                 }
 

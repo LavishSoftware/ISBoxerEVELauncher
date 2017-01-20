@@ -23,6 +23,8 @@ namespace ISBoxerEVELauncher.Windows
         {
             Game = defaultGame;
             GameProfile = defaultGameProfile;
+            UseNewLauncher = true;
+            LeaveLauncherOpen = false;
             InitializeComponent();
             SelectedItem = cbiEVEDirect;
             

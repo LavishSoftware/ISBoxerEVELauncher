@@ -375,7 +375,7 @@ namespace ISBoxerEVELauncher
         /// <param name="sisi"></param>
         /// <param name="dxVersion"></param>
         /// <returns></returns>
-        static public bool Launch(string ssoToken, string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion)
+        static public bool Launch(string ssoToken, string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID)
         {
             if (ssoToken == null)
                 throw new ArgumentNullException("ssoToken");
@@ -389,6 +389,12 @@ namespace ISBoxerEVELauncher
             {
                 cmdLine += " -addparam \"/triPlatform=" + dxVersion.ToString() + "\"";
             }
+
+            if (characterID!=0)
+            {
+                cmdLine += " -addparam \"/character="+characterID+"\"";
+            }
+
             try
             {
                 System.Diagnostics.Process.Start(App.ISExecutable, cmdLine);
@@ -409,7 +415,7 @@ namespace ISBoxerEVELauncher
         /// <param name="sisi"></param>
         /// <param name="dxVersion"></param>
         /// <returns></returns>
-        static public bool Launch(string ssoToken, string sharedCachePath, bool sisi, DirectXVersion dxVersion)
+        static public bool Launch(string ssoToken, string sharedCachePath, bool sisi, DirectXVersion dxVersion, long characterID)
         {
             if (ssoToken == null)
                 throw new ArgumentNullException("ssoToken");
@@ -424,7 +430,12 @@ namespace ISBoxerEVELauncher
 
             if (sisi)
             {
-                args += "/server:Singularity";
+                args += " /server:Singularity";
+            }
+
+            if (characterID != 0)
+            {
+                args += " /character=" + characterID;
             }
 
             string executable;
@@ -503,19 +514,26 @@ namespace ISBoxerEVELauncher
             if (LaunchAccountNames.Count == 0)
                 return;
 
-            List<EVEAccount> LaunchAccounts = new List<EVEAccount>();
+            List<Launchers.ILaunchTarget> LaunchAccounts = new List<Launchers.ILaunchTarget>();
 
             foreach(string name in LaunchAccountNames)
             {
                 EVEAccount acct = Settings.Accounts.FirstOrDefault(q => q.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-
-                if (acct==null)
+                if (acct!=null)
                 {
-                    MessageBox.Show("Unrecognized EVE Account name '" + name + "' -- if this is correct, please use Add Account to enable it before launching.");
-                    return;
+                    LaunchAccounts.Add(acct);
+                    continue;
                 }
 
-                LaunchAccounts.Add(acct);
+                EVECharacter ec = Settings.Characters.FirstOrDefault(q => q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (ec!=null)
+                {
+                    LaunchAccounts.Add(ec);
+                    continue;
+                }
+
+                MessageBox.Show("Unrecognized EVE Account or Character name '" + name + "' -- if this is correct, please use Add Account/Character to enable it before launching.");
+                return;
             }
 
             Launchers.ILauncher launcher;

@@ -23,9 +23,9 @@ namespace ISBoxerEVELauncher.Windows
     /// </summary>
     public partial class LaunchProgressWindow : Window, INotifyPropertyChanged
     {
-        public ObservableCollection<EVEAccount> Accounts { get; set; }
+        public ObservableCollection<ILaunchTarget> Accounts { get; set; }
 
-        public ObservableCollection<EVEAccount> AccountsLaunched { get; set; }
+        public ObservableCollection<ILaunchTarget> AccountsLaunched { get; set; }
 
         float _DelaySeconds;
         public float DelaySeconds
@@ -49,10 +49,10 @@ namespace ISBoxerEVELauncher.Windows
 
         public int NumErrors { get; set; }
 
-        public LaunchProgressWindow(IEnumerable<EVEAccount> accounts, ILauncher launcher)
+        public LaunchProgressWindow(IEnumerable<ILaunchTarget> accounts, ILauncher launcher)
         {
-            Accounts = new ObservableCollection<EVEAccount>(accounts);
-            AccountsLaunched = new ObservableCollection<EVEAccount>();
+            Accounts = new ObservableCollection<ILaunchTarget>(accounts);
+            AccountsLaunched = new ObservableCollection<ILaunchTarget>();
             Launcher = launcher;
             AutoClose = true;
             InitializeComponent();
@@ -121,11 +121,11 @@ namespace ISBoxerEVELauncher.Windows
             }
 
 
-            EVEAccount a = Accounts[0];
+            ILaunchTarget a = Accounts[0];
             EVEAccount.LoginResult lr = EVEAccount.LoginResult.Error;
             try
             {            
-                 lr = Launcher.LaunchAccount(a);
+                 lr = Launcher.Launch(a);
             }
             catch(ArgumentNullException ane)
             {
@@ -166,10 +166,10 @@ namespace ISBoxerEVELauncher.Windows
                         AccountsLaunched.Add(a);
                         Accounts.Remove(a);
                         LastLaunch = DateTime.Now;
-                        AddDetailsLine("Account '"+a.Username+"' launched");
+                        AddDetailsLine("Account '"+a.EVEAccount.Username+"' launched");
                         break;
                     default:
-                        AddDetailsLine("Account '" + a.Username + "' failed to launch: "+lr.ToString()+". Aborting!");
+                        AddDetailsLine("Account '" + a.EVEAccount.Username + "' failed to launch: " + lr.ToString() + ". Aborting!");
                         NumErrors++;
                         Stop();
                         break;

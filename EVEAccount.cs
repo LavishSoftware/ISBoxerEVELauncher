@@ -25,7 +25,7 @@ namespace ISBoxerEVELauncher
     /// <summary>
     /// An EVE Online account and related data
     /// </summary>
-    public class EVEAccount : INotifyPropertyChanged, IDisposable
+    public class EVEAccount : INotifyPropertyChanged, IDisposable, ISBoxerEVELauncher.Launchers.ILaunchTarget
     {
         /// <summary>
         /// An Outh2 Access Token
@@ -895,6 +895,7 @@ namespace ISBoxerEVELauncher
     <ul><li>Invalid username / password</li>
     </ul></div></span>
                      */
+
                     if (responseBody.Contains("Invalid username / password"))
                     {
                         accessToken = null;
@@ -937,7 +938,8 @@ namespace ISBoxerEVELauncher
                     }
                     catch (Exception e)
                     {
-
+                        Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
+                        urw.ShowDialog();
 
                         // can't get the token
                         accessToken = null;
@@ -1089,25 +1091,25 @@ namespace ISBoxerEVELauncher
             return LoginResult.Success;
         }
 
-        public LoginResult Launch(string sharedCachePath, bool sisi, DirectXVersion dxVersion)
+        public LoginResult Launch(string sharedCachePath, bool sisi, DirectXVersion dxVersion, long characterID)
         {
             string ssoToken;
             LoginResult lr = GetSSOToken(sisi, out ssoToken);
             if (lr != LoginResult.Success)
                 return lr;
-            if (!App.Launch(ssoToken, sharedCachePath, sisi, dxVersion))
+            if (!App.Launch(ssoToken, sharedCachePath, sisi, dxVersion, characterID))
                 return LoginResult.Error;
 
             return LoginResult.Success;
         }
 
-        public LoginResult Launch(string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion)
+        public LoginResult Launch(string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID)
         {
             string ssoToken;
             LoginResult lr = GetSSOToken(sisi, out ssoToken);
             if (lr != LoginResult.Success)
                 return lr;
-            if (!App.Launch(ssoToken, gameName, gameProfileName, sisi, dxVersion))
+            if (!App.Launch(ssoToken, gameName, gameProfileName, sisi, dxVersion, characterID))
                 return LoginResult.Error;
 
             return LoginResult.Success;
@@ -1147,6 +1149,16 @@ namespace ISBoxerEVELauncher
         public override string ToString()
         {
             return Username;
+        }
+
+        EVEAccount Launchers.ILaunchTarget.EVEAccount
+        {
+            get { return this; }
+        }
+
+        public long CharacterID
+        {
+            get { return 0; }
         }
     }
 }

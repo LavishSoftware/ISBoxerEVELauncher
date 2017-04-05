@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ISBoxerEVELauncher.Windows.CreateAccountGameProfilesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ISBoxer EVE Launcher - Create Account Game Profiles" Width="500" SizeToContent="Height" Name="windowCreateGameProfiles"  WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textGame}">
+        Title="ISBoxer EVE Launcher - Create Account/Character Game Profiles" Width="600" SizeToContent="Height" Name="windowCreateGameProfiles"  WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textGame}">
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="5">
             <TextBlock DockPanel.Dock="Left" Text="'Game' name" Width="120" />
@@ -13,9 +13,9 @@
         </DockPanel>
         <CheckBox Name="checkNewLauncher" DockPanel.Dock="Top" Margin="5,0,5,5" Content="Perform launch from a new ISBoxer EVE Launcher instance" ToolTip="ISBoxer EVE Launcher can recognize an already-running launcher instance, and ask it to do the launching -- allowing you to leave an ISBoxer EVE Launcher instance running, with passwords all ready and secure for automatic login. However, with this option enabled, a new instance will perform the launch, and will require Password entry." IsChecked="{Binding ElementName=windowCreateGameProfiles, Path=UseNewLauncher}" />
         <CheckBox DockPanel.Dock="Top" Margin="5,0,5,5" Content="Leave new ISBoxer EVE Launcher instance open after launch" ToolTip="This setting only applies to the 'new ISBoxer EVE Launcher instance'." IsEnabled="{Binding ElementName=checkNewLauncher, Path=IsChecked}" IsChecked="{Binding ElementName=windowCreateGameProfiles, Path=LeaveLauncherOpen}" />
-        <ComboBox DockPanel.Dock="Top" Margin="5,0,5,5" SelectedItem="{Binding ElementName=windowCreateGameProfiles, Path=LauncherMode}">
-            <ComboBoxItem Name="cbiEVEDirect" Content="Launch EVE client directly" />
-            <ComboBoxItem Name="cbiInnerSpace" Content="Launch the EVE client via the configured Master Game Profile" />
+        <ComboBox Name="comboLauncherMode" DockPanel.Dock="Top" Margin="5,0,5,5" SelectedItem="{Binding ElementName=windowCreateGameProfiles, Path=SelectedItem}" ToolTip="If these Game Profiles are intended to be used with ISBoxer Toolkit, this should be set to 'Launch EVE client directly'">
+            <ComboBoxItem Name="cbiEVEDirect" Content="Launch EVE client directly (recommended for ISBoxer)" />
+            <ComboBoxItem Name="cbiInnerSpace" Content="Launch the EVE client via the configured Master Game Profile (will not use ISBoxer)" />
         </ComboBox>
         <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
             <Button DockPanel.Dock="Right" Name="buttonGo"  Content="Go" VerticalAlignment="Top" Width="75" Click="buttonGo_Click" IsDefault="True" />

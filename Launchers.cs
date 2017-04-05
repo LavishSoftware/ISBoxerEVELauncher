@@ -8,8 +8,14 @@ namespace ISBoxerEVELauncher.Launchers
 {
     public interface ILauncher
     {
-        EVEAccount.LoginResult LaunchAccount(EVEAccount account);
+        EVEAccount.LoginResult Launch(ILaunchTarget launchTarget);
         string LauncherText { get; }
+    }
+
+    public interface ILaunchTarget
+    {
+        EVEAccount EVEAccount { get; }
+        long CharacterID { get; }
     }
 
     public class InnerSpaceLauncher : ILauncher
@@ -25,9 +31,9 @@ namespace ISBoxerEVELauncher.Launchers
         public DirectXVersion UseDirectXVersion { get; set; }
         public bool UseSingularity { get; set; }
 
-        public EVEAccount.LoginResult LaunchAccount(EVEAccount account)
+        public EVEAccount.LoginResult Launch(ILaunchTarget launchTarget)
         {
-            return account.Launch(GameProfile.Game, GameProfile.GameProfile, App.Settings.UseSingularity, UseDirectXVersion);
+            return launchTarget.EVEAccount.Launch(GameProfile.Game, GameProfile.GameProfile, App.Settings.UseSingularity, UseDirectXVersion, launchTarget.CharacterID);
 
             throw new NotImplementedException();
         }
@@ -51,9 +57,9 @@ namespace ISBoxerEVELauncher.Launchers
         public DirectXVersion UseDirectXVersion { get; set; }
         public bool UseSingularity { get; set; }
 
-        public EVEAccount.LoginResult LaunchAccount(EVEAccount account)
+        public EVEAccount.LoginResult Launch(ILaunchTarget launchTarget)
         {
-            return account.Launch(SharedCachePath, App.Settings.UseSingularity, UseDirectXVersion);
+            return launchTarget.EVEAccount.Launch(SharedCachePath, App.Settings.UseSingularity, UseDirectXVersion, launchTarget.CharacterID);
         }
 
         public string LauncherText

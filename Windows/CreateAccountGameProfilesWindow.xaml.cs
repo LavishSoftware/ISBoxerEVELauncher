@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace ISBoxerEVELauncher.Windows
     /// <summary>
     /// Interaction logic for CreateAccountGameProfilesWindow.xaml
     /// </summary>
-    public partial class CreateAccountGameProfilesWindow : Window
+    public partial class CreateAccountGameProfilesWindow : Window, INotifyPropertyChanged
     {
         public CreateAccountGameProfilesWindow(string defaultGame, string defaultGameProfile)
         {
@@ -26,8 +27,7 @@ namespace ISBoxerEVELauncher.Windows
             UseNewLauncher = true;
             LeaveLauncherOpen = false;
             InitializeComponent();
-            SelectedItem = cbiEVEDirect;
-            
+            SelectedItem = cbiEVEDirect;                       
         }
 
         bool _UseNewLauncher;
@@ -74,6 +74,7 @@ namespace ISBoxerEVELauncher.Windows
             set
             {
                 _SelectedItem = value;
+                OnPropertyChanged("SelectedItem");
             }
         }
 
@@ -123,5 +124,22 @@ namespace ISBoxerEVELauncher.Windows
             DialogResult = false;
             this.Close();
         }
+
+        #region INotifyPropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void FirePropertyChanged(string value)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(value));
+            }
+        }
+        public void OnPropertyChanged(string value)
+        {
+            FirePropertyChanged(value);
+        }
+        #endregion
     }
 }

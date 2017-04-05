@@ -158,6 +158,10 @@ namespace ISBoxerEVELauncher.Windows
             return ChangeWindowMessageFilterEx(source.Handle, msg, ChangeWindowMessageFilterExAction.Allow, ref filterStatus);
         }
 
+        /// <summary>
+        /// Request Master Key from Master Instance
+        /// </summary>
+        /// <returns>True if a request was transmitted to the Master Instance</returns>
         public bool RequestMasterKey()
         {
             if (App.Settings.UseMasterKey && (App.Settings.PasswordMasterKey == null || !App.Settings.PasswordMasterKey.HasData))
@@ -201,35 +205,6 @@ namespace ISBoxerEVELauncher.Windows
             // Handle messages...
             switch(msg)
             {
-                    /*
-                case WM_REQUESTMASTERKEY:
-                    {
-                        handled = true;
-                        // lParam should be a window handle to transmit back to
-                        int processId = 0;
-                        GetWindowThreadProcessId(lParam, out processId);
-
-                        System.Diagnostics.Process newInstance = System.Diagnostics.Process.GetProcessById(processId);
-                        // ensure this is the same app, otherwise we might be leaking ...
-                        if (newInstance==null || newInstance.MainModule.FileName!=System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName)
-                        {
-                            // different thing, sorry.
-                            return IntPtr.Zero;
-                        }
-
-                        // do we even have a master key?
-                        if (!App.Settings.HasPasswordMasterKey)
-                        {
-                            // ... no...
-                            return IntPtr.Zero;
-                        }
-
-                        // ok i guess we're good. start by sending DH public key
-                        KeyTransmitter.TransmitPublicKey(lParam, newInstance);
-                        return new IntPtr(1);
-                    }
-                    break;
-                    /**/
                 case WM_COPYDATA:
                     handled = true;
                     COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
@@ -313,6 +288,14 @@ namespace ISBoxerEVELauncher.Windows
             get
             {
                 return App.Settings.Accounts;
+            }
+        }
+
+        public ObservableCollection<EVECharacter> Characters
+        {
+            get
+            {
+                return App.Settings.Characters;
             }
         }
 
@@ -619,39 +602,6 @@ namespace ISBoxerEVELauncher.Windows
 
             Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchAccounts, new Launchers.InnerSpaceLauncher(gp, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
             lpw.ShowDialog();
-            /*
-            foreach(EVEAccount a in launchAccounts)
-            {
-                EVEAccount.LoginResult lr = a.Launch(gp.Game, gp.GameProfile, App.Settings.UseSingularity, App.Settings.UseDirectXVersion);
-                switch(lr)
-                {
-                    case EVEAccount.LoginResult.Success:
-                        listAccounts.SelectedItems.Remove(a);
-                        break;
-                    case EVEAccount.LoginResult.InvalidUsernameOrPassword:
-                        {
-                            MessageBox.Show("Invalid Username or Password. Account NOT launched.");
-                            return;
-                        }
-                    case EVEAccount.LoginResult.Timeout:
-                        {
-                            MessageBox.Show("Timed out attempting to log in. Account NOT launched.");
-                            return;
-                        }
-                    case EVEAccount.LoginResult.InvalidCharacterChallenge:
-                        {
-                            MessageBox.Show("Invalid Character Name entered, or Invalid Username or Password. Account NOT launched.");
-                            return;
-                        }
-                    default:
-                        {
-                            MessageBox.Show("Failed to log in: " + lr.ToString() + ". Account NOT launched.");
-                            return;
-                        }
-
-                }
-            }
-             */
         }
 
         private void buttonDeleteAccount_Click(object sender, RoutedEventArgs e)
@@ -807,6 +757,171 @@ namespace ISBoxerEVELauncher.Windows
                     MessageBox.Show("This Game Profile does not appear to point to exefile.exe. Please select a Game Profile that points at exefile.exe, or use 'Create one now' to have one correctly set up for you.");
                     SingularityGameProfile = null;
                     break;
+            }
+
+        }
+
+        private void buttonAddCharacter_Click(object sender, RoutedEventArgs e)
+        {
+            EVECharacter newCharacter = new EVECharacter();
+            AddCharacterWindow acw = new AddCharacterWindow(newCharacter);
+            acw.ShowDialog();
+
+            if (acw.DialogResult.HasValue && acw.DialogResult.Value)
+            {
+                // user clicked Go
+                EVECharacter existing = App.Settings.FindEVECharacter(acw.UseSingularity, acw.CharacterName);
+                if (existing!=null)
+                {
+                    existing.EVEAccount = acw.Account;
+                }
+                else
+                {
+                    // no existing.
+                    App.Settings.Characters.Add(newCharacter);
+                }
+
+                App.Settings.Store();
+            }
+        }
+
+        private void buttonLaunchCharacterIS_Click(object sender, RoutedEventArgs e)
+        {
+            List<EVECharacter> launchCharacters = new List<EVECharacter>();
+            foreach (EVECharacter a in listCharacters.SelectedItems)
+            {
+                launchCharacters.Add(a);
+            }
+
+            if (launchCharacters.Count == 0)
+                return;
+
+            InnerSpaceGameProfile gp;
+            if (App.Settings.UseSingularity)
+            {
+                gp = App.Settings.SingularityGameProfile;
+            }
+            else
+            {
+                gp = App.Settings.TranquilityGameProfile;
+            }
+
+            if (gp == null || string.IsNullOrEmpty(gp.Game) || string.IsNullOrEmpty(gp.GameProfile))
+            {
+                MessageBox.Show("Please select a Game Profile first!");
+                return;
+            }
+
+            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchCharacters, new Launchers.InnerSpaceLauncher(gp, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
+            lpw.ShowDialog();
+        }
+
+        private void buttonLaunchCharacterNonIS_Click(object sender, RoutedEventArgs e)
+        {
+
+            List<EVECharacter> launchCharacters = new List<EVECharacter>();
+            foreach (EVECharacter a in listCharacters.SelectedItems)
+            {
+                launchCharacters.Add(a);
+            }
+
+            if (launchCharacters.Count == 0)
+                return;
+
+            InnerSpaceGameProfile gp;
+            if (string.IsNullOrWhiteSpace(App.Settings.EVESharedCachePath))
+            {
+                MessageBox.Show("Please set the EVE SharedCache path first!");
+                return;
+            }
+
+            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchCharacters, new Launchers.DirectLauncher(App.Settings.EVESharedCachePath, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
+            lpw.ShowDialog();
+        }
+
+        private void buttonCreateCharacterLauncherProfiles_Click(object sender, RoutedEventArgs e)
+        {
+            List<EVECharacter> launchCharacters = new List<EVECharacter>();
+            foreach (EVECharacter a in listCharacters.SelectedItems)
+            {
+                launchCharacters.Add(a);
+            }
+
+            if (launchCharacters.Count == 0)
+                return;
+
+            CreateAccountGameProfilesWindow cagpw = new CreateAccountGameProfilesWindow("ISBoxer EVE Launcher", "ISBEL - {0}");
+            cagpw.ShowDialog();
+
+            if (cagpw.DialogResult.HasValue && cagpw.DialogResult.Value)
+            {
+
+                foreach (EVECharacter acct in launchCharacters)
+                {
+                    string flags = string.Empty;
+                    if (cagpw.UseEVEDirect)
+                        flags += "-eve ";
+                    else
+                        flags += "-innerspace ";
+
+                    if (cagpw.UseNewLauncher)
+                    {
+                        flags += "-multiinstance ";
+
+                        if (!cagpw.LeaveLauncherOpen)
+                            flags += "-exit ";
+                    }
+
+
+                    if (!App.AddGame(cagpw.Game, string.Format(cagpw.GameProfile, acct.Name), App.BaseDirectory, "ISBoxerEVELauncher.exe", flags + "\"" + acct.Name+ "\""))
+                    {
+                        App.ReloadGameConfiguration();
+                        return;
+
+                    }
+                }
+
+                App.ReloadGameConfiguration();
+
+            }
+
+        }
+
+        private void buttonDeleteCharacter_Click(object sender, RoutedEventArgs e)
+        {
+            List<EVECharacter> deleteCharacters = new List<EVECharacter>();
+            foreach (EVECharacter a in listCharacters.SelectedItems)
+            {
+                deleteCharacters.Add(a);
+            }
+
+            if (deleteCharacters.Count == 0)
+                return;
+
+            if (deleteCharacters.Count == 1)
+            {
+                switch (MessageBox.Show("Are you sure you want to delete '" + deleteCharacters[0].Name + "'?", "Wait! You are about to lose a character!", MessageBoxButton.YesNo))
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+                    default:
+                        return;
+                }
+            }
+            else
+            {
+                switch (MessageBox.Show("Are you sure you want to delete " + deleteCharacters.Count + " characters?", "Wait! You are about to lose some characters!", MessageBoxButton.YesNo))
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+                    default:
+                        return;
+                }
+            }
+
+            foreach (EVECharacter toDelete in deleteCharacters)
+            {
+                Characters.Remove(toDelete);
             }
 
         }

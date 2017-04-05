@@ -29,7 +29,9 @@
                 </StackPanel>
             </DockPanel>
         </StackPanel>
-        <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5" VerticalAlignment="Stretch">
+        <TabControl Margin="5,0,5,5">
+            <TabItem Header="EVE Accounts" >
+        <DockPanel DockPanel.Dock="Bottom" VerticalAlignment="Stretch">
             <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Known EVE Accounts..." VerticalAlignment="Top"/>
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="5" VerticalAlignment="Stretch">
                 <ListBox Name="listAccounts" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="385" ItemsSource="{Binding ElementName=mainWindow, Path=Accounts}" SelectionMode="Multiple">
@@ -69,5 +71,49 @@
                 </DockPanel>
             </StackPanel>
         </DockPanel>
+            </TabItem>
+            <TabItem Header="EVE Characters" >
+                <DockPanel DockPanel.Dock="Bottom" VerticalAlignment="Stretch">
+                    <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Known EVE Characters..." VerticalAlignment="Top"/>
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="5" VerticalAlignment="Stretch">
+                        <ListBox Name="listCharacters" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="385" ItemsSource="{Binding ElementName=mainWindow, Path=Characters}" SelectionMode="Multiple">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Path=Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <DockPanel Margin="5,0,0,0">
+                            <Button DockPanel.Dock="Top" Name="buttonAddCharacter" Content="Add Character" Click="buttonAddCharacter_Click" />
+                            <Button DockPanel.Dock="Top" Name="buttonLaunchCharacterIS" Click="buttonLaunchCharacterIS_Click"  Margin="0,5,0,0">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                        <TextBlock>Launch</TextBlock>
+                                        <TextBlock Margin="3,0,3,0" FontWeight="Bold">with</TextBlock>
+                                        <TextBlock>Inner Space</TextBlock>
+                                    </StackPanel>
+                                </Button.Content>
+
+                            </Button>
+                            <Button DockPanel.Dock="Top" Name="buttonLaunchCharacterNonIS"  Click="buttonLaunchCharacterNonIS_Click" Margin="0,5,0,0">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                        <TextBlock>Launch</TextBlock>
+                                        <TextBlock Margin="3,0,0,0" FontWeight="Bold">Non-</TextBlock>
+                                        <TextBlock>Inner Space</TextBlock>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button DockPanel.Dock="Top" Name="buttonCreateCharcterLauncherProfiles" Content="Create Game Profile" Click="buttonCreateCharacterLauncherProfiles_Click" Margin="0,5,0,0" VerticalAlignment="Bottom" ToolTip="Creates an Inner Space Game Profile to launch this Character via ISBoxer EVE Launcher" />
+                            <CheckBox DockPanel.Dock="Top" Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,5,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding ElementName=checkSavePasswords, Path=IsChecked}" />
+                            <Button DockPanel.Dock="Bottom" Name="buttonDeleteCharacter" Content="Delete" Click="buttonDeleteCharacter_Click" Margin="0,5,0,0" VerticalAlignment="Bottom" />
+                        </DockPanel>
+                    </StackPanel>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
     </DockPanel>
 </Window>

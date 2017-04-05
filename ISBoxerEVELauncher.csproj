@@ -61,9 +61,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EVECharacter.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="KeyTransmitter.cs" />
     <Compile Include="Launchers.cs" />
+    <Compile Include="Windows\AddCharacterWindow.xaml.cs">
+      <DependentUpon>AddCharacterWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\AuthenticatorChallengeWindow.xaml.cs">
       <DependentUpon>AuthenticatorChallengeWindow.xaml</DependentUpon>
     </Compile>
@@ -94,6 +98,13 @@
       <DependentUpon>SetMasterKeyWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="Windows\UnhandledResponseWindow.xaml.cs">
+      <DependentUpon>UnhandledResponseWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Windows\AddCharacterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\AuthenticatorChallengeWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -148,6 +159,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SetMasterKeyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\UnhandledResponseWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

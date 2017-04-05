@@ -1,0 +1,15 @@
+﻿<Window x:Class="ISBoxerEVELauncher.Windows.UnhandledResponseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ISBoxer EVE Launcher: Unrecognized response from server" Height="600" Width="800" WindowStartupLocation="CenterOwner"
+        Name="windowUnhandledResponse">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
+            <Button DockPanel.Dock="Left" Name="buttonCopy" Content="Copy" Width="75" Click="buttonCopy_Click" />
+            <TextBlock DockPanel.Dock="Left" Text="The above text is a raw uncensored response from the server, and may contain sensitive/private information." FontWeight="Bold" Margin="8,0" />
+            <Button DockPanel.Dock="Right" Name="buttonGo"  Content="OK" VerticalAlignment="Top" Width="75" Click="buttonGo_Click" IsDefault="True" HorizontalAlignment="Right" />
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="ISBoxer EVE Launcher cannot continue with this account; An unrecognized response was received from the EVE Online login server:"  HorizontalAlignment="Center" FontWeight="Bold"  />
+        <TextBox DockPanel.Dock="Top" Name="textResponse" IsReadOnly="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5" BorderThickness="2" BorderBrush="Black" Text="{Binding ElementName=windowUnhandledResponse, Path=ResponseBody}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible" />        
+    </DockPanel>
+</Window>

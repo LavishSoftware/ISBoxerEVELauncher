@@ -216,6 +216,12 @@ namespace ISBoxerEVELauncher
 
         static ObservableCollection<Session> Sessions = new ObservableCollection<Session>();
 
+        /// <summary>
+        /// Request Master Key from Master Instance
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="remoteWindow"></param>
+        /// <param name="remoteProcess"></param>
         public static void RequestMasterKey(Windows.MainWindow window, IntPtr remoteWindow, System.Diagnostics.Process remoteProcess)
         {
             Session session = Sessions.FirstOrDefault(q => q.RemoteWindow == remoteWindow && q.Process.Id == remoteProcess.Id);

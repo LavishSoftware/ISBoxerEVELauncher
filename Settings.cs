@@ -19,6 +19,7 @@ namespace ISBoxerEVELauncher
         public Settings()
         {
             Accounts = new ObservableCollection<EVEAccount>();
+            Characters = new ObservableCollection<EVECharacter>();
             EULAAccepted = DateTime.MinValue;
             MasterKeyRequested = DateTime.MinValue;
             EVESharedCachePath = App.DetectedEVESharedCachePath;
@@ -29,6 +30,21 @@ namespace ISBoxerEVELauncher
         /// List of EVE Accounts we've presumably verified access to. (A user may have manually edited the Settings file.)
         /// </summary>
         public ObservableCollection<EVEAccount> Accounts { get; set; }
+
+        /// <summary>
+        /// List of known EVE Characters, for use with auto-login
+        /// </summary>
+        public ObservableCollection<EVECharacter> Characters { get; set; }
+
+
+        public EVEAccount FindEVEAccount(string name)
+        {
+            return App.Settings.Accounts.FirstOrDefault(q => q.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        }
+        public EVECharacter FindEVECharacter(bool sisi,string name)
+        {
+            return App.Settings.Characters.FirstOrDefault(q => q.UseSingularity=sisi && q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        }
 
         InnerSpaceGameProfile _TranquilityGameProfile;
         /// <summary>

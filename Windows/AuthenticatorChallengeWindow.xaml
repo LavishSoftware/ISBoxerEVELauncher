@@ -1,16 +1,16 @@
 ﻿<Window x:Class="ISBoxerEVELauncher.Windows.AuthenticatorChallengeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="AuthenticatorChallengeWindow" Width="300" SizeToContent="Height" WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textAuthenticatorCode}">
+        Title="AuthenticatorChallengeWindow" Name="windowAuthenticatorChallenge" Width="300" SizeToContent="Height" WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textAuthenticatorCode}">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,5,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Please confirm your identity by providing the Authenticator Code for the account." VerticalAlignment="Top"/>
         <DockPanel DockPanel.Dock="Top" Margin="5,5,5,0">
             <TextBlock Text="EVE Account" Width="120"  />
-            <TextBox DockPanel.Dock="Top" Name="textAccountName" VerticalAlignment="Top" Text="{Binding ElementName=windowCharacterChallenge, Path=AccountName}"  IsReadOnly="true"  />
+            <TextBox DockPanel.Dock="Top" Name="textAccountName" VerticalAlignment="Top" Text="{Binding ElementName=windowAuthenticatorChallenge, Path=AccountName}"  IsReadOnly="true"  />
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="5">
             <TextBlock Text="Authenticator Code" Width="120"/>
-            <TextBox DockPanel.Dock="Top" Name="textAuthenticatorCode"  VerticalAlignment="Top" Text="{Binding ElementName=windowCharacterChallenge, Path=AuthenticatorCode}"/>
+            <TextBox DockPanel.Dock="Top" Name="textAuthenticatorCode"  VerticalAlignment="Top" Text="{Binding ElementName=windowAuthenticatorChallenge, Path=AuthenticatorCode}"/>
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
             <Button DockPanel.Dock="Right" Name="buttonGo"  Content="Go" VerticalAlignment="Top" Width="75" Click="buttonGo_Click" IsDefault="True" />

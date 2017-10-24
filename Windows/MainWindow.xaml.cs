@@ -93,11 +93,11 @@ namespace ISBoxerEVELauncher.Windows
 
        protected override void OnStateChanged(EventArgs e)
        {
-           if (WindowState == System.Windows.WindowState.Minimized)
-           {
-               this.Hide();
-               NotifyIcon.Visible = true;
-           }
+           //if (WindowState == System.Windows.WindowState.Minimized)
+           //{
+           //    this.Hide();
+           //    NotifyIcon.Visible = true;
+           //}
            base.OnStateChanged(e);
        }
 

@@ -910,8 +910,9 @@ namespace ISBoxerEVELauncher
                         SecurePassword = null;
                         return LoginResult.InvalidAuthenticatorChallenge;
                     }
-
-                    if (responseBody.Contains("Character challenge"))
+                    //The 2FA page now has "Character challenge" in the text but it is hidden. This should fix it from
+                    //Coming up during 2FA challenge
+                    if (responseBody.Contains("Character challenge") && !responseBody.Contains("visuallyhidden"))
                     {
                         return GetCharacterChallenge(sisi, out accessToken);
                     }
@@ -921,7 +922,7 @@ namespace ISBoxerEVELauncher
                         return GetEmailChallenge(sisi, responseBody, out accessToken);
                     }
 
-                    if (responseBody.Contains("form action=\"/Account/Authenticator\""))
+                    if (responseBody.Contains("Authenticator is enabled"))
                     {
                         return GetAuthenticatorChallenge(sisi, out accessToken);
                     }

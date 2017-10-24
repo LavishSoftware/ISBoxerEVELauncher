@@ -62,7 +62,7 @@ namespace ISBoxerEVELauncher
         public static long GetCharacterID(bool sisi, string characterName)
         {
 
-            string uri = string.Format("https://esi.tech.ccp.is/v1/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true",(sisi?"singularity":"tranquility"),characterName);
+            string uri = string.Format("https://esi.tech.ccp.is/v1/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true",(sisi?"singularity":"tranquility"), WebUtility.UrlEncode(characterName));
 
             using (WebClient wc = new WebClient())
             {
@@ -73,9 +73,9 @@ namespace ISBoxerEVELauncher
                         return 0;// Character does not exist
 
                     // Response is JSON, but since it's not complex we'll just strip the formatting instead of using a JSON parser.
-//                     {"character": [90664221]}
+//                     {"character":[90664221]}
 
-                    string prefix = "{\"character\": [";
+                    string prefix = "{\"character\":[";
                     string suffix = "]}";
 
                     if (!outputString.StartsWith(prefix))

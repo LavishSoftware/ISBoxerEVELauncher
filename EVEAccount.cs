@@ -927,7 +927,7 @@ namespace ISBoxerEVELauncher
                         return GetAuthenticatorChallenge(sisi, out accessToken);
                     }
 
-                    if (responseBody.Contains("form action=\"/OAuth/Eula\""))
+                    if (responseBody.ToLower().Contains("form action=\"/oauth/eula\"")) 
                     {
                         return GetEULAChallenge(sisi, responseBody, out accessToken);
                     }

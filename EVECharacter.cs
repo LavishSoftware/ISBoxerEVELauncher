@@ -80,12 +80,12 @@ namespace ISBoxerEVELauncher
 
                     if (!outputString.StartsWith(prefix))
                     {
-                        throw new FormatException("Expected {\"character\": [#####]} but got " + outputString);
+                        throw new FormatException("Expected {\"character\":[#####]} but got " + outputString);
                     }
 
                     if (!outputString.EndsWith(suffix))
                     {
-                        throw new FormatException("Expected {\"character\": [#####]} but got " + outputString);
+                        throw new FormatException("Expected {\"character\":[#####]} but got " + outputString);
                     }
 
                     outputString = outputString.Substring(prefix.Length);

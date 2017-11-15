@@ -1,7 +1,9 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
-* Version 1.0.0.16 incudes submitted patches to fix 2-Factor Authentication with Authenticator codes, and Character selection
+* Version 1.0.0.17 includes submitted patches to fix adding Characters, and an issue with the EULA page. Minimizing to Tray is temporarily disabled to work around an issue with the Master Password not operating correctly while minimized this way.
+
+* Version 1.0.0.16 includes submitted patches to fix 2-Factor Authentication with Authenticator codes, and Character selection
 
 * Version 1.0.0.15 added automtic Character selection (further streamlining auto-login), and fixed defaults for setting up Inner Space Game Profiles to match the settings required for ISBoxer
 

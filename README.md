@@ -1,7 +1,7 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
-# Version 1.0.0.18 includes a fix for Authenticators requiring 2-factor Authenticator codes each time, the Authenticator window popping up an error message when pressing Enter, and also for the Settings file sometimes losing stored passwords. Timeouts have been increased from 5 to 30 seconds.
+* Version 1.0.0.18 includes a fix for Authenticators requiring 2-factor Authenticator codes each time, the Authenticator window popping up an error message when pressing Enter, and also for the Settings file sometimes losing stored passwords. Timeouts have been increased from 5 to 30 seconds.
 
 * Version 1.0.0.17 includes submitted patches to fix adding Characters, and an issue with the EULA page. Minimizing to Tray is temporarily disabled to work around an issue with the Master Password not operating correctly while minimized this way.
 

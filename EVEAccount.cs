@@ -712,7 +712,7 @@ namespace ISBoxerEVELauncher
 
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
+            req.Timeout = 30000;
             req.AllowAutoRedirect = true;
             if (!sisi)
             {
@@ -784,7 +784,7 @@ namespace ISBoxerEVELauncher
             }
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
+            req.Timeout = 30000;
             req.AllowAutoRedirect = true;
             if (!sisi)
             {
@@ -872,7 +872,7 @@ namespace ISBoxerEVELauncher
             }
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
+            req.Timeout = 30000;
             req.AllowAutoRedirect = true;
             if (!sisi)
             {
@@ -1077,7 +1077,7 @@ namespace ISBoxerEVELauncher
             }
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
+            req.Timeout = 30000;
             req.AllowAutoRedirect = true;
             if (!sisi)
             {
@@ -1146,7 +1146,7 @@ namespace ISBoxerEVELauncher
                 uri = "https://sisilogin.testeveonline.com/launcher/token?accesstoken=" + accessToken;
             }
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
+            req.Timeout = 30000;
             req.AllowAutoRedirect = false;
 
             using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())

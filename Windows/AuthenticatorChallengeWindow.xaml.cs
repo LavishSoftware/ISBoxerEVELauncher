@@ -51,7 +51,7 @@ namespace ISBoxerEVELauncher.Windows
         private void buttonGo_Click(object sender, RoutedEventArgs e)
         {
             e.Handled = true;
-
+            AuthenticatorCode = textAuthenticatorCode.Text;
             if (string.IsNullOrEmpty(AuthenticatorCode))
             {
                 MessageBox.Show("Please enter a valid Authenticator Code to continue logging into this EVE Account!");

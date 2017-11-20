@@ -12,6 +12,7 @@ using System.Web;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Security.Cryptography;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ISBoxerEVELauncher
 {
@@ -74,16 +75,61 @@ namespace ISBoxerEVELauncher
             public DateTime Expiration { get; set; }
         }
 
+        CookieContainer _Cookies;
+
         /// <summary>
-        /// The EVE login process requires cookies, this will ensure we maintain the same cookies for the session
+        /// The EVE login process requires cookies; this will ensure we maintain the same cookies for the account
         /// </summary>
-        CookieContainer Cookies = new CookieContainer();
+        CookieContainer Cookies
+        {
+            get
+            {
+                if (_Cookies == null)
+                {
+                    if (!string.IsNullOrEmpty(CookieStorage))
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        
+                        
+                        using (Stream s = new MemoryStream(Convert.FromBase64String(CookieStorage)))
+                        {
+                            _Cookies = (CookieContainer)formatter.Deserialize(s);
+                        }
+                    }
+                }
+                return _Cookies;
+            }
+            set
+            {
+                _Cookies = value;
+            }
+        }
+
+        public void UpdateCookieStorage()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(ms, Cookies);
+                ms.Flush();
+                ms.Seek(0, SeekOrigin.Begin);
+
+                CookieStorage = Convert.ToBase64String(ms.ToArray());
+            }
+            
+        }
 
         string _Username;
         /// <summary>
         /// EVE Account username
         /// </summary>
         public string Username { get { return _Username; } set { _Username = value; OnPropertyChanged("Username"); } }
+
+        public string CookieStorage
+        {
+            get;set;
+        }
+
 
         #region Password
         System.Security.SecureString _SecurePassword;
@@ -164,6 +210,21 @@ namespace ISBoxerEVELauncher
         public void EncryptPassword()
         {
             SetEncryptedPassword(SecurePassword);
+        }
+
+        /// <summary>
+        /// Prepares the EVEAccount for storage by ensuring that the Encrypted fields are set, if available
+        /// </summary>
+        public void PrepareStorage()
+        {
+            if (SecurePassword!=null)
+            {
+                EncryptPassword();
+            }
+            if (SecureCharacterName!=null)
+            {
+                EncryptCharacterName();
+            }
         }
 
         /// <summary>
@@ -716,11 +777,10 @@ namespace ISBoxerEVELauncher
                 return LoginResult.InvalidAuthenticatorChallenge;
             }
 
-
-            string uri = "https://login.eveonline.com/Account/Authenticator?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            string uri = "https://login.eveonline.com/account/authenticator?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
             if (sisi)
             {
-                uri = "https://sisilogin.testeveonline.com/Account/Authenticator?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+                uri = "https://sisilogin.testeveonline.com/account/authenticator?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
             }
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
@@ -735,7 +795,7 @@ namespace ISBoxerEVELauncher
                 req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
             }
             req.Referer = uri;
-            req.CookieContainer = Cookies;
+            req.CookieContainer = Cookies;            
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
             using (SecureBytesWrapper body = new SecureBytesWrapper())
@@ -764,7 +824,13 @@ namespace ISBoxerEVELauncher
                     }
                 }
             }
-            return GetAccessToken(sisi, req, out accessToken);
+            LoginResult result = GetAccessToken(sisi, req, out accessToken);
+            if (result == LoginResult.Success)
+            {
+                // successful authenticator challenge, make sure we save the cookies.
+                App.Settings.Store();
+            }
+            return result;
         }
 
         public LoginResult GetCharacterChallenge(bool sisi, out Token accessToken)
@@ -875,7 +941,7 @@ namespace ISBoxerEVELauncher
                             responseBody = sr.ReadToEnd();
                         }
                     }
-
+                    UpdateCookieStorage();
                     /*
 <span id="ValidationContainer"><div class="validation-summary-errors"><span>Login failed. Possible reasons can be:</span>
 <ul><li>Invalid username / password</li>
@@ -1089,6 +1155,7 @@ namespace ISBoxerEVELauncher
                 ssotoken = HttpUtility.ParseQueryString(responseUri.Fragment).Get("#access_token");
                 
             }
+            UpdateCookieStorage();
             return LoginResult.Success;
         }
 

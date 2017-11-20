@@ -442,6 +442,10 @@ namespace ISBoxerEVELauncher
         /// <param name="filename"></param>
         public void Store(string filename)
         {
+            foreach(EVEAccount a in Accounts)
+            {
+                a.PrepareStorage();
+            }
             try
             {
                 using (TextWriter w = new StreamWriter(filename, false, System.Text.Encoding.UTF8))

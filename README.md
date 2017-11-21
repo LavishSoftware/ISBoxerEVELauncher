@@ -1,6 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.19 fixes a new ArgumentNullException error from 1.0.0.18
+
 * Version 1.0.0.18 includes a fix for Authenticators requiring 2-factor Authenticator codes each time, the Authenticator window popping up an error message when pressing Enter, and also for the Settings file sometimes losing stored passwords. Timeouts have been increased from 5 to 30 seconds.
 
 * Version 1.0.0.17 includes submitted patches to fix adding Characters, and an issue with the EULA page. Minimizing to Tray is temporarily disabled to work around an issue with the Master Password not operating correctly while minimized this way.
@@ -23,7 +25,7 @@ ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Onl
 If password storage is enabled, ISBoxer EVE Launcher keeps your EVE passwords cryptographically secure, allowing you to keep any number of EVE accounts safely ready for instant login.
 
 # Download
-**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.18.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
+**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.19.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
 
 # Installation
 Un-zip the ISBoxer EVE Launcher.exe file into the location of your choice. If intending to use with Inner Space/ISBoxer, it is recommended to place the file in the Inner Space folder.

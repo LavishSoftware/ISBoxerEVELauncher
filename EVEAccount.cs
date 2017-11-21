@@ -89,13 +89,15 @@ namespace ISBoxerEVELauncher
                     if (!string.IsNullOrEmpty(CookieStorage))
                     {
                         BinaryFormatter formatter = new BinaryFormatter();
-                        
-                        
+
+
                         using (Stream s = new MemoryStream(Convert.FromBase64String(CookieStorage)))
                         {
                             _Cookies = (CookieContainer)formatter.Deserialize(s);
                         }
                     }
+                    else
+                        _Cookies = new CookieContainer();
                 }
                 return _Cookies;
             }
@@ -107,6 +109,12 @@ namespace ISBoxerEVELauncher
 
         public void UpdateCookieStorage()
         {
+            if (Cookies == null)
+            {
+                CookieStorage = null;
+                return;
+            }
+            
             using (MemoryStream ms = new MemoryStream())
             {
                 BinaryFormatter formatter = new BinaryFormatter();
@@ -1211,7 +1219,16 @@ namespace ISBoxerEVELauncher
             }
             this.EncryptedPassword = null;
             this.EncryptedPasswordIV = null;
+            if (this.SecureCharacterName!=null)
+            {
+                this.SecureCharacterName.Dispose();
+                this.SecureCharacterName = null;
+            }
+            this.EncryptedCharacterName = null;
+            this.EncryptedCharacterNameIV = null;
             this.Username = null;
+            this.Cookies = null;
+            this.CookieStorage = null;
         }
 
         public override string ToString()

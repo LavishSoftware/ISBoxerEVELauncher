@@ -664,6 +664,24 @@ namespace ISBoxerEVELauncher
             TokenFailure,
         }
 
+        private static string GetRequestVerificationToken(string body)
+        {
+            // <input name="__RequestVerificationToken" type="hidden" value="rGFOR5OvmlpJ_6_Kabcx3JSrJ3v6EL0W6tuOuD-e8QvUuK2l1MX5jP7pztjxnm5k0qgHIv-mati2ctst9M8kD9jBg3E1" />
+            const string needle = "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"";
+            int hashStart = body.IndexOf(needle, StringComparison.Ordinal);
+            if (hashStart == -1)
+                return null;
+
+            hashStart += needle.Length;
+
+            // get hash end
+            int hashEnd = body.IndexOf('"', hashStart);
+            if (hashEnd == -1)
+                return null;
+
+            return body.Substring(hashStart, hashEnd - hashStart);
+        }
+
         private static string GetEulaHash(string body)
         {
             const string needle = "name=\"eulaHash\" type=\"hidden\" value=\"";
@@ -1035,18 +1053,80 @@ namespace ISBoxerEVELauncher
 
                 return LoginResult.Success;
             }
-            catch(System.Net.WebException we)
+            catch (System.Net.WebException we)
             {
-                switch(we.Status)
+                switch (we.Status)
                 {
                     case WebExceptionStatus.Timeout:
                         accessToken = null;
                         return LoginResult.Timeout;
                     default:
+                        string responseBody = null;
+                        using (Stream stream = we.Response.GetResponseStream())
+                        {
+                            using (StreamReader sr = new StreamReader(stream))
+                            {
+                                responseBody = sr.ReadToEnd();
+                            }
+                        }
+
+                        Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
+                        urw.ShowDialog();
+                        accessToken = null;
+                        return LoginResult.Error;
+                }
+            }
+        }
+
+        public LoginResult GetRequestVerificationToken(bool sisi, out string verificationToken)
+        {
+            string uri = "https://login.eveonline.com/Account/LogOn";
+            if (sisi)
+            {
+                uri = "https://sisilogin.testeveonline.com/Account/LogOn";
+            }
+
+            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
+            req.Timeout = 30000;
+            req.AllowAutoRedirect = true;
+            req.Referer = uri;
+            req.CookieContainer = Cookies;
+            req.Method = "GET";
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.ContentLength = 0;
+            try
+            {
+                using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                {                   
+                    string responseBody = null;
+                    using (Stream stream = resp.GetResponseStream())
+                    {
+                        using (StreamReader sr = new StreamReader(stream))
+                        {
+                            responseBody = sr.ReadToEnd();
+                        }
+                    }
+                    UpdateCookieStorage();
+
+                    verificationToken = GetRequestVerificationToken(responseBody);
+                    return LoginResult.Success;
+                }
+            }
+            catch (System.Net.WebException ex)
+            {
+                switch (ex.Status)
+                {
+                    case WebExceptionStatus.Timeout:
+                        {
+                            verificationToken = string.Empty;
+                            return LoginResult.Timeout;
+                        }
+                    default:
                         throw;
                 }
             }
         }
+    
 
         public LoginResult GetAccessToken(bool sisi, out Token accessToken)
         {
@@ -1099,8 +1179,12 @@ namespace ISBoxerEVELauncher
             req.CookieContainer = Cookies;
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
+
+            string RequestVerificationToken = string.Empty;
+            GetRequestVerificationToken(sisi, out RequestVerificationToken);
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {                
+//                byte[] body1 = Encoding.ASCII.GetBytes(String.Format("__RequestVerificationToken={1}&UserName={0}&Password=", Uri.EscapeDataString(Username), Uri.EscapeDataString(RequestVerificationToken)));
                 byte[] body1 = Encoding.ASCII.GetBytes(String.Format("UserName={0}&Password=", Uri.EscapeDataString(Username)));
                 using (SecureStringWrapper ssw = new SecureStringWrapper(SecurePassword, Encoding.ASCII))
                 {

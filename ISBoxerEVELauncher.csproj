@@ -94,6 +94,9 @@
       <DependentUpon>MasterKeyEntryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SecureStringWrapper.cs" />
+    <Compile Include="Windows\SecurityWarningWindow.xaml.cs">
+      <DependentUpon>SecurityWarningWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SetMasterKeyWindow.xaml.cs">
       <DependentUpon>SetMasterKeyWindow.xaml</DependentUpon>
     </Compile>
@@ -155,6 +158,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\MasterKeyEntryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SecurityWarningWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

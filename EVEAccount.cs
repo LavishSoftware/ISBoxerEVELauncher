@@ -661,6 +661,7 @@ namespace ISBoxerEVELauncher
             InvalidAuthenticatorChallenge,
             EULADeclined,
             EmailVerificationRequired,
+            SecurityWarningClosed,
             TokenFailure,
         }
 
@@ -702,6 +703,44 @@ namespace ISBoxerEVELauncher
 
 
             return body.Substring(fieldStart, fieldEnd-fieldStart);
+        }
+
+        public LoginResult GetSecurityWarningChallenge(bool sisi, string responseBody, out Token accessToken)
+        {
+            Windows.SecurityWarningWindow swWindow = new Windows.SecurityWarningWindow(responseBody);
+            swWindow.ShowDialog();
+      
+            if (string.IsNullOrEmpty( swWindow.URI))
+            {
+                SecurePassword = null;
+                accessToken = null;
+                return LoginResult.SecurityWarningClosed;
+            }
+
+            string uri = "https://login.eveonline.com/"+ swWindow.URI;
+            if (sisi)
+            {
+                uri = "https://sisilogin.testeveonline.com/" + swWindow.URI;
+            }
+
+            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
+            req.Timeout = 30000;
+            req.AllowAutoRedirect = true;
+            if (!sisi)
+            {
+                req.Headers.Add("Origin", "https://login.eveonline.com");
+            }
+            else
+            {
+                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
+            }
+            req.Referer = uri;
+            req.CookieContainer = Cookies;
+            req.Method = "GET";
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.ContentLength = 0;
+            return GetAccessToken(sisi, req, out accessToken);
+
         }
 
         public LoginResult GetEmailChallenge(bool sisi, string responseBody, out Token accessToken)
@@ -1017,6 +1056,11 @@ namespace ISBoxerEVELauncher
                     if (responseBody.Contains("Authenticator is enabled"))
                     {
                         return GetAuthenticatorChallenge(sisi, out accessToken);
+                    }
+
+                    if (responseBody.Contains("Security Warning"))
+                    {
+                        return GetSecurityWarningChallenge(sisi, responseBody, out accessToken);
                     }
 
                     if (responseBody.ToLower().Contains("form action=\"/oauth/eula\"")) 

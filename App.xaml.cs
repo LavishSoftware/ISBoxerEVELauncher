@@ -19,6 +19,8 @@ namespace ISBoxerEVELauncher
     /// </summary>
     public partial class App : Application
     {
+        public static bool HasInnerSpace { get; set; }
+
         public static string AppVersion
         {
             get
@@ -541,9 +543,21 @@ namespace ISBoxerEVELauncher
             {
                 InnerSpaceGameProfile gp;
                 if (Settings.UseSingularity)
-                    launcher = new Launchers.InnerSpaceLauncher(Settings.SingularityGameProfile, Settings.UseDirectXVersion, true);
+                {
+                    gp = Settings.SingularityGameProfile;
+                }
                 else
-                    launcher = new Launchers.InnerSpaceLauncher(Settings.TranquilityGameProfile, Settings.UseDirectXVersion, false);
+                {
+                    gp = Settings.TranquilityGameProfile;
+                }
+
+                if (gp == null || string.IsNullOrEmpty(gp.Game) || string.IsNullOrEmpty(gp.GameProfile))
+                {
+                    MessageBox.Show("Please select a Game Profile first!");
+                    return;
+                }
+
+                launcher = new Launchers.InnerSpaceLauncher(gp, Settings.UseDirectXVersion, Settings.UseSingularity);
             }
             else
             {
@@ -665,10 +679,12 @@ namespace ISBoxerEVELauncher
 
             if (!TransmitCommandLine())
             {
-
                 ReloadGameConfiguration();
 
-
+                if (GameConfiguration!=null || System.IO.File.Exists(ISExecutable))
+                {
+                    HasInnerSpace = true;
+                }
 
                 var mainWindow = new Windows.MainWindow();
                 //Re-enable normal shutdown mode.

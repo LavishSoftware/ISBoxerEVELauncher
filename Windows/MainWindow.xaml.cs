@@ -333,6 +333,19 @@ namespace ISBoxerEVELauncher.Windows
             }            
         }
 
+        public Visibility InnerSpaceVisibility
+        {
+            get
+            {
+                if (App.HasInnerSpace)
+                    return System.Windows.Visibility.Visible;
+                return System.Windows.Visibility.Collapsed;
+            }
+            set
+            {
+
+            }
+        }
 
         public bool UseSingularity
         {

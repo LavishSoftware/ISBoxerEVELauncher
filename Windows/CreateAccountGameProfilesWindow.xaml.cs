@@ -35,6 +35,8 @@ namespace ISBoxerEVELauncher.Windows
         {
             get
             {
+                if (UseISBoxerSettings)
+                    return true;
                 return _UseNewLauncher;
             }
             set
@@ -48,6 +50,8 @@ namespace ISBoxerEVELauncher.Windows
         {
             get
             {
+                if (UseISBoxerSettings)
+                    return false;
                 return _LeaveLauncherOpen;
             }
             set
@@ -60,6 +64,8 @@ namespace ISBoxerEVELauncher.Windows
         {
             get
             {
+                if (UseISBoxerSettings)
+                    return true;
                 return SelectedItem == cbiEVEDirect;
             }            
         }
@@ -77,6 +83,54 @@ namespace ISBoxerEVELauncher.Windows
                 OnPropertyChanged("SelectedItem");
             }
         }
+
+        bool _UseISBoxerSettings= true;
+        public bool UseISBoxerSettings
+        {
+            get
+            {
+                return _UseISBoxerSettings;
+            }
+            set
+            {
+                _UseISBoxerSettings = value;
+                OnPropertyChanged("UseISBoxerSettings");
+                OnPropertyChanged("UseAdvancedSettings");
+                OnPropertyChanged("AdvancedVisibility");
+
+                OnPropertyChanged("SelectedItem");
+                OnPropertyChanged("UseEVEDirect");
+                OnPropertyChanged("LeaveLauncherOpen");
+                OnPropertyChanged("UseNewLauncher");
+            }
+        }
+
+        public bool UseAdvancedSettings
+        {
+            get
+            {
+                return !UseISBoxerSettings;
+            }
+            set
+            {
+                UseISBoxerSettings = !value;
+            }
+        }
+
+        public Visibility AdvancedVisibility
+        {
+            get
+            {
+                if (UseISBoxerSettings)
+                    return System.Windows.Visibility.Collapsed;
+                return System.Windows.Visibility.Visible;
+            }
+            set
+            {
+
+            }
+        }
+
 
         string _Game;
         public string Game

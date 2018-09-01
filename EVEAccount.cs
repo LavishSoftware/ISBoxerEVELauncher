@@ -707,8 +707,11 @@ namespace ISBoxerEVELauncher
 
         public LoginResult GetSecurityWarningChallenge(bool sisi, string responseBody, out Token accessToken)
         {
+            /*
             Windows.SecurityWarningWindow swWindow = new Windows.SecurityWarningWindow(responseBody);
             swWindow.ShowDialog();
+
+            // /oauth/authorize/?client_id=eveLauncherTQ&lang=en&response_type=token&redirect_uri=https://login.eveonline.com/launcher?client_id=eveLauncherTQ&scope=eveClientToken
       
             if (string.IsNullOrEmpty( swWindow.URI))
             {
@@ -716,11 +719,12 @@ namespace ISBoxerEVELauncher
                 accessToken = null;
                 return LoginResult.SecurityWarningClosed;
             }
+            */
 
-            string uri = "https://login.eveonline.com/"+ swWindow.URI;
+            string uri = "https://login.eveonline.com/oauth/authorize/?client_id=eveLauncherTQ&lang=en&response_type=token&redirect_uri=https://login.eveonline.com/launcher?client_id=eveLauncherTQ&scope=eveClientToken";
             if (sisi)
             {
-                uri = "https://sisilogin.testeveonline.com/" + swWindow.URI;
+                uri = "https://sisilogin.testeveonline.com/oauth/authorize/?client_id=eveLauncherTQ&lang=en&response_type=token&redirect_uri=https://sisilogin.testeveonline.com/launcher?client_id=eveLauncherTQ&scope=eveClientToken";
             }
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);

@@ -1,6 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.23 fixes Security Warning messages, updates the GUI to hide Inner Space related controls when the user does not have Inner Space, and hides most options under Advanced when creating Game Profiles
+
 * Version 1.0.0.22 adds support for Security Warning messages such as Commonly Used Password, and includes a warning message when adding Characters
 
 * Version 1.0.0.21 fixes a new 500 Internal Server Error due to a minor change in the EVE login process, and also improves output from this type of error
@@ -29,7 +31,7 @@ ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Onl
 If password storage is enabled, ISBoxer EVE Launcher keeps your EVE passwords cryptographically secure, allowing you to keep any number of EVE accounts safely ready for instant login.
 
 # Download
-**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.22.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
+**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.23.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
 
 # Installation
 Un-zip the ISBoxer EVE Launcher.exe file into the location of your choice. If intending to use with Inner Space/ISBoxer, it is recommended to place the file in the Inner Space folder.
@@ -94,7 +96,9 @@ This is exactly the same as Creating Account-specific Game Profiles (see above),
 This method sets up Game Profiles that automatically log in to specific characters on your EVE accounts.
 
 ## Recommendations for ISBoxer
-When using ISBoxer, it is recommended to create Account-specific Game Profiles with "Perform launch from a new ISBoxer EVE Launcher instance" *enabled*, "Leave new ISBoxer EVE Launcher instance open after launch" *disabled*, and the drop-down configured to launch EVE directly. The Account-specific Game Profiles can then be selected per Character in ISBoxer Toolkit. This will fully enable Character Set launching, at the cost of having to enter your EVE password (or Master Password) each time. *To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
+When using ISBoxer, you will need to create Account-specific Game Profiles for Inner Space. The Account-specific Game Profiles can then be selected per Character in ISBoxer Toolkit. This will fully enable Character Set launching. 
+
+*To avoid re-entering your Master Password, launch an instance of ISBoxer EVE Launcher as Administrator, enter the Master Password in it, and leave it running as you do future launches.*
 
 Here is a step-by-step description of updating your ISBoxer Character Set to use ISBoxer EVE Launcher:
 
@@ -110,7 +114,7 @@ Here is a step-by-step description of updating your ISBoxer Character Set to use
 
 6. Close Inner Space if it is running. This will make sure you don't have to do Step 7 twice under any circumstance...
 
-7. Select all EVE Accounts (or Characters) in the list and select "Create Game Profile". **Tick "Perform launch from a new ISBoxer EVE Launcher instance" (leave default).** Do not tick "Leave new ISBoxer EVE Launcher instance open after launch" (leave default). **Set the drop-down box to "Launch EVE client directly" (again, leave default).** Click "Go"! (Remember the Game name and Game Profile schemes for Step #9!)
+7. Select all EVE Accounts (or Characters) in the list and select "Create Game Profile". Adjust the "Game" and "Game Profile" settings if you would not like it to use the defaults, leave the "Use recommended settings for ISBoxer" option ticked, and click "Go"! (Remember the Game name and Game Profile schemes for Step #9!)
 
 8. You can launch Inner Space again now if you want. The new Game and Game Profiles should be successfully added.
 

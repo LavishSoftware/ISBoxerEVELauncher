@@ -104,6 +104,9 @@
     <Compile Include="Windows\UnhandledResponseWindow.xaml.cs">
       <DependentUpon>UnhandledResponseWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\VerificationCodeChallengeWindow.xaml.cs">
+      <DependentUpon>VerificationCodeChallengeWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Windows\AddCharacterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -170,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\UnhandledResponseWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\VerificationCodeChallengeWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

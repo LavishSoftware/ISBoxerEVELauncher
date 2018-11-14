@@ -659,6 +659,7 @@ namespace ISBoxerEVELauncher
             InvalidUsernameOrPassword,
             InvalidCharacterChallenge,
             InvalidAuthenticatorChallenge,
+            InvalidEmailVerificationChallenge,
             EULADeclined,
             EmailVerificationRequired,
             SecurityWarningClosed,
@@ -762,6 +763,7 @@ namespace ISBoxerEVELauncher
             return LoginResult.EmailVerificationRequired;
         }
 
+
         public LoginResult GetEULAChallenge(bool sisi, string responseBody,  out Token accessToken)
         {
             Windows.EVEEULAWindow eulaWindow = new Windows.EVEEULAWindow(responseBody);
@@ -833,6 +835,74 @@ namespace ISBoxerEVELauncher
             {
                 return GetAccessToken(sisi, out accessToken);
             }
+        }
+
+        public LoginResult GetEmailCodeChallenge(bool sisi, out Token accessToken)
+        {
+            Windows.VerificationCodeChallengeWindow acw = new Windows.VerificationCodeChallengeWindow(this);
+            acw.ShowDialog();
+            if (!acw.DialogResult.HasValue || !acw.DialogResult.Value)
+            {
+                SecurePassword = null;
+                accessToken = null;
+                return LoginResult.InvalidEmailVerificationChallenge;
+            }
+
+
+            string uri = "https://login.eveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            if (sisi)
+            {
+                uri = "https://sisilogin.testeveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            }
+
+            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
+            req.Timeout = 30000;
+            req.AllowAutoRedirect = true;
+            if (!sisi)
+            {
+                req.Headers.Add("Origin", "https://login.eveonline.com");
+            }
+            else
+            {
+                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
+            }
+            req.Referer = uri;
+            req.CookieContainer = Cookies;
+            req.Method = "POST";
+            req.ContentType = "application/x-www-form-urlencoded";
+            using (SecureBytesWrapper body = new SecureBytesWrapper())
+            {
+                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&RememberTwoFactor={1}&command={2}", Uri.EscapeDataString(acw.VerificationCode), "true", "Continue"));
+
+                req.ContentLength = body.Bytes.Length;
+                try
+                {
+                    using (Stream reqStream = req.GetRequestStream())
+                    {
+                        reqStream.Write(body.Bytes, 0, body.Bytes.Length);
+                    }
+                }
+                catch (System.Net.WebException e)
+                {
+                    switch (e.Status)
+                    {
+                        case WebExceptionStatus.Timeout:
+                            {
+                                accessToken = null;
+                                return LoginResult.Timeout;
+                            }
+                        default:
+                            throw;
+                    }
+                }
+            }
+            LoginResult result = GetAccessToken(sisi, req, out accessToken);
+            if (result == LoginResult.Success)
+            {
+                // successful verification code challenge, make sure we save the cookies.
+                App.Settings.Store();
+            }
+            return result;
         }
 
         public LoginResult GetAuthenticatorChallenge(bool sisi, out Token accessToken)
@@ -1060,6 +1130,11 @@ namespace ISBoxerEVELauncher
                     if (responseBody.Contains("Authenticator is enabled"))
                     {
                         return GetAuthenticatorChallenge(sisi, out accessToken);
+                    }
+
+                    if (responseBody.Contains("Please enter the verification code "))
+                    {
+                        return GetEmailCodeChallenge(sisi, out accessToken);
                     }
 
                     if (responseBody.Contains("Security Warning"))

@@ -1,0 +1,20 @@
+﻿<Window x:Class="ISBoxerEVELauncher.Windows.VerificationCodeChallengeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           Title="Verification Code Challenge" Name="windowVerificationCodeChallenge" Width="300" SizeToContent="Height" WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textAuthenticatorCode}">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,5,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Please enter the verification code EVE Online just sent to your email address." VerticalAlignment="Top"/>
+        <DockPanel DockPanel.Dock="Top" Margin="5,5,5,0">
+            <TextBlock Text="EVE Account" Width="120"  />
+            <TextBox DockPanel.Dock="Top" Name="textAccountName" VerticalAlignment="Top" Text="{Binding ElementName=windowVerificationCodeChallenge, Path=AccountName}"  IsReadOnly="true"  />
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="5">
+            <TextBlock Text="Verification Code" Width="120"/>
+            <TextBox DockPanel.Dock="Top" Name="textVerificationCode"  VerticalAlignment="Top" Text="{Binding ElementName=windowVerificationCodeChallenge, Path=VerificationCode}"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="5,0,5,5">
+            <Button DockPanel.Dock="Right" Name="buttonGo"  Content="Go" VerticalAlignment="Top" Width="75" Click="buttonGo_Click" IsDefault="True" />
+            <Button DockPanel.Dock="Right" x:Name="buttonCancel" IsCancel="True"  Content="Cancel" HorizontalAlignment="Right" Margin="5,0,5,0" VerticalAlignment="Top" Width="75" Click="buttonCancel_Click" />
+        </DockPanel>
+    </DockPanel>
+</Window>

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ISBoxerEVELauncher.Windows.VerificationCodeChallengeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-           Title="Verification Code Challenge" Name="windowVerificationCodeChallenge" Width="300" SizeToContent="Height" WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textAuthenticatorCode}">
+           Title="Verification Code Challenge" Name="windowVerificationCodeChallenge" Width="300" SizeToContent="Height" WindowStartupLocation="CenterOwner" FocusManager.FocusedElement="{Binding ElementName=textVerificationCode}">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,5,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Please enter the verification code EVE Online just sent to your email address." VerticalAlignment="Top"/>
         <DockPanel DockPanel.Dock="Top" Margin="5,5,5,0">

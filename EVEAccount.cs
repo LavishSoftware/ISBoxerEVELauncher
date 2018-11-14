@@ -837,8 +837,54 @@ namespace ISBoxerEVELauncher
             }
         }
 
-        public LoginResult GetEmailCodeChallenge(bool sisi, out Token accessToken)
+        /// <summary>
+        /// Retrieve a string value that falls between a left and right side...
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="leftSide"></param>
+        /// <param name="rightSide"></param>
+        /// <param name="between"></param>
+        /// <returns></returns>
+        bool GetValueBetween(string input, string leftSide, string rightSide, out string between)
         {
+            try
+            {
+                int leftPos = input.IndexOf(leftSide);
+                if (leftPos < 0)
+                {
+                    between = string.Empty;
+                    return false;
+                }
+                leftPos += leftSide.Length;
+                int rightPos = input.IndexOf(rightSide,leftPos);
+                if (rightPos < 0)
+                {
+                    between = string.Empty;
+                    return false;
+                }
+
+                between = input.Substring(leftPos, rightPos - leftPos);
+                return true;
+            }
+            catch
+            {
+            }
+            between = string.Empty;
+            return false;
+        }
+
+        public LoginResult GetEmailCodeChallenge(bool sisi, string responseBody, out Token accessToken)
+        {
+            /*
+            string IsPasswordBreached;
+            string NumPasswordBreaches;
+            string uriPart;
+            GetValueBetween(responseBody, "<input id=\"IsPasswordBreached\" name=\"IsPasswordBreached\" type=\"hidden\" value=\"", "\" />", out IsPasswordBreached);
+            GetValueBetween(responseBody, "<input id=\"NumPasswordBreaches\" name=\"NumPasswordBreaches\" type=\"hidden\" value=\"", "\" />", out NumPasswordBreaches);
+
+            GetValueBetween(responseBody, "<form action=\"", "\" method=\"post\">", out uriPart);
+            /**/
+
             Windows.VerificationCodeChallengeWindow acw = new Windows.VerificationCodeChallengeWindow(this);
             acw.ShowDialog();
             if (!acw.DialogResult.HasValue || !acw.DialogResult.Value)
@@ -848,11 +894,23 @@ namespace ISBoxerEVELauncher
                 return LoginResult.InvalidEmailVerificationChallenge;
             }
 
-
-            string uri = "https://login.eveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            if (sisi)
+            //string origin = "https://login.eveonline.com";
+            string uri;
+            //if (!string.IsNullOrEmpty(uriPart))
+            //{
+            //    uri = origin + uriPart;
+           // }
+           // else
             {
-                uri = "https://sisilogin.testeveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+                if (sisi)
+                {
+                           
+                    uri = "https://sisilogin.testeveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+                }
+                else
+                {
+                    uri = "https://login.eveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+                }
             }
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
@@ -872,7 +930,8 @@ namespace ISBoxerEVELauncher
             req.ContentType = "application/x-www-form-urlencoded";
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {
-                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&RememberTwoFactor={1}&command={2}", Uri.EscapeDataString(acw.VerificationCode), "true", "Continue"));
+//                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&IsPasswordBreached={1}&NumPasswordBreaches={2}&command={3}", Uri.EscapeDataString(acw.VerificationCode), IsPasswordBreached, NumPasswordBreaches, "Continue"));
+                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&command={1}", Uri.EscapeDataString(acw.VerificationCode), "Continue"));
 
                 req.ContentLength = body.Bytes.Length;
                 try
@@ -1134,7 +1193,7 @@ namespace ISBoxerEVELauncher
 
                     if (responseBody.Contains("Please enter the verification code "))
                     {
-                        return GetEmailCodeChallenge(sisi, out accessToken);
+                        return GetEmailCodeChallenge(sisi, responseBody, out accessToken);
                     }
 
                     if (responseBody.Contains("Security Warning"))

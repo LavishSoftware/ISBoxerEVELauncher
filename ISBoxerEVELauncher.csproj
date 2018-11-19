@@ -61,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CookieStorage.cs" />
     <Compile Include="EVECharacter.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="KeyTransmitter.cs" />

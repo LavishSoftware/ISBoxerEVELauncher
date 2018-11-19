@@ -71,6 +71,10 @@ namespace ISBoxerEVELauncher
                     try
                     {
                         _Settings = Settings.Load();
+                        if (EVEAccount.ShouldUgradeCookieStorage)
+                        {
+                            _Settings.Store();
+                        }
                     }
                     catch(System.IO.FileNotFoundException e)
                     {

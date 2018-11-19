@@ -80,18 +80,19 @@ namespace ISBoxerEVELauncher
         /// <summary>
         /// The EVE login process requires cookies; this will ensure we maintain the same cookies for the account
         /// </summary>
+        [XmlIgnore]
         CookieContainer Cookies
         {
             get
             {
                 if (_Cookies == null)
                 {
-                    if (!string.IsNullOrEmpty(CookieStorage))
+                    if (!string.IsNullOrEmpty(NewCookieStorage))
                     {
                         BinaryFormatter formatter = new BinaryFormatter();
 
 
-                        using (Stream s = new MemoryStream(Convert.FromBase64String(CookieStorage)))
+                        using (Stream s = new MemoryStream(Convert.FromBase64String(NewCookieStorage)))
                         {
                             _Cookies = (CookieContainer)formatter.Deserialize(s);
                         }
@@ -111,7 +112,7 @@ namespace ISBoxerEVELauncher
         {
             if (Cookies == null)
             {
-                CookieStorage = null;
+                NewCookieStorage = null;
                 return;
             }
             
@@ -122,7 +123,7 @@ namespace ISBoxerEVELauncher
                 ms.Flush();
                 ms.Seek(0, SeekOrigin.Begin);
 
-                CookieStorage = Convert.ToBase64String(ms.ToArray());
+                NewCookieStorage = Convert.ToBase64String(ms.ToArray());
             }
             
         }
@@ -133,9 +134,40 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public string Username { get { return _Username; } set { _Username = value; OnPropertyChanged("Username"); } }
 
+        /// <summary>
+        /// Old cookie storage. If found in the XML, it will automatically be split into separate storage
+        /// </summary>
         public string CookieStorage
         {
-            get;set;
+            get
+            {
+                return null;// return ISBoxerEVELauncher.CookieStorage.GetCookies(this);
+            }
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    ISBoxerEVELauncher.CookieStorage.SetCookies(this, value);
+                    EVEAccount.ShouldUgradeCookieStorage = true;
+                }
+            }
+        }
+
+        public static bool ShouldUgradeCookieStorage { get; private set; }
+        /// <summary>
+        /// New method of storing cookies
+        /// </summary>
+        [XmlIgnore]
+        public string NewCookieStorage
+        {
+            get
+            {
+                return ISBoxerEVELauncher.CookieStorage.GetCookies(this);
+            }
+            set
+            {
+                   ISBoxerEVELauncher.CookieStorage.SetCookies(this, value);
+            }
         }
 
 
@@ -1494,7 +1526,7 @@ namespace ISBoxerEVELauncher
             this.EncryptedCharacterNameIV = null;
             this.Username = null;
             this.Cookies = null;
-            this.CookieStorage = null;
+            this.NewCookieStorage = null;
         }
 
         public override string ToString()

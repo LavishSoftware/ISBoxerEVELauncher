@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ISBoxerEVELauncher.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="EVE Online Launcher for ISBoxer" Height="412" Width="591" Name="mainWindow" WindowStartupLocation="CenterScreen">
+        Title="ISBoxer EVE Online Launcher" Height="420" Width="600" Name="mainWindow" WindowStartupLocation="CenterScreen">
     <DockPanel>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" DockPanel.Dock="Top" Margin="5">
             <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,5">
@@ -11,16 +11,16 @@
             </DockPanel>
             <GroupBox Header="Inner Space Game Profiles" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" DockPanel.Dock="Top" Margin="5">
-            <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,5" ToolTip="An Inner Space Game Profile, which will be used for launching EVE for Tranquility via Inner Space">
-                <Button DockPanel.Dock="Right" Name="buttonCreateTranquility" Margin="5,0,0,0"  Content="Create one now" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="buttonCreateTranquility_Click" />
-                <TextBlock Name="textGameProfileTranquility" DockPanel.Dock="Left" HorizontalAlignment="Left" Width="150" TextWrapping="Wrap" Text="Game Profile for Tranquility" VerticalAlignment="Top"/>
-                <ComboBox Name="comboTranquilityGameProfile"  DockPanel.Dock="Right" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalAlignment="Top" ItemsSource="{Binding ElementName=mainWindow, Path=GameProfiles}"  SelectedItem="{Binding ElementName=mainWindow, Path=TranquilityGameProfile}" SelectionChanged="TranquilityGameProfile_SelectionChanged" />
-            </DockPanel>
-            <DockPanel HorizontalAlignment="Stretch"  Margin="0,0,0,0" ToolTip="An Inner Space Game Profile, which will be used for launching EVE for Singularity via Inner Space">
-                <Button DockPanel.Dock="Right" Name="buttonCreateSingularity" Margin="5,0,0,0" Content="Create one now" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="buttonCreateSingularity_Click" />
-                <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" Width="{Binding ElementName=textGameProfileTranquility, Path=Width}" TextWrapping="Wrap" Text="Game Profile for Singularity" VerticalAlignment="Top"/>
-                <ComboBox Name="comboSingularityGameProfile" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalAlignment="Top" ItemsSource="{Binding ElementName=mainWindow, Path=GameProfiles}" SelectedItem="{Binding ElementName=mainWindow, Path=SingularityGameProfile}" SelectionChanged="SingularityGameProfile_SelectionChanged"/>
-            </DockPanel>
+                    <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,5" ToolTip="An Inner Space Game Profile, which will be used for launching EVE for Tranquility via Inner Space">
+                        <Button DockPanel.Dock="Right" Name="buttonCreateTranquility" Margin="5,0,0,0"  Content="Create one now" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="buttonCreateTranquility_Click" />
+                        <TextBlock Name="textGameProfileTranquility" DockPanel.Dock="Left" HorizontalAlignment="Left" Width="150" TextWrapping="Wrap" Text="Game Profile for Tranquility" VerticalAlignment="Top"/>
+                        <ComboBox Name="comboTranquilityGameProfile"  DockPanel.Dock="Right" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalAlignment="Top" ItemsSource="{Binding ElementName=mainWindow, Path=GameProfiles}"  SelectedItem="{Binding ElementName=mainWindow, Path=TranquilityGameProfile}" SelectionChanged="TranquilityGameProfile_SelectionChanged" />
+                    </DockPanel>
+                    <DockPanel HorizontalAlignment="Stretch"  Margin="0,0,0,0" ToolTip="An Inner Space Game Profile, which will be used for launching EVE for Singularity via Inner Space">
+                        <Button DockPanel.Dock="Right" Name="buttonCreateSingularity" Margin="5,0,0,0" Content="Create one now" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="buttonCreateSingularity_Click" />
+                        <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" Width="{Binding ElementName=textGameProfileTranquility, Path=Width}" TextWrapping="Wrap" Text="Game Profile for Singularity" VerticalAlignment="Top"/>
+                        <ComboBox Name="comboSingularityGameProfile" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalAlignment="Top" ItemsSource="{Binding ElementName=mainWindow, Path=GameProfiles}" SelectedItem="{Binding ElementName=mainWindow, Path=SingularityGameProfile}" SelectionChanged="SingularityGameProfile_SelectionChanged"/>
+                    </DockPanel>
                 </StackPanel>
             </GroupBox>
             <DockPanel Margin="5,0,5,0">
@@ -36,51 +36,79 @@
         <TabControl Margin="5,0,5,5">
             <TabItem Header="EVE Accounts" >
                 <DockPanel DockPanel.Dock="Bottom" VerticalAlignment="Stretch">
-            <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Known EVE Accounts..." VerticalAlignment="Top"/>
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="5" VerticalAlignment="Stretch">
-                <ListBox Name="listAccounts" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="385" ItemsSource="{Binding ElementName=mainWindow, Path=Accounts}" SelectionMode="Multiple">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                        <StackPanel>
-                                <TextBlock Text="{Binding Path=Username}" />
-                        </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Known EVE Accounts..." VerticalAlignment="Top"/>
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="5" VerticalAlignment="Stretch">
+                        <ListBox Name="listAccounts" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="362" ItemsSource="{Binding ElementName=mainWindow, Path=Accounts}" SelectionMode="Multiple">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Path=Username}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
 
-                <DockPanel Margin="5,0,0,0">
-                    <Button DockPanel.Dock="Top" Name="buttonAddAccount" Content="Add Account" Click="buttonAddAccount_Click" />
-                    <Button DockPanel.Dock="Top" Name="buttonLaunchIS" Click="buttonLaunchIS_Click"  Margin="0,5,0,0" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                                <TextBlock>Launch</TextBlock>
-                                <TextBlock Margin="3,0,3,0" FontWeight="Bold">with</TextBlock>
-                                <TextBlock>Inner Space</TextBlock>
-                            </StackPanel>
-                        </Button.Content>
+                        <DockPanel Margin="5,0,0,0" Width="187" Height="186">
+                            <CheckBox DockPanel.Dock="Top" Name="checkSavePasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" />
+                            <Button DockPanel.Dock="Top" Name="buttonAddAccount" Content="Add Account"  Margin="0,3,0,0" Click="buttonAddAccount_Click" />
+                            <Button DockPanel.Dock="Top" Name="buttonDelete" Content="Delete Account(s)" Click="buttonDeleteAccount_Click" Margin="0,3,0,0" >
+                                <Button.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                <Setter Property="Button.IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                   </Button>
-                    <Button DockPanel.Dock="Top" Name="buttonLaunchNonIS"  Click="buttonLaunchNonIS_Click" Margin="0,5,0,0">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                                <TextBlock>Launch</TextBlock>
-                                        <TextBlock Margin="3,0,0,0" FontWeight="Bold" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Non-</TextBlock>
-                                        <TextBlock Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Inner Space</TextBlock>
+                            <Button DockPanel.Dock="Top" Name="buttonCreateLauncherProfiles" Content="Create Inner Space Game Profile(s)" Click="buttonCreateLauncherProfiles_Click" Margin="0,3,0,0" VerticalAlignment="Bottom" ToolTip="Creates an Inner Space Game Profile to launch this Account via ISBoxer EVE Launcher" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
+                                <Button.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                <Setter Property="Button.IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom" >
+
+                                <TextBlock VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="3,0,3,0">If you are launching with ISBoxer, do not use the buttons below</TextBlock>
+
+                                <Button Name="buttonLaunchNonIS"  Click="buttonLaunchNonIS_Click" Margin="0,2,0,0" VerticalAlignment="Bottom">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                            <TextBlock>Launch</TextBlock>
+                                            <TextBlock Margin="3,0,0,0" FontWeight="Bold" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Non-</TextBlock>
+                                            <TextBlock Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Inner Space</TextBlock>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                                <Button Name="buttonLaunchIS" Click="buttonLaunchIS_Click"  Margin="0,3,0,0" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}" VerticalAlignment="Bottom">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                            <TextBlock>Launch</TextBlock>
+                                            <TextBlock Margin="3,0,3,0" FontWeight="Bold">with</TextBlock>
+                                            <TextBlock>Inner Space</TextBlock>
+                                        </StackPanel>
+                                    </Button.Content>
+
+                                </Button>
                             </StackPanel>
-                        </Button.Content>
-                    </Button>
-                            <Button DockPanel.Dock="Top" Name="buttonCreateLauncherProfiles" Content="Create Game Profile" Click="buttonCreateLauncherProfiles_Click" Margin="0,5,0,0" VerticalAlignment="Bottom" ToolTip="Creates an Inner Space Game Profile to launch this Account via ISBoxer EVE Launcher" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}" />
-                    <CheckBox DockPanel.Dock="Top" Name="checkSavePasswords" Content="Save passwords (securely)" Margin="0,5,0,0" Click="checkSavePasswords_Click" />
-                    <Button DockPanel.Dock="Bottom" Name="buttonDelete" Content="Delete" Click="buttonDeleteAccount_Click" Margin="0,5,0,0" VerticalAlignment="Bottom" />
-                </DockPanel>
-            </StackPanel>
+                        </DockPanel>
+                    </StackPanel>
                 </DockPanel>
             </TabItem>
             <TabItem Header="EVE Characters" >
                 <DockPanel DockPanel.Dock="Bottom" VerticalAlignment="Stretch">
                     <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="15,0,0,0" TextWrapping="Wrap" FontWeight="Bold" Text="Known EVE Characters..." VerticalAlignment="Top"/>
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="5" VerticalAlignment="Stretch">
-                        <ListBox Name="listCharacters" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="385" ItemsSource="{Binding ElementName=mainWindow, Path=Characters}" SelectionMode="Multiple">
+                        <ListBox Name="listCharacters" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="362
+                                 " ItemsSource="{Binding ElementName=mainWindow, Path=Characters}" SelectionMode="Multiple">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -89,31 +117,52 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-
-                        <DockPanel Margin="5,0,0,0">
-                            <Button DockPanel.Dock="Top" Name="buttonAddCharacter" Content="Add Character" Click="buttonAddCharacter_Click" />
-                            <Button DockPanel.Dock="Top" Name="buttonLaunchCharacterIS" Click="buttonLaunchCharacterIS_Click"  Margin="0,5,0,0" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
-                                <Button.Content>
-                                    <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                                        <TextBlock>Launch</TextBlock>
-                                        <TextBlock Margin="3,0,3,0" FontWeight="Bold">with</TextBlock>
-                                        <TextBlock>Inner Space</TextBlock>
-                                    </StackPanel>
-                                </Button.Content>
-
+                        <DockPanel  Margin="5,0,0,0" Width="187" Height="186">
+                            <CheckBox DockPanel.Dock="Top" x:Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding IsChecked, ElementName=checkSavePasswords}" />
+                            <Button DockPanel.Dock="Top" x:Name="buttonAddCharacter" Content="Add Character" Click="buttonAddCharacter_Click" Margin="0,3,0,0" />
+                            <Button DockPanel.Dock="Top" x:Name="buttonDeleteCharacter" Content="Delete Character(s)" Click="buttonDeleteCharacter_Click" Margin="0,3,0,0" VerticalAlignment="Top" >
+                                <Button.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding ="{Binding ElementName=listCharacters, Path=SelectedIndex}" Value="-1">
+                                                <Setter Property="Button.IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
                             </Button>
-                            <Button DockPanel.Dock="Top" Name="buttonLaunchCharacterNonIS"  Click="buttonLaunchCharacterNonIS_Click" Margin="0,5,0,0">
-                                <Button.Content>
-                                    <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                                        <TextBlock>Launch</TextBlock>
-                                        <TextBlock Margin="3,0,0,0" FontWeight="Bold" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Non-</TextBlock>
-                                        <TextBlock Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Inner Space</TextBlock>
-                                    </StackPanel>
-                                </Button.Content>
+                            <Button DockPanel.Dock="Top" x:Name="buttonCreateCharcterLauncherProfiles" Content="Create Inner Space Game Profile(s)" Click="buttonCreateCharacterLauncherProfiles_Click" Margin="0,3,0,0" VerticalAlignment="Bottom" ToolTip="Creates an Inner Space Game Profile to launch this Character via ISBoxer EVE Launcher" Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}" >
+                                <Button.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding ="{Binding ElementName=listCharacters, Path=SelectedIndex}" Value="-1">
+                                                <Setter Property="Button.IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
                             </Button>
-                            <Button DockPanel.Dock="Top" Name="buttonCreateCharcterLauncherProfiles" Content="Create Game Profile" Click="buttonCreateCharacterLauncherProfiles_Click" Margin="0,5,0,0" VerticalAlignment="Bottom" ToolTip="Creates an Inner Space Game Profile to launch this Character via ISBoxer EVE Launcher" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}" />
-                            <CheckBox DockPanel.Dock="Top" Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,5,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding ElementName=checkSavePasswords, Path=IsChecked}" />
-                            <Button DockPanel.Dock="Bottom" Name="buttonDeleteCharacter" Content="Delete" Click="buttonDeleteCharacter_Click" Margin="0,5,0,0" VerticalAlignment="Bottom" />
+
+
+                            <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+                                <TextBlock VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="3,0,3,0"><Run Text="If you are launching with ISBoxer, do not use the buttons below"/></TextBlock>
+                                <Button x:Name="buttonLaunchCharacterNonIS"  Click="buttonLaunchCharacterNonIS_Click" Margin="0,3,0,0">
+                                    <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                        <TextBlock><Run Text="Launch"/></TextBlock>
+                                        <TextBlock Margin="3,0,0,0" FontWeight="Bold" Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}"><Run Text="Non-"/></TextBlock>
+                                        <TextBlock Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}"><Run Text="Inner Space"/></TextBlock>
+                                    </StackPanel>
+                                </Button>
+                                <Button x:Name="buttonLaunchCharacterIS" Click="buttonLaunchCharacterIS_Click"  Margin="0,3,0,0" Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}">
+                                    <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                        <TextBlock><Run Text="Launch"/></TextBlock>
+                                        <TextBlock Margin="3,0,3,0" FontWeight="Bold"><Run Text="with"/></TextBlock>
+                                        <TextBlock><Run Text="Inner Space"/></TextBlock>
+                                    </StackPanel>
+
+                                </Button>
+                                
+                            </StackPanel>
                         </DockPanel>
                     </StackPanel>
                 </DockPanel>

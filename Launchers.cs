@@ -8,7 +8,7 @@ namespace ISBoxerEVELauncher.Launchers
 {
     public interface ILauncher
     {
-        EVEAccount.LoginResult Launch(ILaunchTarget launchTarget);
+        LoginResult Launch(ILaunchTarget launchTarget);
         string LauncherText { get; }
     }
 
@@ -31,7 +31,7 @@ namespace ISBoxerEVELauncher.Launchers
         public DirectXVersion UseDirectXVersion { get; set; }
         public bool UseSingularity { get; set; }
 
-        public EVEAccount.LoginResult Launch(ILaunchTarget launchTarget)
+        public LoginResult Launch(ILaunchTarget launchTarget)
         {
             return launchTarget.EVEAccount.Launch(GameProfile.Game, GameProfile.GameProfile, App.Settings.UseSingularity, UseDirectXVersion, launchTarget.CharacterID);
 
@@ -57,7 +57,7 @@ namespace ISBoxerEVELauncher.Launchers
         public DirectXVersion UseDirectXVersion { get; set; }
         public bool UseSingularity { get; set; }
 
-        public EVEAccount.LoginResult Launch(ILaunchTarget launchTarget)
+        public LoginResult Launch(ILaunchTarget launchTarget)
         {
             return launchTarget.EVEAccount.Launch(SharedCachePath, App.Settings.UseSingularity, UseDirectXVersion, launchTarget.CharacterID);
         }

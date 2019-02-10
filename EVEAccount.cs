@@ -1,19 +1,18 @@
 ﻿//#define REFRESH_TOKENS
 
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using System.Web;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
-using System.Security.Cryptography;
+using System.IO;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
-using Newtonsoft.Json.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web;
+using System.Xml.Serialization;
+using ISBoxerEVELauncher.Utility;
+using ISBoxerEVELauncher.Extensions;
 
 namespace ISBoxerEVELauncher
 {
@@ -29,6 +28,29 @@ namespace ISBoxerEVELauncher
     /// </summary>
     public class EVEAccount : INotifyPropertyChanged, IDisposable, ISBoxerEVELauncher.Launchers.ILaunchTarget
     {
+
+        [XmlIgnore]
+        private Guid challengeCodeSource;
+        [XmlIgnore]
+        private byte[] challengeCode;
+        [XmlIgnore]
+        private string challengeHash;
+        [XmlIgnore]
+        private Guid state;
+        [XmlIgnore]
+        private string authCode;
+
+
+        public EVEAccount()
+        {
+            state = Guid.NewGuid();
+            challengeCodeSource = Guid.NewGuid();
+            challengeCode = Encoding.UTF8.GetBytes(challengeCodeSource.ToString().Replace("-", ""));
+            challengeHash = Base64UrlEncoder.Encode(Crypto.GenerateSHA256Hash(Base64UrlEncoder.Encode(challengeCode)));
+        }
+
+
+
         /// <summary>
         /// An Outh2 Access Token
         /// </summary>
@@ -43,10 +65,11 @@ namespace ISBoxerEVELauncher
             /// We usually just need to parse a Uri for the Access Token details. So here is the constructor that does it for us.
             /// </summary>
             /// <param name="fromUri"></param>
-            public Token(String token)
+            public Token(authObj resp)
             {
-                TokenString = token;
-                Expiration = DateTime.Now.AddSeconds(int.Parse("1799"));
+
+                TokenString = resp.access_token;
+                Expiration = DateTime.Now.AddMinutes(resp.expires_in);
             }
 
             public override string ToString()
@@ -115,7 +138,7 @@ namespace ISBoxerEVELauncher
                 NewCookieStorage = null;
                 return;
             }
-            
+
             using (MemoryStream ms = new MemoryStream())
             {
                 BinaryFormatter formatter = new BinaryFormatter();
@@ -125,7 +148,7 @@ namespace ISBoxerEVELauncher
 
                 NewCookieStorage = Convert.ToBase64String(ms.ToArray());
             }
-            
+
         }
 
         string _Username;
@@ -166,7 +189,7 @@ namespace ISBoxerEVELauncher
             }
             set
             {
-                   ISBoxerEVELauncher.CookieStorage.SetCookies(this, value);
+                ISBoxerEVELauncher.CookieStorage.SetCookies(this, value);
             }
         }
 
@@ -183,13 +206,13 @@ namespace ISBoxerEVELauncher
         /// <summary>
         /// An encrypted version of the password for the account. It is protected by the Password Master Key. Changing the Password Master Key will wipe this.
         /// </summary>
-        public string EncryptedPassword 
-        { 
-            get 
-            { 
-                return _EncryptedPassword; 
-            } 
-            set { _EncryptedPassword = value; OnPropertyChanged("EncryptedPassword"); } 
+        public string EncryptedPassword
+        {
+            get
+            {
+                return _EncryptedPassword;
+            }
+            set { _EncryptedPassword = value; OnPropertyChanged("EncryptedPassword"); }
         }
 
         string _EncryptedPasswordIV;
@@ -197,7 +220,7 @@ namespace ISBoxerEVELauncher
         /// The Initialization Vector used to encrypt the password
         /// </summary>
         public string EncryptedPasswordIV { get { return _EncryptedPasswordIV; } set { _EncryptedPasswordIV = value; OnPropertyChanged("EncryptedPasswordIV"); } }
-        
+
         /// <summary>
         /// Sets the encrypted password to the given SecureString, if possible
         /// </summary>
@@ -226,7 +249,7 @@ namespace ISBoxerEVELauncher
                 else
                     rjm.IV = Convert.FromBase64String(EncryptedPasswordIV);
 
-                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey,true))
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
                 {
                     rjm.Key = sbwKey.Bytes;
 
@@ -257,11 +280,11 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public void PrepareStorage()
         {
-            if (SecurePassword!=null)
+            if (SecurePassword != null)
             {
                 EncryptPassword();
             }
-            if (SecureCharacterName!=null)
+            if (SecureCharacterName != null)
             {
                 EncryptCharacterName();
             }
@@ -484,7 +507,7 @@ namespace ISBoxerEVELauncher
         /// </summary>
         [XmlIgnore]
         public Token TranquilityToken { get { return _TranquilityToken; } set { _TranquilityToken = value; OnPropertyChanged("TranquilityToken"); } }
-        
+
         Token _SisiToken;
         /// <summary>
         /// AccessToken for Singularity. Lasts up to 11 hours?
@@ -683,60 +706,8 @@ namespace ISBoxerEVELauncher
 #endif
         #endregion
 
-        public enum LoginResult
-        {
-            Success,
-            Error,
-            Timeout,
-            InvalidUsernameOrPassword,
-            InvalidCharacterChallenge,
-            InvalidAuthenticatorChallenge,
-            InvalidEmailVerificationChallenge,
-            EULADeclined,
-            EmailVerificationRequired,
-            SecurityWarningClosed,
-            TokenFailure,
-        }
-
-        private static string GetRequestVerificationToken(string body)
-        {
-            // <input name="__RequestVerificationToken" type="hidden" value="rGFOR5OvmlpJ_6_Kabcx3JSrJ3v6EL0W6tuOuD-e8QvUuK2l1MX5jP7pztjxnm5k0qgHIv-mati2ctst9M8kD9jBg3E1" />
-            const string needle = "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"";
-            int hashStart = body.IndexOf(needle, StringComparison.Ordinal);
-            if (hashStart == -1)
-                return null;
-
-            hashStart += needle.Length;
-
-            // get hash end
-            int hashEnd = body.IndexOf('"', hashStart);
-            if (hashEnd == -1)
-                return null;
-
-            return body.Substring(hashStart, hashEnd - hashStart);
-        }
-
-        private static string GetEulaHash(string body)
-        {
-            const string needle = "name=\"eulaHash\" type=\"hidden\" value=\"";
-            int hashStart = body.IndexOf(needle, StringComparison.Ordinal);
-            if (hashStart == -1)
-                return null;
-            return body.Substring(hashStart + needle.Length, 32);
-        }
-        private static string GetEulaReturnUrl(string body)
-        {
-            const string needle = "input id=\"returnUrl\" name=\"returnUrl\" type=\"hidden\" value=\"";
-            int fieldStart = body.IndexOf(needle, StringComparison.Ordinal);
-            if (fieldStart == -1)
-                return null;
-
-            fieldStart += needle.Length;
-            int fieldEnd = body.IndexOf('"', fieldStart);
 
 
-            return body.Substring(fieldStart, fieldEnd-fieldStart);
-        }
 
         public LoginResult GetSecurityWarningChallenge(bool sisi, string responseBody, out Token accessToken)
         {
@@ -754,28 +725,15 @@ namespace ISBoxerEVELauncher
             }
             */
 
-            string uri = "https://login.eveonline.com/oauth/authorize/?client_id=eveLauncherTQ&lang=en&response_type=token&redirect_uri=https://login.eveonline.com/launcher?client_id=eveLauncherTQ&scope=eveClientToken";
+            //string uri = "https://login.eveonline.com/oauth/authorize/?client_id=eveLauncherTQ&lang=en&response_type=token&redirect_uri=https://login.eveonline.com/launcher?client_id=eveLauncherTQ&scope=eveClientToken";
+            string uri = "https://login.eveonline.com/v2/oauth/authorize?client_id=eveLauncherTQ&amp;response_type=code&amp;scope=eveClientLogin%20cisservice.customerRead.v1%20cisservice.customerWrite.v1&amp;redirect_uri=https%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ&amp;state=5617f90c-efdb-41a1-b00d-6f4f24bbeee4&amp;code_challenge_method=S256&amp;code_challenge=nC-B19HKX8ZZYfOEN_bg-YZSjVAMieqEB3nJXFyfQQc&amp;ignoreClientStyle=true&amp;showRemember=true ";
+
             if (sisi)
             {
                 uri = "https://sisilogin.testeveonline.com/oauth/authorize/?client_id=eveLauncherTQ&lang=en&response_type=token&redirect_uri=https://sisilogin.testeveonline.com/launcher?client_id=eveLauncherTQ&scope=eveClientToken";
             }
 
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 30000;
-            req.AllowAutoRedirect = true;
-            if (!sisi)
-            {
-                req.Headers.Add("Origin", "https://login.eveonline.com");
-            }
-            else
-            {
-                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
-            }
-            req.Referer = uri;
-            req.CookieContainer = Cookies;
-            req.Method = "GET";
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.ContentLength = 0;
+            var req = Utils.CreateGetRequest(new Uri(uri), sisi, true, uri, Cookies);
             return GetAccessToken(sisi, req, out accessToken);
 
         }
@@ -796,7 +754,7 @@ namespace ISBoxerEVELauncher
         }
 
 
-        public LoginResult GetEULAChallenge(bool sisi, string responseBody,  out Token accessToken)
+        public LoginResult GetEULAChallenge(bool sisi, string responseBody, out Token accessToken)
         {
             Windows.EVEEULAWindow eulaWindow = new Windows.EVEEULAWindow(responseBody);
             eulaWindow.ShowDialog();
@@ -831,8 +789,8 @@ namespace ISBoxerEVELauncher
             req.ContentType = "application/x-www-form-urlencoded";
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {
-                string eulaHash = GetEulaHash(responseBody);
-                string returnUrl = GetEulaReturnUrl(responseBody);
+                string eulaHash = Utils.GetEulaHashFromBody(responseBody);
+                string returnUrl = Utils.GetEulaReturnUrlFromBody(responseBody);
 
                 string formattedString = String.Format("eulaHash={0}&returnUrl={1}&action={2}", Uri.EscapeDataString(eulaHash), Uri.EscapeDataString(returnUrl), "Accept");
                 body.Bytes = Encoding.ASCII.GetBytes(formattedString);
@@ -869,41 +827,6 @@ namespace ISBoxerEVELauncher
             }
         }
 
-        /// <summary>
-        /// Retrieve a string value that falls between a left and right side...
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="leftSide"></param>
-        /// <param name="rightSide"></param>
-        /// <param name="between"></param>
-        /// <returns></returns>
-        bool GetValueBetween(string input, string leftSide, string rightSide, out string between)
-        {
-            try
-            {
-                int leftPos = input.IndexOf(leftSide);
-                if (leftPos < 0)
-                {
-                    between = string.Empty;
-                    return false;
-                }
-                leftPos += leftSide.Length;
-                int rightPos = input.IndexOf(rightSide,leftPos);
-                if (rightPos < 0)
-                {
-                    between = string.Empty;
-                    return false;
-                }
-
-                between = input.Substring(leftPos, rightPos - leftPos);
-                return true;
-            }
-            catch
-            {
-            }
-            between = string.Empty;
-            return false;
-        }
 
         public LoginResult GetEmailCodeChallenge(bool sisi, string responseBody, out Token accessToken)
         {
@@ -927,42 +850,47 @@ namespace ISBoxerEVELauncher
             }
 
             //string origin = "https://login.eveonline.com";
-            string uri;
-            //if (!string.IsNullOrEmpty(uriPart))
+            //string uri;
+            ////if (!string.IsNullOrEmpty(uriPart))
+            ////{
+            ////    uri = origin + uriPart;
+            //// }
+            //// else
             //{
-            //    uri = origin + uriPart;
-           // }
-           // else
-            {
-                if (sisi)
-                {
-                           
-                    uri = "https://sisilogin.testeveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-                }
-                else
-                {
-                    uri = "https://login.eveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-                }
-            }
+            //    if (sisi)
+            //    {
 
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 30000;
-            req.AllowAutoRedirect = true;
-            if (!sisi)
-            {
-                req.Headers.Add("Origin", "https://login.eveonline.com");
-            }
-            else
-            {
-                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
-            }
-            req.Referer = uri;
-            req.CookieContainer = Cookies;
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
+            //        uri = "https://sisilogin.testeveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            //    }
+            //    else
+            //    {
+            //        uri = "https://login.eveonline.com/account/verifytwofactor?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            //    }
+            //}
+
+            //"POST /account/verifytwofactor?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Fsisilogin.testeveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3D1043d900-ab13-42f3-a741-285cce0c8b47%26code_challenge_method%3DS256%26code_challenge%3DC0emnYPGUFfgXiyQx9d47zMM3uUXb6H9JB-PLptvtZ4%26ignoreClientStyle%3Dtrue%26showRemember%3Dtrue HTTP/1.1"
+
+            var uri = Utils.GetVerifyTwoFactorUri(sisi, state.ToString(), challengeHash);
+            var req = Utils.CreatePostRequest(uri, sisi, true, null, Cookies);
+
+            //HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
+            //req.Timeout = 30000;
+            //req.AllowAutoRedirect = true;
+            //if (!sisi)
+            //{
+            //    req.Headers.Add("Origin", "https://login.eveonline.com");
+            //}
+            //else
+            //{
+            //    req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
+            //}
+            //req.Referer = uri;
+            //req.CookieContainer = Cookies;
+            //req.Method = "POST";
+            //req.ContentType = "application/x-www-form-urlencoded";
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {
-//                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&IsPasswordBreached={1}&NumPasswordBreaches={2}&command={3}", Uri.EscapeDataString(acw.VerificationCode), IsPasswordBreached, NumPasswordBreaches, "Continue"));
+                //                body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&IsPasswordBreached={1}&NumPasswordBreaches={2}&command={3}", Uri.EscapeDataString(acw.VerificationCode), IsPasswordBreached, NumPasswordBreaches, "Continue"));
                 body.Bytes = Encoding.ASCII.GetBytes(String.Format("Challenge={0}&command={1}", Uri.EscapeDataString(acw.VerificationCode), "Continue"));
 
                 req.ContentLength = body.Bytes.Length;
@@ -1025,7 +953,7 @@ namespace ISBoxerEVELauncher
                 req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
             }
             req.Referer = uri;
-            req.CookieContainer = Cookies;            
+            req.CookieContainer = Cookies;
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
             using (SecureBytesWrapper body = new SecureBytesWrapper())
@@ -1079,7 +1007,7 @@ namespace ISBoxerEVELauncher
                     {
                         // CharacterName is required, sorry dude
                         accessToken = null;
-                      //  SecurePassword = null;
+                        //  SecurePassword = null;
                         SecureCharacterName = null;
                         return LoginResult.InvalidCharacterChallenge;
                     }
@@ -1094,7 +1022,7 @@ namespace ISBoxerEVELauncher
                     App.Settings.Store();
                 }
             }
-            
+
             string uri = "https://login.eveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
             if (sisi)
             {
@@ -1151,26 +1079,25 @@ namespace ISBoxerEVELauncher
                         default:
                             throw;
                     }
-                }               
+                }
             }
             return GetAccessToken(sisi, req, out accessToken);
         }
 
         public LoginResult GetAccessToken(bool sisi, HttpWebRequest req, out Token accessToken)
         {
+            accessToken = null;
             try
             {
                 using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
                 {
+                    // https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=...&token_type=Bearer&expires_in=43200
+                    //https://login.eveonline.com/v2/oauth/authorize?client_id=eveLauncherTQ&response_type=code&scope=eveClientLogin%20cisservice.customerRead.v1%20cisservice.customerWrite.v1&redirect_uri=https%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ&state=5617f90c-efdb-41a1-b00d-6f4f24bbeee4&code_challenge_method=S256&code_challenge=nC-B19HKX8ZZYfOEN_bg-YZSjVAMieqEB3nJXFyfQQc&ignoreClientStyle=true&showRemember=true HTTP/1.1
+
                     string responseBody = null;
-                    using (Stream stream = resp.GetResponseStream())
-                    {
-                        using (StreamReader sr = new StreamReader(stream))
-                        {
-                            responseBody = sr.ReadToEnd();
-                        }
-                    }
+                    responseBody = Utils.GetResponseBody(resp);
                     UpdateCookieStorage();
+
                     /*
 <span id="ValidationContainer"><div class="validation-summary-errors"><span>Login failed. Possible reasons can be:</span>
 <ul><li>Invalid username / password</li>
@@ -1204,7 +1131,7 @@ namespace ISBoxerEVELauncher
                         accessToken = null;
                         SecurePassword = null;
                         return LoginResult.InvalidAuthenticatorChallenge;
-                    } 
+                    }
                     //The 2FA page now has "Character challenge" in the text but it is hidden. This should fix it from
                     //Coming up during 2FA challenge
                     if (responseBody.Contains("Character challenge") && !responseBody.Contains("visuallyhidden"))
@@ -1232,43 +1159,26 @@ namespace ISBoxerEVELauncher
                         return GetSecurityWarningChallenge(sisi, responseBody, out accessToken);
                     }
 
-                    if (responseBody.ToLower().Contains("form action=\"/oauth/eula\"")) 
+                    if (responseBody.ToLower().Contains("form action=\"/oauth/eula\""))
                     {
                         return GetEULAChallenge(sisi, responseBody, out accessToken);
                     }
 
                     try
                     {
-
-                        string code = HttpUtility.ParseQueryString(resp.ResponseUri.Query).Get("code");
-
-                        // @TODO -- change this to pull for sisi.
-                        HttpWebRequest jwtRequest = (HttpWebRequest)HttpWebRequest.Create("https://login.eveonline.com/v2/oauth/token");
-                        jwtRequest.Timeout = 5000;
-                        jwtRequest.AllowAutoRedirect = true;
-                        jwtRequest.Method = "POST";
-                        jwtRequest.ContentType = "application/x-www-form-urlencoded";
-                        byte[] body = Encoding.ASCII.GetBytes(String.Format("grant_type=authorization_code&client_id=eveLauncherTQ&code={0}&code_verifier=F6Li7QkvgjQEHf59eM-RvfvWbr61BJNgy_S1R7HUJAE", code));
-                        jwtRequest.ContentLength = body.Length;
-                        using (Stream reqStream = jwtRequest.GetRequestStream())
+                        //https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=l4nGki1CTUI7pCQZoIdnARcCLqL6ZGJM1X1tPf1bGKSJxEwP8lk_shS19w3sjLzyCbecYAn05y-Vbs-Jm1d1cw2&token_type=Bearer&expires_in=43200
+                        authCode = HttpUtility.ParseQueryString(resp.ResponseUri.ToString()).Get("code");
+                        if (authCode == null)
                         {
-                            reqStream.Write(body, 0, body.Length);
+                            responseBody = resp.ResponseUri + 
+                                    Environment.NewLine +
+                                    Environment.NewLine +
+                                    Environment.NewLine +
+                                    Utils.GetResponseBody(resp);
+                            return LoginResult.Error;
                         }
-                        using (HttpWebResponse jwtResp = (HttpWebResponse)jwtRequest.GetResponse())
-                        {
-                            string jwtResponseBody = null;
-                            using (Stream stream = jwtResp.GetResponseStream())
-                            {
-                                using (StreamReader sr = new StreamReader(stream))
-                                {
-                                    jwtResponseBody = sr.ReadToEnd();
-                                }
-                            }
-                            string jwtAccessToken;
-                            dynamic parsedJWT = JObject.Parse(jwtResponseBody);
-                            accessToken = new Token((string) parsedJWT.access_token);
-                            TranquilityToken = accessToken;
-                        }
+                        GetAccessToken(sisi, authCode, out responseBody);
+                        accessToken = new Token(JsonConvert.DeserializeObject<authObj>(responseBody));
                     }
                     catch (Exception e)
                     {
@@ -1299,94 +1209,95 @@ namespace ISBoxerEVELauncher
                 switch (we.Status)
                 {
                     case WebExceptionStatus.Timeout:
-                        accessToken = null;
                         return LoginResult.Timeout;
                     default:
-                        string responseBody = null;
-                        using (Stream stream = we.Response.GetResponseStream())
-                        {
-                            using (StreamReader sr = new StreamReader(stream))
-                            {
-                                responseBody = sr.ReadToEnd();
-                            }
-                        }
+                        string responseBody = Utils.GetResponseBody(we.Response);
 
                         Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
                         urw.ShowDialog();
-                        accessToken = null;
                         return LoginResult.Error;
                 }
             }
         }
 
-        public LoginResult GetRequestVerificationToken(bool sisi, out string verificationToken)
+
+        public class authObj
         {
-            string uri = "https://login.eveonline.com/Account/LogOn";
-            if (sisi)
+            private int _expiresIn;
+            public string access_token { get; set; }
+            public int expires_in
             {
-                uri = "https://sisilogin.testeveonline.com/Account/LogOn";
-            }
-
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 30000;
-            req.AllowAutoRedirect = true;
-            req.Referer = uri;
-            req.CookieContainer = Cookies;
-            req.Method = "GET";
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.ContentLength = 0;
-            try
-            {
-                using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
-                {                   
-                    string responseBody = null;
-                    using (Stream stream = resp.GetResponseStream())
-                    {
-                        using (StreamReader sr = new StreamReader(stream))
-                        {
-                            responseBody = sr.ReadToEnd();
-                        }
-                    }
-                    UpdateCookieStorage();
-
-                    verificationToken = GetRequestVerificationToken(responseBody);
-                    return LoginResult.Success;
-                }
-            }
-            catch (System.Net.WebException ex)
-            {
-                switch (ex.Status)
+                get
                 {
-                    case WebExceptionStatus.Timeout:
-                        {
-                            verificationToken = string.Empty;
-                            return LoginResult.Timeout;
-                        }
-                    default:
-                        throw;
+                    return _expiresIn;
+                }
+                set
+                {
+                    _expiresIn = value;
+                    Expiration = DateTime.Now.AddMinutes(_expiresIn);
                 }
             }
+            public string token_type { get; set; }
+            public string refresh_token { get; set; }
+
+            public DateTime Expiration { get; private set; }
+
         }
-    
+
+
+        private LoginResult GetAccessToken(bool sisi, string authCode, out string responseBody)
+        {
+            HttpWebRequest req2 = Utils.CreatePostRequest(new Uri(Utils.token, UriKind.Relative), sisi, true, Utils.refererUri, Cookies);
+
+
+
+            //byte[] body =
+            //    Encoding.UTF8.GetBytes("grant_type=authorization_code&client_id=eveLauncherTQ&redirect_uri=" + HttpUtility.UrlEncode(sisi?Utils.sisiBaseUri:Utils.tqBaseUri) + "%2Flauncher%3Fclient_id%3DeveLauncherTQ&code=" + authCode + "&code_verifier=" +
+            //Base64UrlEncoder.Encode(challengeCode));
+
+            req2.SetBody(Utils.GetSsoTokenRequestBody(sisi, authCode, challengeCode));
+
+            return Utils.GetHttpWebResponse(req2, UpdateCookieStorage, out responseBody);
+
+        }
+
+        public LoginResult GetRequestVerificationToken(Uri uri, bool sisi, out string verificationToken)
+        {
+            string responseBody;
+            verificationToken = null;
+
+            var req = Utils.CreateGetRequest(uri, sisi, false, Utils.refererUri, Cookies);
+            req.ContentLength = 0;
+
+            var result = Utils.GetHttpWebResponse(req, UpdateCookieStorage, out responseBody);
+
+            if (result == LoginResult.Success)
+            {
+                verificationToken = Utils.GetRequestVerificationTokenFromBody(responseBody);
+            }
+
+            return result;
+        }
+
 
         public LoginResult GetAccessToken(bool sisi, out Token accessToken)
         {
             Token checkToken = sisi ? SisiToken : TranquilityToken;
-            if (checkToken!=null && !checkToken.IsExpired)
+            if (checkToken != null && !checkToken.IsExpired)
             {
                 accessToken = checkToken;
                 return LoginResult.Success;
             }
 
             // need SecurePassword.
-            if (SecurePassword==null || SecurePassword.Length == 0)
-            {             
+            if (SecurePassword == null || SecurePassword.Length == 0)
+            {
                 DecryptPassword(true);
                 if (SecurePassword == null || SecurePassword.Length == 0)
                 {
 
                     Windows.EVELogin el = new Windows.EVELogin(this, true);
-                    bool? result = el.ShowDialog();
+                    bool? dialogResult = el.ShowDialog();
 
                     if (SecurePassword == null || SecurePassword.Length == 0)
                     {
@@ -1399,30 +1310,18 @@ namespace ISBoxerEVELauncher
                 }
             }
 
-            string uri = "https://login.eveonline.com/account/logon?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Flogin.eveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3Dfrogout%26code_challenge_method%3DS256%26code_challenge%3DHTWDBedky6KLwKNK0Nf_VgWbziO2QnC_lxi0_OvL84U%26ignoreClientStyle%3Dtrue";
 
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 30000;
-            req.AllowAutoRedirect = true;
-            if (!sisi)
-            {
-                req.Headers.Add("Origin", "https://login.eveonline.com");
-            }
-            else
-            {
-                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
-            }
-            req.Referer = uri;
-            req.CookieContainer = Cookies;
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
+            var uri = Utils.GetLoginUri(sisi, state.ToString(), challengeHash);
 
             string RequestVerificationToken = string.Empty;
-            GetRequestVerificationToken(sisi, out RequestVerificationToken);
+            var result = GetRequestVerificationToken(uri, sisi, out RequestVerificationToken);
+
+            var req = Utils.CreatePostRequest(uri, sisi, true, Utils.refererUri, Cookies);
+
             using (SecureBytesWrapper body = new SecureBytesWrapper())
-            {                
+            {
                 byte[] body1 = Encoding.ASCII.GetBytes(String.Format("__RequestVerificationToken={1}&UserName={0}&Password=", Uri.EscapeDataString(Username), Uri.EscapeDataString(RequestVerificationToken)));
-//                byte[] body1 = Encoding.ASCII.GetBytes(String.Format("UserName={0}&Password=", Uri.EscapeDataString(Username)));
+                //                byte[] body1 = Encoding.ASCII.GetBytes(String.Format("UserName={0}&Password=", Uri.EscapeDataString(Username)));
                 using (SecureStringWrapper ssw = new SecureStringWrapper(SecurePassword, Encoding.ASCII))
                 {
                     using (SecureBytesWrapper escapedPassword = new SecureBytesWrapper())
@@ -1432,50 +1331,29 @@ namespace ISBoxerEVELauncher
                         body.Bytes = new byte[body1.Length + escapedPassword.Bytes.Length];
                         System.Buffer.BlockCopy(body1, 0, body.Bytes, 0, body1.Length);
                         System.Buffer.BlockCopy(escapedPassword.Bytes, 0, body.Bytes, body1.Length, escapedPassword.Bytes.Length);
-                    }
-                }
-
-                req.ContentLength = body.Bytes.Length;
-                try
-                {
-                    using (Stream reqStream = req.GetRequestStream())
-                    {
-                        reqStream.Write(body.Bytes, 0, body.Bytes.Length);
-                    }
-                }
-                catch(System.Net.WebException e)
-                {
-                    switch(e.Status)
-                    {
-                        case WebExceptionStatus.Timeout:
-                            {
-                                accessToken = null;
-                                return LoginResult.Timeout;
-                            }
-                        default:
-                            throw;                            
+                        req.SetBody(body);
                     }
                 }
             }
+
             return GetAccessToken(sisi, req, out accessToken);
         }
 
-        public LoginResult GetSSOToken(bool sisi, out string ssotoken)
+        public LoginResult GetSSOToken(bool sisi, out Token ssoToken)
         {
             Token accessToken;
-            LoginResult lr = this.GetAccessToken(sisi, out accessToken);
-            ssotoken = accessToken.TokenString;
-            UpdateCookieStorage();
-            return LoginResult.Success;
+            LoginResult lr = this.GetAccessToken(sisi, out ssoToken);
+           
+            return lr;
         }
 
         public LoginResult Launch(string sharedCachePath, bool sisi, DirectXVersion dxVersion, long characterID)
         {
-            string ssoToken;
+            Token ssoToken;
             LoginResult lr = GetSSOToken(sisi, out ssoToken);
             if (lr != LoginResult.Success)
                 return lr;
-            if (!App.Launch(ssoToken, sharedCachePath, sisi, dxVersion, characterID))
+            if (!App.Launch(sharedCachePath, sisi, dxVersion, characterID, ssoToken))
                 return LoginResult.Error;
 
             return LoginResult.Success;
@@ -1483,11 +1361,11 @@ namespace ISBoxerEVELauncher
 
         public LoginResult Launch(string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID)
         {
-            string ssoToken;
-            LoginResult lr = GetSSOToken(sisi, out ssoToken);
-            if (lr != LoginResult.Success)
-                return lr;
-            if (!App.Launch(ssoToken, gameName, gameProfileName, sisi, dxVersion, characterID))
+            //string ssoToken;
+            //LoginResult lr = GetSSOToken(sisi, out ssoToken);
+            //if (lr != LoginResult.Success)
+            //    return lr;
+            if (!App.Launch(gameName, gameProfileName, sisi, dxVersion, characterID, TranquilityToken))
                 return LoginResult.Error;
 
             return LoginResult.Success;
@@ -1521,16 +1399,18 @@ namespace ISBoxerEVELauncher
             }
             this.EncryptedPassword = null;
             this.EncryptedPasswordIV = null;
-            if (this.SecureCharacterName!=null)
+            if (this.SecureCharacterName != null)
             {
                 this.SecureCharacterName.Dispose();
                 this.SecureCharacterName = null;
             }
             this.EncryptedCharacterName = null;
             this.EncryptedCharacterNameIV = null;
+
+            ISBoxerEVELauncher.CookieStorage.DeleteCookies(this);
             this.Username = null;
             this.Cookies = null;
-            this.NewCookieStorage = null;
+            //this.NewCookieStorage = null;
         }
 
         public override string ToString()

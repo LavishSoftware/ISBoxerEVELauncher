@@ -100,5 +100,12 @@ namespace ISBoxerEVELauncher
             string filePath = GetCookiesFilename(eveAccount);
             WriteAllTextSafe(filePath, cookies, Encoding.ASCII);
         }
+
+
+        public static void DeleteCookies(EVEAccount eveAccount)
+        {
+            string filePath = GetCookiesFilename(eveAccount);
+            System.IO.File.Delete(filePath);
+        }
     }
 }

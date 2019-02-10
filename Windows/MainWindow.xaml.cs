@@ -471,27 +471,27 @@ namespace ISBoxerEVELauncher.Windows
 //                string refreshToken;
 //                switch (newAccount.GetRefreshToken(false, out refreshToken))
                 EVEAccount.Token token;
-                EVEAccount.LoginResult lr = newAccount.GetAccessToken(false, out token);
+                LoginResult lr = newAccount.GetAccessToken(false, out token);
                 switch(lr)
                 {
-                    case EVEAccount.LoginResult.Success:
+                    case LoginResult.Success:
                         break;
-                    case EVEAccount.LoginResult.InvalidUsernameOrPassword:
+                    case LoginResult.InvalidUsernameOrPassword:
                         {
                             MessageBox.Show("Invalid Username or Password. Account NOT added.");
                             return;
                         }
-                    case EVEAccount.LoginResult.Timeout:
+                    case LoginResult.Timeout:
                         {
                             MessageBox.Show("Timed out attempting to log in. Account NOT added.");
                             return;
                         }
-                    case EVEAccount.LoginResult.InvalidCharacterChallenge:
+                    case LoginResult.InvalidCharacterChallenge:
                         {
                             MessageBox.Show("Invalid Character Name entered, or Invalid Username or Password. Account NOT added.");
                             return;
                         }
-                    case EVEAccount.LoginResult.EmailVerificationRequired:
+                    case LoginResult.EmailVerificationRequired:
                         // message already provided
                         return;
                     default:
@@ -653,7 +653,10 @@ namespace ISBoxerEVELauncher.Windows
             {
                 Accounts.Remove(toDelete);
                 toDelete.Dispose();
+                
             }
+
+            App.Settings.Store();
         }
 
         #region INotifyPropertyChanged

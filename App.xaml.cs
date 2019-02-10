@@ -390,7 +390,7 @@ namespace ISBoxerEVELauncher
             if (gameProfileName == null)
                 throw new ArgumentNullException("gameProfileName");
 
-            string cmdLine = "open \"" + gameName + "\" \"" + gameProfileName + "\" -addparam \"/noconsole\" -addparam \"/ssoToken=" + ssoToken + "\"";
+            string cmdLine = "open \"" + gameName + "\" \"" + gameProfileName + "\" -addparam \"/noconsole\" -addparam \"/server:tranquility\" -addparam \"/ssoToken=" + ssoToken + "\"";
             if (dxVersion != DirectXVersion.Default)
             {
                 cmdLine += " -addparam \"/triPlatform=" + dxVersion.ToString() + "\"";
@@ -437,6 +437,10 @@ namespace ISBoxerEVELauncher
             if (sisi)
             {
                 args += " /server:Singularity";
+            }
+            else
+            {
+                args += " /server:tranquility";
             }
 
             if (characterID != 0)

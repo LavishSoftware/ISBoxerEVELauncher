@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ISBoxerEVELauncher.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -111,6 +112,13 @@ namespace ISBoxerEVELauncher.Extensions
             {
             }
             return string.Empty;
+        }
+
+
+
+        public static string SHA256(this string plaintext)
+        {
+            return Crypto.GenerateSHA256String(plaintext);
         }
     }
 }

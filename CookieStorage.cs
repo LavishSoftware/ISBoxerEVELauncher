@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ISBoxerEVELauncher.Extensions;
 
 namespace ISBoxerEVELauncher
 {
@@ -16,20 +17,6 @@ namespace ISBoxerEVELauncher
             System.IO.Directory.CreateDirectory(path);
 
             return path;
-        }
-
-        public static string SHA256(this string plaintext)
-        {
-            using (System.Security.Cryptography.SHA256Managed crypt = new System.Security.Cryptography.SHA256Managed())
-            {
-                byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(plaintext), 0, Encoding.UTF8.GetByteCount(plaintext));
-                System.Text.StringBuilder hash = new System.Text.StringBuilder();
-                foreach (byte theByte in crypto)
-                {
-                    hash.Append(theByte.ToString("x2"));
-                }
-                return hash.ToString();
-            }
         }
 
         public static string GetCookiesFilename(EVEAccount eveAccount)

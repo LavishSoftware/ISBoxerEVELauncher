@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LavishSoft EVE Launcher")]
-[assembly: AssemblyDescription("An alternative EVE Launcher. Special thanks to open source EVE Launcher projects CliLauncher and IsBridgeUp, and users logical and HunterAlvi")]
+[assembly: AssemblyTitle("ISBoxer EVE Launcher")]
+[assembly: AssemblyDescription("An EVE Launcher for ISBoxer. Special thanks to open source EVE Launcher projects CliLauncher and IsBridgeUp, and users logical and HunterAlvi")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lavish Software LLC")]
-[assembly: AssemblyProduct("LavishSoft EVE Launcher")]
+[assembly: AssemblyProduct("ISBoxer EVE Launcher")]
 [assembly: AssemblyCopyright("Copyright © 2016-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -33,11 +33,11 @@ using System.Windows;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
-    //(used if a resource is not found in the page, 
-    // or application resource dictionaries)
+                                     //(used if a resource is not found in the page, 
+                                     // or application resource dictionaries)
     ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
-    //(used if a resource is not found in the page, 
-    // app, or any theme specific resource dictionaries)
+                                              //(used if a resource is not found in the page, 
+                                              // app, or any theme specific resource dictionaries)
 )]
 
 

@@ -1,6 +1,10 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
+
+* Version 1.0.0.28 includes a community-supplied fix for the new SSOv2 token requirement, currently supporting Tranquility but not Singularity
+
 * Version 1.0.0.27 uses a separate cookies file per EVE account, for better simultaneous login support
 
 * Version 1.0.0.26 slightly increases the size of the Verification Code entry box to address reported issues
@@ -39,7 +43,7 @@ ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Onl
 If password storage is enabled, ISBoxer EVE Launcher keeps your EVE passwords cryptographically secure, allowing you to keep any number of EVE accounts safely ready for instant login.
 
 # Download
-**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.27.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
+**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.29.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
 
 # Installation
 Un-zip the ISBoxer EVE Launcher.exe file into the location of your choice. If intending to use with Inner Space/ISBoxer, it is recommended to place the file in the Inner Space folder.

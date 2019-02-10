@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json.Linq;
 
 namespace ISBoxerEVELauncher
 {
@@ -42,11 +43,10 @@ namespace ISBoxerEVELauncher
             /// We usually just need to parse a Uri for the Access Token details. So here is the constructor that does it for us.
             /// </summary>
             /// <param name="fromUri"></param>
-            public Token(Uri fromUri)
+            public Token(String token)
             {
-                TokenString = HttpUtility.ParseQueryString(fromUri.Fragment).Get("#access_token");
-                String expires_in = HttpUtility.ParseQueryString(fromUri.Fragment).Get("expires_in");
-                Expiration = DateTime.Now.AddSeconds(int.Parse(expires_in));
+                TokenString = token;
+                Expiration = DateTime.Now.AddSeconds(int.Parse("1799"));
             }
 
             public override string ToString()
@@ -1162,7 +1162,6 @@ namespace ISBoxerEVELauncher
             {
                 using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
                 {
-                    // https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=...&token_type=Bearer&expires_in=43200
                     string responseBody = null;
                     using (Stream stream = resp.GetResponseStream())
                     {
@@ -1205,7 +1204,7 @@ namespace ISBoxerEVELauncher
                         accessToken = null;
                         SecurePassword = null;
                         return LoginResult.InvalidAuthenticatorChallenge;
-                    }
+                    } 
                     //The 2FA page now has "Character challenge" in the text but it is hidden. This should fix it from
                     //Coming up during 2FA challenge
                     if (responseBody.Contains("Character challenge") && !responseBody.Contains("visuallyhidden"))
@@ -1240,8 +1239,36 @@ namespace ISBoxerEVELauncher
 
                     try
                     {
-                        //                https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=l4nGki1CTUI7pCQZoIdnARcCLqL6ZGJM1X1tPf1bGKSJxEwP8lk_shS19w3sjLzyCbecYAn05y-Vbs-Jm1d1cw2&token_type=Bearer&expires_in=43200
-                        accessToken = new Token(resp.ResponseUri);
+
+                        string code = HttpUtility.ParseQueryString(resp.ResponseUri.Query).Get("code");
+
+                        // @TODO -- change this to pull for sisi.
+                        HttpWebRequest jwtRequest = (HttpWebRequest)HttpWebRequest.Create("https://login.eveonline.com/v2/oauth/token");
+                        jwtRequest.Timeout = 5000;
+                        jwtRequest.AllowAutoRedirect = true;
+                        jwtRequest.Method = "POST";
+                        jwtRequest.ContentType = "application/x-www-form-urlencoded";
+                        byte[] body = Encoding.ASCII.GetBytes(String.Format("grant_type=authorization_code&client_id=eveLauncherTQ&code={0}&code_verifier=F6Li7QkvgjQEHf59eM-RvfvWbr61BJNgy_S1R7HUJAE", code));
+                        jwtRequest.ContentLength = body.Length;
+                        using (Stream reqStream = jwtRequest.GetRequestStream())
+                        {
+                            reqStream.Write(body, 0, body.Length);
+                        }
+                        using (HttpWebResponse jwtResp = (HttpWebResponse)jwtRequest.GetResponse())
+                        {
+                            string jwtResponseBody = null;
+                            using (Stream stream = jwtResp.GetResponseStream())
+                            {
+                                using (StreamReader sr = new StreamReader(stream))
+                                {
+                                    jwtResponseBody = sr.ReadToEnd();
+                                }
+                            }
+                            string jwtAccessToken;
+                            dynamic parsedJWT = JObject.Parse(jwtResponseBody);
+                            accessToken = new Token((string) parsedJWT.access_token);
+                            TranquilityToken = accessToken;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -1372,11 +1399,7 @@ namespace ISBoxerEVELauncher
                 }
             }
 
-            string uri = "https://login.eveonline.com/Account/LogOn?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            if (sisi)
-            {
-                uri = "https://sisilogin.testeveonline.com/Account/LogOn?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            }
+            string uri = "https://login.eveonline.com/account/logon?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Flogin.eveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3Dfrogout%26code_challenge_method%3DS256%26code_challenge%3DHTWDBedky6KLwKNK0Nf_VgWbziO2QnC_lxi0_OvL84U%26ignoreClientStyle%3Dtrue";
 
             HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
             req.Timeout = 30000;
@@ -1441,26 +1464,7 @@ namespace ISBoxerEVELauncher
         {
             Token accessToken;
             LoginResult lr = this.GetAccessToken(sisi, out accessToken);
-            if (accessToken == null)
-            {
-                ssotoken = null;
-                return lr;
-            }
-            string uri = "https://login.eveonline.com/launcher/token?accesstoken=" + accessToken;
-            if (sisi)
-            {
-                uri = "https://sisilogin.testeveonline.com/launcher/token?accesstoken=" + accessToken;
-            }
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 30000;
-            req.AllowAutoRedirect = false;
-
-            using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
-            {
-                Uri responseUri = new Uri(resp.GetResponseHeader("Location"));
-                ssotoken = HttpUtility.ParseQueryString(responseUri.Fragment).Get("#access_token");
-                
-            }
+            ssotoken = accessToken.TokenString;
             UpdateCookieStorage();
             return LoginResult.Success;
         }

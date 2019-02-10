@@ -1170,7 +1170,11 @@ namespace ISBoxerEVELauncher
                         authCode = HttpUtility.ParseQueryString(resp.ResponseUri.ToString()).Get("code");
                         if (authCode == null)
                         {
-                            responseBody = resp.ResponseUri + 
+                            responseBody =
+                                req.RequestUri +
+                                    Environment.NewLine +
+                                    Environment.NewLine +
+                                resp.ResponseUri + 
                                     Environment.NewLine +
                                     Environment.NewLine +
                                     Environment.NewLine +

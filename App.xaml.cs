@@ -402,6 +402,17 @@ namespace ISBoxerEVELauncher
                 cmdLine += " -addparam \"/character="+characterID+"\"";
             }
 
+            if (sisi)
+            {
+                cmdLine += " -addparam \"/server:Singularity\"";
+            }
+            else
+            {
+                cmdLine += " -addparam \"/server:tranquility\"";
+            }
+
+            cmdLine += " -addparam \"/settingsprofile=Default\" -addparam \"/machineHash=" + App.Settings.MachineHash + "\"";
+
             try
             {
                 System.Diagnostics.Process.Start(App.ISExecutable, cmdLine);

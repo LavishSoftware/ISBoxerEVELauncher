@@ -87,6 +87,16 @@
                                             <TextBlock Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">Inner Space</TextBlock>
                                         </StackPanel>
                                     </Button.Content>
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                    <Setter Property="Button.Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                 </Button>
                                 <Button Name="buttonLaunchIS" Click="buttonLaunchIS_Click"  Margin="0,3,0,0" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}" VerticalAlignment="Bottom">
                                     <Button.Content>
@@ -96,6 +106,16 @@
                                             <TextBlock>Inner Space</TextBlock>
                                         </StackPanel>
                                     </Button.Content>
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                    <Setter Property="Button.Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
 
                                 </Button>
                             </StackPanel>
@@ -152,6 +172,16 @@
                                         <TextBlock Margin="3,0,0,0" FontWeight="Bold" Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}"><Run Text="Non-"/></TextBlock>
                                         <TextBlock Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}"><Run Text="Inner Space"/></TextBlock>
                                     </StackPanel>
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listCharacters, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                    <Setter Property="Button.Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                 </Button>
                                 <Button x:Name="buttonLaunchCharacterIS" Click="buttonLaunchCharacterIS_Click"  Margin="0,3,0,0" Visibility="{Binding InnerSpaceVisibility, ElementName=mainWindow}">
                                     <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
@@ -159,7 +189,16 @@
                                         <TextBlock Margin="3,0,3,0" FontWeight="Bold"><Run Text="with"/></TextBlock>
                                         <TextBlock><Run Text="Inner Space"/></TextBlock>
                                     </StackPanel>
-
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listCharacters, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                    <Setter Property="Button.Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                 </Button>
                                 
                             </StackPanel>

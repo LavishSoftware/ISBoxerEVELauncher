@@ -102,8 +102,6 @@ namespace ISBoxerEVELauncher.Utility
                 .AddQuery("code", authCode)
                 .AddQuery("code_verifier", Base64UrlEncoder.Encode(challengeCode)).SafeQuery());
 
-            //byte[] body =                Encoding.UTF8.GetBytes("grant_type=authorization_code&client_id=eveLauncherTQ&redirect_uri=" + HttpUtility.UrlEncode(sisi ? Utils.sisiBaseUri : Utils.tqBaseUri) + "%2Flauncher%3Fclient_id%3DeveLauncherTQ&code=" + authCode + "&code_verifier=" +
-            //Base64UrlEncoder.Encode(challengeCode));
         }
 
         public static Uri GetVerifyTwoFactorUri(bool sisi, string state, string challengeHash)
@@ -122,10 +120,6 @@ namespace ISBoxerEVELauncher.Utility
                         .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
-            //byte[] body =                Encoding.UTF8.GetBytes("grant_type=authorization_code&client_id=eveLauncherTQ&redirect_uri=" + HttpUtility.UrlEncode(sisi ? Utils.sisiBaseUri : Utils.tqBaseUri) + "%2Flauncher%3Fclient_id%3DeveLauncherTQ&code=" + authCode + "&code_verifier=" +
-            //Base64UrlEncoder.Encode(challengeCode));
-
-            //"POST /account/verifytwofactor?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Fsisilogin.testeveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3D1043d900-ab13-42f3-a741-285cce0c8b47%26code_challenge_method%3DS256%26code_challenge%3DC0emnYPGUFfgXiyQx9d47zMM3uUXb6H9JB-PLptvtZ4%26ignoreClientStyle%3Dtrue%26showRemember%3Dtrue HTTP/1.1"
         }
 
         public static Uri GetAuthenticatorUri(bool sisi, string state, string challengeHash)
@@ -144,10 +138,43 @@ namespace ISBoxerEVELauncher.Utility
                         .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
-            //byte[] body =                Encoding.UTF8.GetBytes("grant_type=authorization_code&client_id=eveLauncherTQ&redirect_uri=" + HttpUtility.UrlEncode(sisi ? Utils.sisiBaseUri : Utils.tqBaseUri) + "%2Flauncher%3Fclient_id%3DeveLauncherTQ&code=" + authCode + "&code_verifier=" +
-            //Base64UrlEncoder.Encode(challengeCode));
+        }
 
-            //"POST /account/verifytwofactor?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Fsisilogin.testeveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3D1043d900-ab13-42f3-a741-285cce0c8b47%26code_challenge_method%3DS256%26code_challenge%3DC0emnYPGUFfgXiyQx9d47zMM3uUXb6H9JB-PLptvtZ4%26ignoreClientStyle%3Dtrue%26showRemember%3Dtrue HTTP/1.1"
+        public static Uri GetEulaUri(bool sisi, string state, string challengeHash)
+        {
+            return new Uri("/account/eula", UriKind.Relative)
+                .AddQuery("ReturnUrl",
+                    new Uri(auth, UriKind.Relative)
+                        .AddQuery("client_id", "eveLauncherTQ")
+                        .AddQuery("response_type", "code")
+                        .AddQuery("scope", "eveClientLogin cisservice.customerRead.v1 cisservice.customerWrite.v1")
+                        .AddQuery("redirect_uri", new Uri(new Uri(sisi ? sisiBaseUri : tqBaseUri), launcher)
+                            .AddQuery("client_id", "eveLauncherTQ").ToString())
+                        .AddQuery("state", state)
+                        .AddQuery("code_challenge_method", "S256")
+                        .AddQuery("code_challenge", challengeHash)
+                        .AddQuery("ignoreClientStyle", "true")
+                        .AddQuery("showRemember", "true").ToString());
+
+        }
+
+
+        public static Uri GetCharacterChallengeUri(bool sisi, string state, string challengeHash)
+        {
+            return new Uri("/account/character", UriKind.Relative)
+                .AddQuery("ReturnUrl",
+                    new Uri(auth, UriKind.Relative)
+                        .AddQuery("client_id", "eveLauncherTQ")
+                        .AddQuery("response_type", "code")
+                        .AddQuery("scope", "eveClientLogin cisservice.customerRead.v1 cisservice.customerWrite.v1")
+                        .AddQuery("redirect_uri", new Uri(new Uri(sisi ? sisiBaseUri : tqBaseUri), launcher)
+                            .AddQuery("client_id", "eveLauncherTQ").ToString())
+                        .AddQuery("state", state)
+                        .AddQuery("code_challenge_method", "S256")
+                        .AddQuery("code_challenge", challengeHash)
+                        .AddQuery("ignoreClientStyle", "true")
+                        .AddQuery("showRemember", "true").ToString());
+
         }
 
 

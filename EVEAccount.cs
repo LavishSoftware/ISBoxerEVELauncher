@@ -751,7 +751,7 @@ namespace ISBoxerEVELauncher
             //    uri = "https://sisilogin.testeveonline.com/OAuth/Eula";
             //}
 
-            var uri = WebReqResp.GetSecurityWarningChallenge(sisi, state.ToString(), challengeHash);
+            var uri = WebReqResp.GetEulaUri(sisi, state.ToString(), challengeHash);
             HttpWebRequest req = WebReqResp.CreatePostRequest(uri, sisi, true, referer.ToString(), Cookies);
 
 
@@ -959,27 +959,14 @@ namespace ISBoxerEVELauncher
                 }
             }
 
-            string uri = "https://login.eveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            if (sisi)
-            {
-                uri = "https://sisilogin.testeveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            }
+            //string uri = "https://login.eveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            //if (sisi)
+            //{
+            //    uri = "https://sisilogin.testeveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
+            //}
 
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 30000;
-            req.AllowAutoRedirect = true;
-            if (!sisi)
-            {
-                req.Headers.Add("Origin", "https://login.eveonline.com");
-            }
-            else
-            {
-                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
-            }
-            req.Referer = uri;
-            req.CookieContainer = Cookies;
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
+            var uri = WebReqResp.GetCharacterChallengeUri(sisi, state.ToString(), challengeHash);
+            var req = WebReqResp.CreatePostRequest(uri, sisi, true, uri.ToString(), Cookies);
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {
                 byte[] body1 = Encoding.ASCII.GetBytes(String.Format("RememberCharacterChallenge={0}&Challenge=", "true"));
@@ -1047,7 +1034,9 @@ namespace ISBoxerEVELauncher
                     }
 
                     // I'm just guessing on this one at the moment.
-                    if (responseBody.Contains("Invalid authenticat"))
+                    if (responseBody.Contains("Invalid authenticat")
+                        || (responseBody.Contains("Verification code mismatch") && responseBody.Contains("/account/authenticator"))
+                        )
                     {
                         accessToken = null;
                         SecurePassword = null;

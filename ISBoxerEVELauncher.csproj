@@ -79,16 +79,18 @@
     </ApplicationDefinition>
     <Compile Include="CookieStorage.cs" />
     <Compile Include="EVECharacter.cs" />
+    <Compile Include="Extensions\HttpWebResponseExtension.cs" />
     <Compile Include="Extensions\ProcessExtension.cs" />
     <Compile Include="Extensions\UriExtension.cs" />
     <Compile Include="Extensions\HttpWebRequestExtension.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="Extensions\WebResponseExtension.cs" />
     <Compile Include="KeyTransmitter.cs" />
     <Compile Include="Launchers.cs" />
     <Compile Include="LoginResultEnum.cs" />
     <Compile Include="SecureBytesWrapper.cs" />
     <Compile Include="Utility\Crypto.cs" />
-    <Compile Include="Utility\Utils.cs" />
+    <Compile Include="Utility\WebReqResp.cs" />
     <Compile Include="Windows\AddCharacterWindow.xaml.cs">
       <DependentUpon>AddCharacterWindow.xaml</DependentUpon>
     </Compile>

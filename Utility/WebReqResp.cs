@@ -9,11 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ISBoxerEVELauncher.Utility
 {
-    public static class Utils
+    public static class WebReqResp
     {
 
         //public const string logoff = "/account/logoff";
         private const string auth = "/v2/oauth/authorize";
+        private const string eula = "/v2/oauth/eula";
         private const string logon = "/account/logon";
         private const string launcher = "launcher";
         public const string token = "/v2/oauth/token";
@@ -27,6 +28,8 @@ namespace ISBoxerEVELauncher.Utility
         public const string originUri = "https://launcher.eveonline.com";
         public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.0.22/";
 
+
+        
 
         public static Uri GetLoginUri(bool sisi, string state, string challengeHash)
         {
@@ -43,6 +46,33 @@ namespace ISBoxerEVELauncher.Utility
                         .AddQuery("code_challenge", challengeHash)
                         .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
+        }
+
+        public static Uri GetSecurityWarningChallenge(bool sisi, string state, string challengeHash)
+        {
+
+            //https://login.eveonline.com/v2/oauth/authorize?
+            //client_id =eveLauncherTQ
+            //&amp;response_type=code
+            //&amp;scope=eveClientLogin%20cisservice.customerRead.v1%20cisservice.customerWrite.v1
+            //&amp;redirect_uri=https%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ
+            //&amp;state=5617f90c-efdb-41a1-b00d-6f4f24bbeee4
+            //&amp;code_challenge_method=S256
+            //&amp;code_challenge=nC-B19HKX8ZZYfOEN_bg-YZSjVAMieqEB3nJXFyfQQc
+            //&amp;ignoreClientStyle=true
+            //&amp;showRemember=true
+
+            return new Uri(auth, UriKind.Relative)
+                        .AddQuery("client_id", "eveLauncherTQ")
+                        .AddQuery("response_type", "code")
+                        .AddQuery("scope", "eveClientLogin cisservice.customerRead.v1 cisservice.customerWrite.v1")
+                        .AddQuery("redirect_uri", new Uri(new Uri(sisi ? sisiBaseUri : tqBaseUri), launcher)
+                            .AddQuery("client_id", "eveLauncherTQ").ToString())
+                        .AddQuery("state", state)
+                        .AddQuery("code_challenge_method", "S256")
+                        .AddQuery("code_challenge", challengeHash)
+                        .AddQuery("ignoreClientStyle", "true")
+                        .AddQuery("showRemember", "true");
         }
 
 
@@ -67,7 +97,7 @@ namespace ISBoxerEVELauncher.Utility
                 Encoding.UTF8.GetBytes(new Uri("/", UriKind.Relative)
                 .AddQuery("grant_type","authorization_code")
                 .AddQuery("client_id", "eveLauncherTQ")
-                .AddQuery("redirect_uri", new Uri(new Uri(sisi ? Utils.sisiBaseUri : Utils.tqBaseUri), launcher)
+                .AddQuery("redirect_uri", new Uri(new Uri(sisi ? WebReqResp.sisiBaseUri : WebReqResp.tqBaseUri), launcher)
                     .AddQuery("client_id", "eveLauncherTQ").ToString())
                 .AddQuery("code", authCode)
                 .AddQuery("code_verifier", Base64UrlEncoder.Encode(challengeCode)).SafeQuery());
@@ -98,7 +128,27 @@ namespace ISBoxerEVELauncher.Utility
             //"POST /account/verifytwofactor?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Fsisilogin.testeveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3D1043d900-ab13-42f3-a741-285cce0c8b47%26code_challenge_method%3DS256%26code_challenge%3DC0emnYPGUFfgXiyQx9d47zMM3uUXb6H9JB-PLptvtZ4%26ignoreClientStyle%3Dtrue%26showRemember%3Dtrue HTTP/1.1"
         }
 
+        public static Uri GetAuthenticatorUri(bool sisi, string state, string challengeHash)
+        {
+            return new Uri("/account/authenticator", UriKind.Relative)
+                .AddQuery("ReturnUrl",
+                    new Uri(auth, UriKind.Relative)
+                        .AddQuery("client_id", "eveLauncherTQ")
+                        .AddQuery("response_type", "code")
+                        .AddQuery("scope", "eveClientLogin cisservice.customerRead.v1 cisservice.customerWrite.v1")
+                        .AddQuery("redirect_uri", new Uri(new Uri(sisi ? sisiBaseUri : tqBaseUri), launcher)
+                            .AddQuery("client_id", "eveLauncherTQ").ToString())
+                        .AddQuery("state", state)
+                        .AddQuery("code_challenge_method", "S256")
+                        .AddQuery("code_challenge", challengeHash)
+                        .AddQuery("ignoreClientStyle", "true")
+                        .AddQuery("showRemember", "true").ToString());
 
+            //byte[] body =                Encoding.UTF8.GetBytes("grant_type=authorization_code&client_id=eveLauncherTQ&redirect_uri=" + HttpUtility.UrlEncode(sisi ? Utils.sisiBaseUri : Utils.tqBaseUri) + "%2Flauncher%3Fclient_id%3DeveLauncherTQ&code=" + authCode + "&code_verifier=" +
+            //Base64UrlEncoder.Encode(challengeCode));
+
+            //"POST /account/verifytwofactor?ReturnUrl=%2Fv2%2Foauth%2Fauthorize%3Fclient_id%3DeveLauncherTQ%26response_type%3Dcode%26scope%3DeveClientLogin%2520cisservice.customerRead.v1%2520cisservice.customerWrite.v1%26redirect_uri%3Dhttps%253A%252F%252Fsisilogin.testeveonline.com%252Flauncher%253Fclient_id%253DeveLauncherTQ%26state%3D1043d900-ab13-42f3-a741-285cce0c8b47%26code_challenge_method%3DS256%26code_challenge%3DC0emnYPGUFfgXiyQx9d47zMM3uUXb6H9JB-PLptvtZ4%26ignoreClientStyle%3Dtrue%26showRemember%3Dtrue HTTP/1.1"
+        }
 
 
 
@@ -110,9 +160,9 @@ namespace ISBoxerEVELauncher.Utility
             req.AllowAutoRedirect = true;
             if (origin)
             {
-                if (referer == Utils.refererUri)
+                if (referer == WebReqResp.refererUri)
                 {
-                    req.Headers.Add("Origin", Utils.originUri);
+                    req.Headers.Add("Origin", WebReqResp.originUri);
                 }
                 else
                 {
@@ -148,7 +198,7 @@ namespace ISBoxerEVELauncher.Utility
             {
                 resp = (HttpWebResponse)webRequest.GetResponse();
                 {
-                    body = GetResponseBody(resp);
+                    body = resp.GetResponseBody();
                     if (updateCookies != null)
                     {
                         updateCookies();
@@ -168,7 +218,7 @@ namespace ISBoxerEVELauncher.Utility
                         {
                             if (resp != null)
                             {
-                                body = GetResponseBody(resp);
+                                body = resp.GetResponseBody();
                             }
                             responseBody = body;
                             return LoginResult.Error;
@@ -184,34 +234,6 @@ namespace ISBoxerEVELauncher.Utility
 
             responseBody = body;
             return LoginResult.Success;
-        }
-
-
-
-        public static string GetResponseBody(HttpWebResponse response)
-        {
-            string body;
-            using (Stream stream = response.GetResponseStream())
-            {
-                using (StreamReader sr = new StreamReader(stream))
-                {
-                    body = sr.ReadToEnd();
-                }
-            }
-            return body;
-        }
-
-        public static string GetResponseBody(WebResponse response)
-        {
-            string body;
-            using (Stream stream = response.GetResponseStream())
-            {
-                using (StreamReader sr = new StreamReader(stream))
-                {
-                    body = sr.ReadToEnd();
-                }
-            }
-            return body;
         }
 
 

@@ -20,7 +20,7 @@ namespace ISBoxerEVELauncher.Extensions
                     body = sr.ReadToEnd();
                 }
             }
-            return body;
+            return body.Trim();
         }
 
     }

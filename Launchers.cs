@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.InnerSpace;
+
 
 namespace ISBoxerEVELauncher.Launchers
 {

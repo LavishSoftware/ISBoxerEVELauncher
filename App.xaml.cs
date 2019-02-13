@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
 using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Games.EVE;
 
 namespace ISBoxerEVELauncher
 {

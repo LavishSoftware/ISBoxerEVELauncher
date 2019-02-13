@@ -16,6 +16,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
+using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Security;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Games.EVE;
 
 namespace ISBoxerEVELauncher.Windows
 {

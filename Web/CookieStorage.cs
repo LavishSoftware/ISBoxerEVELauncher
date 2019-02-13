@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.Games.EVE;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Web
 {
     static public class CookieStorage
     {

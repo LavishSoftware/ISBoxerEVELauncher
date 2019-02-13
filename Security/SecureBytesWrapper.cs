@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.ConstrainedExecution;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Security
 {
     /// <summary>
     /// This is an IDispoable wrapper for secure byte[] arrays, wiping pre-existing data when altered, Disposed or GC'd. It is designed similar to SecureStringWrapper for convenience.

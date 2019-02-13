@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Games.EVE
 {
     /// <summary>
     /// An EVE Online Character 

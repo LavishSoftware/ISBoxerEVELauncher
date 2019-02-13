@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Security
 {
     /// <summary>
     /// This is an IDisposable wrapper for SecureString, which provides secure byte array access

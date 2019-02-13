@@ -5,11 +5,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.Enums;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ISBoxerEVELauncher.Utility
+namespace ISBoxerEVELauncher.Web
 {
-    public static class WebReqResp
+    public static class RequestResponse
     {
 
         //public const string logoff = "/account/logoff";
@@ -97,7 +98,7 @@ namespace ISBoxerEVELauncher.Utility
                 Encoding.UTF8.GetBytes(new Uri("/", UriKind.Relative)
                 .AddQuery("grant_type","authorization_code")
                 .AddQuery("client_id", "eveLauncherTQ")
-                .AddQuery("redirect_uri", new Uri(new Uri(sisi ? WebReqResp.sisiBaseUri : WebReqResp.tqBaseUri), launcher)
+                .AddQuery("redirect_uri", new Uri(new Uri(sisi ? RequestResponse.sisiBaseUri : RequestResponse.tqBaseUri), launcher)
                     .AddQuery("client_id", "eveLauncherTQ").ToString())
                 .AddQuery("code", authCode)
                 .AddQuery("code_verifier", Base64UrlEncoder.Encode(challengeCode)).SafeQuery());
@@ -187,9 +188,9 @@ namespace ISBoxerEVELauncher.Utility
             req.AllowAutoRedirect = true;
             if (origin)
             {
-                if (referer == WebReqResp.refererUri)
+                if (referer == RequestResponse.refererUri)
                 {
-                    req.Headers.Add("Origin", WebReqResp.originUri);
+                    req.Headers.Add("Origin", RequestResponse.originUri);
                 }
                 else
                 {
@@ -217,19 +218,16 @@ namespace ISBoxerEVELauncher.Utility
             return req;
         }
 
-        public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out string responseBody)
+        public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response)
         {
-            HttpWebResponse resp = null;
-            string body = null;
+            response = null;
+
             try
             {
-                resp = (HttpWebResponse)webRequest.GetResponse();
+                response = new Response(webRequest);
+                if (updateCookies != null)
                 {
-                    body = resp.GetResponseBody();
-                    if (updateCookies != null)
-                    {
-                        updateCookies();
-                    }
+                    updateCookies();
                 }
             }
             catch (System.Net.WebException ex)
@@ -238,48 +236,38 @@ namespace ISBoxerEVELauncher.Utility
                 {
                     case WebExceptionStatus.Timeout:
                         {
-                            responseBody = body;
+
                             return LoginResult.Timeout;
                         }
                     case WebExceptionStatus.ProtocolError:
                         {
-                            if (resp != null)
-                            {
-                                body = resp.GetResponseBody();
-                            }
-                            responseBody = body;
                             return LoginResult.Error;
                         }
                     default:
                         throw;
                 }
             }
-            finally
-            {
-                resp.Dispose();
-            }
-
-            responseBody = body;
+            
             return LoginResult.Success;
         }
 
 
-        public static string GetRequestVerificationTokenFromBody(string body)
+        public static string GetRequestVerificationTokenResponse(Response response)
         {
             // <input name="__RequestVerificationToken" type="hidden" value="rGFOR5OvmlpJ_6_Kabcx3JSrJ3v6EL0W6tuOuD-e8QvUuK2l1MX5jP7pztjxnm5k0qgHIv-mati2ctst9M8kD9jBg3E1" />
             const string needle = "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"";
-            int hashStart = body.IndexOf(needle, StringComparison.Ordinal);
+            int hashStart = response.Body.IndexOf(needle, StringComparison.Ordinal);
             if (hashStart == -1)
                 return null;
 
             hashStart += needle.Length;
 
             // get hash end
-            int hashEnd = body.IndexOf('"', hashStart);
+            int hashEnd = response.Body.IndexOf('"', hashStart);
             if (hashEnd == -1)
                 return null;
 
-            return body.Substring(hashStart, hashEnd - hashStart);
+            return response.Body.Substring(hashStart, hashEnd - hashStart);
         }
 
         public static string GetEulaHashFromBody(string body)

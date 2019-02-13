@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Enums
 { 
     public enum LoginResult
     {

@@ -8,6 +8,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Security;
+using ISBoxerEVELauncher.Enums;
 
 namespace ISBoxerEVELauncher
 {

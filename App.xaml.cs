@@ -11,6 +11,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
+using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Games.EVE;
 
 namespace ISBoxerEVELauncher
 {
@@ -381,16 +385,16 @@ namespace ISBoxerEVELauncher
         /// <param name="sisi"></param>
         /// <param name="dxVersion"></param>
         /// <returns></returns>
-        static public bool Launch(string ssoToken, string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID)
+        static public bool Launch(string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID, EVEAccount.Token token)
         {
-            if (ssoToken == null)
-                throw new ArgumentNullException("ssoToken");
+            //if (ssoToken == null)
+            //    throw new ArgumentNullException("ssoToken");
             if (gameName == null)
                 throw new ArgumentNullException("gameName");
             if (gameProfileName == null)
                 throw new ArgumentNullException("gameProfileName");
 
-            string cmdLine = "open \"" + gameName + "\" \"" + gameProfileName + "\" -addparam \"/noconsole\" -addparam \"/server:tranquility\" -addparam \"/ssoToken=" + ssoToken + "\"";
+            string cmdLine = "open \"" + gameName + "\" \"" + gameProfileName + "\" -addparam \"/noconsole\" -addparam \"/ssoToken=" + token.TokenString + "\"";
             if (dxVersion != DirectXVersion.Default)
             {
                 cmdLine += " -addparam \"/triPlatform=" + dxVersion.ToString() + "\"";
@@ -400,6 +404,17 @@ namespace ISBoxerEVELauncher
             {
                 cmdLine += " -addparam \"/character="+characterID+"\"";
             }
+
+            if (sisi)
+            {
+                cmdLine += " -addparam \"/server:Singularity\"";
+            }
+            else
+            {
+                cmdLine += " -addparam \"/server:tranquility\"";
+            }
+
+            cmdLine += " -addparam \"/settingsprofile=Default\" -addparam \"/machineHash=" + App.Settings.MachineHash + "\"";
 
             try
             {
@@ -421,14 +436,14 @@ namespace ISBoxerEVELauncher
         /// <param name="sisi"></param>
         /// <param name="dxVersion"></param>
         /// <returns></returns>
-        static public bool Launch(string ssoToken, string sharedCachePath, bool sisi, DirectXVersion dxVersion, long characterID)
+        static public bool Launch(string sharedCachePath, bool sisi, DirectXVersion dxVersion, long characterID, EVEAccount.Token token)
         {
-            if (ssoToken == null)
-                throw new ArgumentNullException("ssoToken");
+            //if (ssoToken == null)
+            //    throw new ArgumentNullException("ssoToken");
             if (sharedCachePath == null)
                 throw new ArgumentNullException("sharedCachePath");
 
-            string args = "/noconsole /ssoToken=" + ssoToken;
+            string args = "/noconsole /ssoToken=" + token.TokenString;
             if (dxVersion!= DirectXVersion.Default)
             {
                 args += " /triPlatform=" + dxVersion.ToString();
@@ -447,6 +462,8 @@ namespace ISBoxerEVELauncher
             {
                 args += " /character=" + characterID;
             }
+
+            args += " /settingsprofile=Default /machineHash=" + App.Settings.MachineHash + " \"\"";
 
             string executable;
             if (sisi)

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Security
 {
     /// <summary>
     /// System for securely transmitting Master Key between ISBoxer EVE Launcher instances

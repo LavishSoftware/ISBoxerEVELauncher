@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.Games.EVE;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Web
 {
     static public class CookieStorage
     {
@@ -16,20 +18,6 @@ namespace ISBoxerEVELauncher
             System.IO.Directory.CreateDirectory(path);
 
             return path;
-        }
-
-        public static string SHA256(this string plaintext)
-        {
-            using (System.Security.Cryptography.SHA256Managed crypt = new System.Security.Cryptography.SHA256Managed())
-            {
-                byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(plaintext), 0, Encoding.UTF8.GetByteCount(plaintext));
-                System.Text.StringBuilder hash = new System.Text.StringBuilder();
-                foreach (byte theByte in crypto)
-                {
-                    hash.Append(theByte.ToString("x2"));
-                }
-                return hash.ToString();
-            }
         }
 
         public static string GetCookiesFilename(EVEAccount eveAccount)
@@ -99,6 +87,13 @@ namespace ISBoxerEVELauncher
         {
             string filePath = GetCookiesFilename(eveAccount);
             WriteAllTextSafe(filePath, cookies, Encoding.ASCII);
+        }
+
+
+        public static void DeleteCookies(EVEAccount eveAccount)
+        {
+            string filePath = GetCookiesFilename(eveAccount);
+            System.IO.File.Delete(filePath);
         }
     }
 }

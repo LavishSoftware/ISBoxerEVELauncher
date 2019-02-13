@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.Games.EVE
 {
     /// <summary>
     /// An EVE Online Character 
@@ -62,7 +62,7 @@ namespace ISBoxerEVELauncher
         public static long GetCharacterID(bool sisi, string characterName)
         {
 
-            string uri = string.Format("https://esi.tech.ccp.is/v1/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true",(sisi?"singularity":"tranquility"), WebUtility.UrlEncode(characterName));
+            string uri = string.Format("https://esi.evetech.net/v1/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true", (sisi?"singularity":"tranquility"), WebUtility.UrlEncode(characterName));
 
             using (WebClient wc = new WebClient())
             {

@@ -4,18 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ISBoxerEVELauncher.Enums;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.InnerSpace
 {
-    public enum RelatedExecutable       
-    {
-        InvalidGameProfile,
-        Other,
-        EXEFile,
-        EVELauncher,
-        ISBoxerEVELauncher,
-        InnerSpace,
-    }
+
 
     public class InnerSpaceGameProfile
     {

@@ -8,6 +8,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Security;
+using ISBoxerEVELauncher.Enums;
 
 namespace ISBoxerEVELauncher
 {
@@ -41,9 +45,9 @@ namespace ISBoxerEVELauncher
         {
             return App.Settings.Accounts.FirstOrDefault(q => q.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
-        public EVECharacter FindEVECharacter(bool sisi,string name)
+        public EVECharacter FindEVECharacter(bool sisi, string name)
         {
-            return App.Settings.Characters.FirstOrDefault(q => q.UseSingularity=sisi && q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            return App.Settings.Characters.FirstOrDefault(q => q.UseSingularity = sisi && q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         InnerSpaceGameProfile _TranquilityGameProfile;
@@ -82,6 +86,23 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public string EVESharedCachePath { get { return _EVESharedCachePath; } set { _EVESharedCachePath = value; OnPropertyChanged("EVESharedCachePath"); } }
 
+
+        string _machineHash;
+        public string MachineHash
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_machineHash))
+                {
+                    MachineHash = Guid.NewGuid().ToString().Replace("-", "");
+                }
+                return _machineHash;
+            }
+            set { _machineHash = value; OnPropertyChanged("MachineHash"); }
+        }
+
+
+
         public string GetTranquilityPath()
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
@@ -105,7 +126,7 @@ namespace ISBoxerEVELauncher
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return Path.Combine(GetSingularityPath() , "bin\\exefile.exe");
+            return Path.Combine(GetSingularityPath(), "bin\\exefile.exe");
         }
 
         string _MasterKeyCheck;
@@ -130,8 +151,8 @@ namespace ISBoxerEVELauncher
         /// Has a Master Key been configured?
         /// </summary>
         [XmlIgnore]
-        public bool UseMasterKey 
-        { 
+        public bool UseMasterKey
+        {
             get
             {
                 return !string.IsNullOrEmpty(MasterKeyCheck);
@@ -156,7 +177,7 @@ namespace ISBoxerEVELauncher
         /// The already-encrypted Master Password. The Password itself is discarded and wiped.
         /// </summary>
         [XmlIgnore]
-        public SecureStringWrapper PasswordMasterKey 
+        public SecureStringWrapper PasswordMasterKey
         {
             get
             {
@@ -197,7 +218,7 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public bool RequestMasterPassword()
         {
-            if (UseMasterKey && (PasswordMasterKey==null || !PasswordMasterKey.HasData))
+            if (UseMasterKey && (PasswordMasterKey == null || !PasswordMasterKey.HasData))
             {
                 Windows.MasterKeyEntryWindow mkew = new Windows.MasterKeyEntryWindow();
                 mkew.ShowDialog();
@@ -295,7 +316,7 @@ namespace ISBoxerEVELauncher
                 using (SecureStringWrapper ssw = new SecureStringWrapper(masterPassword))
                 {
                     byte[] passwordBytes = ssw.ToByteArray();
-                    
+
                     using (SecureBytesWrapper sbw = new SecureBytesWrapper())
                     {
                         sbw.Bytes = new byte[MasterKeySalt.Length + passwordBytes.Length];
@@ -365,7 +386,7 @@ namespace ISBoxerEVELauncher
             }
             MasterKeyCheck = null;
             MasterKeyCheckIV = null;
-            if (PasswordMasterKey!=null)
+            if (PasswordMasterKey != null)
             {
                 PasswordMasterKey.Dispose();
             }
@@ -442,7 +463,7 @@ namespace ISBoxerEVELauncher
         /// <param name="filename"></param>
         public void Store(string filename)
         {
-            foreach(EVEAccount a in Accounts)
+            foreach (EVEAccount a in Accounts)
             {
                 a.PrepareStorage();
             }
@@ -454,13 +475,13 @@ namespace ISBoxerEVELauncher
                     s.Serialize(w, this);
                 }
             }
-            catch(UnauthorizedAccessException uae)
+            catch (UnauthorizedAccessException uae)
             {
                 if (cannotSave)
                     return;
                 cannotSave = true;
 
-                System.Windows.MessageBox.Show("ISBoxer EVE Launcher cannot save its Settings to "+DefaultFilename+". You may need to Run as Administrator!");
+                System.Windows.MessageBox.Show("ISBoxer EVE Launcher cannot save its Settings to " + filename + ". You may need to Run as Administrator!");
                 return;
             }
             catch (Exception e)

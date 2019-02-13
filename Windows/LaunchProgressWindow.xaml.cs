@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ISBoxerEVELauncher.Launchers;
+using ISBoxerEVELauncher.Enums;
 
 namespace ISBoxerEVELauncher.Windows
 {
@@ -122,7 +123,7 @@ namespace ISBoxerEVELauncher.Windows
 
 
             ILaunchTarget a = Accounts[0];
-            EVEAccount.LoginResult lr = EVEAccount.LoginResult.Error;
+            LoginResult lr = LoginResult.Error;
             try
             {            
                  lr = Launcher.Launch(a);
@@ -162,7 +163,7 @@ namespace ISBoxerEVELauncher.Windows
             }
                 switch(lr)
                 {
-                    case EVEAccount.LoginResult.Success:
+                    case LoginResult.Success:
                         AccountsLaunched.Add(a);
                         Accounts.Remove(a);
                         LastLaunch = DateTime.Now;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace ISBoxerEVELauncher
+namespace ISBoxerEVELauncher.InnerSpace
 {
     [Serializable]
     public class Set

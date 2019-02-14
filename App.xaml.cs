@@ -415,7 +415,7 @@ namespace ISBoxerEVELauncher
                 cmdLine += " -addparam \"/server:tranquility\"";
             }
 
-            cmdLine += " -addparam \"/settingsprofile=Default\" -addparam \"/machineHash=" + App.Settings.MachineHash + "\"";
+            cmdLine += " -addparam \"/machineHash=" + App.Settings.MachineHash + "\" \"\"";
 
             try
             {
@@ -464,7 +464,7 @@ namespace ISBoxerEVELauncher
                 args += " /character=" + characterID;
             }
 
-            args += " /settingsprofile=Default /machineHash=" + App.Settings.MachineHash + " \"\"";
+            args += " /machineHash=" + App.Settings.MachineHash + " \"\"";
 
             string executable;
             if (sisi)

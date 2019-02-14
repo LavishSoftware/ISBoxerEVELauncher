@@ -18,7 +18,7 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public void LoadProfiles()
         {
-            //path = var System.IO.Directory = App.Settings.EVESharedCachePath
+            var path = App.Settings.EVESharedCachePath;
         }
 
     }

@@ -1,6 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.31 Fix the Launch with InnerSpace function.  Revert profile selection to previous ISBEL behaviour to use the settings/ folder.
+
 * Version 1.0.0.30 updated to include other auth functions.  Adjusted the error reponse to hopefully provide much better info when something goes wrong.
 
 * Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
@@ -8,34 +10,6 @@
 * Version 1.0.0.28 includes a community-supplied fix for the new SSOv2 token requirement, currently supporting Tranquility but not Singularity
 
 * Version 1.0.0.27 uses a separate cookies file per EVE account, for better simultaneous login support
-
-* Version 1.0.0.26 slightly increases the size of the Verification Code entry box to address reported issues
-
-* Version 1.0.0.25 fixes a fudged URL from the new e-mailed Verification Code support
-
-* Version 1.0.0.24 adds support for the new e-mailed Verification Code challenge, as per https://www.eveonline.com/article/pi6klt/security-changes-to-the-eve-sso
-
-* Version 1.0.0.23 fixes Security Warning messages, updates the GUI to hide Inner Space related controls when the user does not have Inner Space, and hides most options under Advanced when creating Game Profiles
-
-* Version 1.0.0.22 adds support for Security Warning messages such as Commonly Used Password, and includes a warning message when adding Characters
-
-* Version 1.0.0.21 fixes a new 500 Internal Server Error due to a minor change in the EVE login process, and also improves output from this type of error
-
-* Version 1.0.0.19 fixes a new ArgumentNullException error from 1.0.0.18
-
-* Version 1.0.0.18 includes a fix for Authenticators requiring 2-factor Authenticator codes each time, the Authenticator window popping up an error message when pressing Enter, and also for the Settings file sometimes losing stored passwords. Timeouts have been increased from 5 to 30 seconds.
-
-* Version 1.0.0.17 includes submitted patches to fix adding Characters, and an issue with the EULA page. Minimizing to Tray is temporarily disabled to work around an issue with the Master Password not operating correctly while minimized this way.
-
-* Version 1.0.0.16 includes submitted patches to fix 2-Factor Authentication with Authenticator codes, and Character selection
-
-* Version 1.0.0.15 added automtic Character selection (further streamlining auto-login), and fixed defaults for setting up Inner Space Game Profiles to match the settings required for ISBoxer
-
-* Version 1.0.0.14 added a fix for the EVE console appearing when launching through Inner Space (submitted by ex0a)
-
-* Version 1.0.0.13 added Minimize-to-Tray functionality, and support for accounts requiring E-mail verification
-
-* Version 1.0.0.5 added a simple way to stop re-entering the Master Password each time ISBoxer EVE Launcher is launched. Just keep a "master" ISBoxer EVE Launcher instance running, with the Master Password already entered.
 
 # What is ISBoxer EVE Launcher?
 ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Online multiboxing team -- securely -- with ISBoxer, but can also be used without ISBoxer at all.
@@ -45,7 +19,7 @@ ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Onl
 If password storage is enabled, ISBoxer EVE Launcher keeps your EVE passwords cryptographically secure, allowing you to keep any number of EVE accounts safely ready for instant login.
 
 # Download
-**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.30.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
+**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.31.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
 
 # Installation
 Un-zip the ISBoxer EVE Launcher.exe file into the location of your choice. If intending to use with Inner Space/ISBoxer, it is recommended to place the file in the Inner Space folder.

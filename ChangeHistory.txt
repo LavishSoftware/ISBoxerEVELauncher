@@ -1,4 +1,8 @@
 ﻿
+* Version 1.0.0.28 includes a community-supplied fix for the new SSOv2 token requirement, currently supporting Tranquility but not Singularity
+
+* Version 1.0.0.27 uses a separate cookies file per EVE account, for better simultaneous login support
+
 * Version 1.0.0.26 slightly increases the size of the Verification Code entry box to address reported issues
 
 * Version 1.0.0.25 fixes a fudged URL from the new e-mailed Verification Code support

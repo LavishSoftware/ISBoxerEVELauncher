@@ -1,15 +1,13 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
-* Version 1.0.0.31 Fix the Launch with InnerSpace function.  Revert profile selection to previous ISBEL behaviour to use the settings/ folder.
+* Version 1.0.0.31 Fix the Launch with InnerSpace function.  ISBEL will now default to using the settings_ISBEL/ as the default settings folder.
+  If you previously had a settings/ folder from an old ISBEL installation these will be auto migrated across to the new ISBEL settings folder.
+  If you have a virtual file in your ISBoxer profile for the settings/ folder, you will need to rename this to settings_ISBEL/
 
 * Version 1.0.0.30 updated to include other auth functions.  Adjusted the error reponse to hopefully provide much better info when something goes wrong.
 
 * Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
-
-* Version 1.0.0.28 includes a community-supplied fix for the new SSOv2 token requirement, currently supporting Tranquility but not Singularity
-
-* Version 1.0.0.27 uses a separate cookies file per EVE account, for better simultaneous login support
 
 # What is ISBoxer EVE Launcher?
 ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Online multiboxing team -- securely -- with ISBoxer, but can also be used without ISBoxer at all.

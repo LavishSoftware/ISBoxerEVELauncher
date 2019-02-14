@@ -15,6 +15,7 @@ using ISBoxerEVELauncher.Extensions;
 using ISBoxerEVELauncher.InnerSpace;
 using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.Interface;
 
 namespace ISBoxerEVELauncher
 {
@@ -541,7 +542,7 @@ namespace ISBoxerEVELauncher
             if (LaunchAccountNames.Count == 0)
                 return;
 
-            List<Launchers.ILaunchTarget> LaunchAccounts = new List<Launchers.ILaunchTarget>();
+            List<ILaunchTarget> LaunchAccounts = new List<ILaunchTarget>();
 
             foreach(string name in LaunchAccountNames)
             {
@@ -563,7 +564,7 @@ namespace ISBoxerEVELauncher
                 return;
             }
 
-            Launchers.ILauncher launcher;
+            ILauncher launcher;
             if (useInnerSpace)
             {
                 InnerSpaceGameProfile gp;
@@ -582,11 +583,11 @@ namespace ISBoxerEVELauncher
                     return;
                 }
 
-                launcher = new Launchers.InnerSpaceLauncher(gp, Settings.UseDirectXVersion, Settings.UseSingularity);
+                launcher = new Launchers.InnerSpace(gp, Settings.UseDirectXVersion, Settings.UseSingularity);
             }
             else
             {
-                launcher = new Launchers.DirectLauncher(Settings.EVESharedCachePath, Settings.UseDirectXVersion, Settings.UseSingularity);
+                launcher = new Launchers.Direct(Settings.EVESharedCachePath, Settings.UseDirectXVersion, Settings.UseSingularity);
             }
             Windows.LaunchProgressWindow lpw = new Windows.LaunchProgressWindow(LaunchAccounts, launcher);
             lpw.ShowDialog();

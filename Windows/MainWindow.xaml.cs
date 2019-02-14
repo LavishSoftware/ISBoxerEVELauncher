@@ -586,7 +586,7 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
-            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchAccounts, new Launchers.DirectLauncher(App.Settings.EVESharedCachePath, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
+            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchAccounts, new Launchers.Direct(App.Settings.EVESharedCachePath, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
             lpw.ShowDialog();
         }
 
@@ -617,7 +617,7 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
-            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchAccounts, new Launchers.InnerSpaceLauncher(gp, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
+            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchAccounts, new Launchers.InnerSpace(gp, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
             lpw.ShowDialog();
         }
 
@@ -832,7 +832,7 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
-            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchCharacters, new Launchers.InnerSpaceLauncher(gp, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
+            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchCharacters, new Launchers.InnerSpace(gp, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
             lpw.ShowDialog();
         }
 
@@ -855,7 +855,7 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
-            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchCharacters, new Launchers.DirectLauncher(App.Settings.EVESharedCachePath, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
+            Windows.LaunchProgressWindow lpw = new LaunchProgressWindow(launchCharacters, new Launchers.Direct(App.Settings.EVESharedCachePath, App.Settings.UseDirectXVersion, App.Settings.UseSingularity));
             lpw.ShowDialog();
         }
 

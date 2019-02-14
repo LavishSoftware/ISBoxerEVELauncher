@@ -82,6 +82,10 @@
     </ApplicationDefinition>
     <Compile Include="Enums\DirectXVersion.cs" />
     <Compile Include="Enums\RelatedExecutable.cs" />
+    <Compile Include="Games\EVE\Profiles.cs" />
+    <Compile Include="Interface\ILauncher.cs" />
+    <Compile Include="Interface\ILaunchTarget.cs" />
+    <Compile Include="Launchers\InnerSpace.cs" />
     <Compile Include="Web\CookieStorage.cs" />
     <Compile Include="Games\EVE\EVECharacter.cs" />
     <Compile Include="Extensions\HttpWebResponseExtension.cs" />
@@ -91,7 +95,7 @@
     <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Extensions\WebResponseExtension.cs" />
     <Compile Include="Security\KeyTransmitter.cs" />
-    <Compile Include="Launchers.cs" />
+    <Compile Include="Launchers\Direct.cs" />
     <Compile Include="Enums\LoginResult.cs" />
     <Compile Include="Security\SecureBytesWrapper.cs" />
     <Compile Include="Security\SHA256.cs" />

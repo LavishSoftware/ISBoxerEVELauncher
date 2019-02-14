@@ -85,6 +85,7 @@
     </ApplicationDefinition>
     <Compile Include="Enums\DirectXVersion.cs" />
     <Compile Include="Enums\RelatedExecutable.cs" />
+    <Compile Include="Games\EVE\ProfileManager.cs" />
     <Compile Include="Games\EVE\Profiles.cs" />
     <Compile Include="Interface\ILauncher.cs" />
     <Compile Include="Interface\ILaunchTarget.cs" />

@@ -15,6 +15,8 @@ using ISBoxerEVELauncher.Extensions;
 using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Web;
 using System.Security.Cryptography;
+using ISBoxerEVELauncher.Interface;
+
 
 namespace ISBoxerEVELauncher.Games.EVE
 {
@@ -23,7 +25,7 @@ namespace ISBoxerEVELauncher.Games.EVE
     /// <summary>
     /// An EVE Online account and related data
     /// </summary>
-    public class EVEAccount : INotifyPropertyChanged, IDisposable, ISBoxerEVELauncher.Launchers.ILaunchTarget
+    public class EVEAccount : INotifyPropertyChanged, IDisposable, ILaunchTarget
     {
 
         [XmlIgnore]
@@ -37,6 +39,8 @@ namespace ISBoxerEVELauncher.Games.EVE
         [XmlIgnore]
         private string code;
 
+        public string Profile { get; set; }
+
 
         public EVEAccount()
         {
@@ -44,6 +48,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             challengeCodeSource = Guid.NewGuid();
             challengeCode = Encoding.UTF8.GetBytes(challengeCodeSource.ToString().Replace("-", ""));
             challengeHash = Base64UrlEncoder.Encode(ISBoxerEVELauncher.Security.SHA256.GenerateHash(Base64UrlEncoder.Encode(challengeCode)));
+            Profile = "Default";
         }
 
 
@@ -864,27 +869,6 @@ namespace ISBoxerEVELauncher.Games.EVE
                 return LoginResult.InvalidAuthenticatorChallenge;
             }
 
-            //string uri = "https://login.eveonline.com/account/authenticator?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            //if (sisi)
-            //{
-            //    uri = "https://sisilogin.testeveonline.com/account/authenticator?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            //}
-
-            //HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            //req.Timeout = 30000;
-            //req.AllowAutoRedirect = true;
-            //if (!sisi)
-            //{
-            //    req.Headers.Add("Origin", "https://login.eveonline.com");
-            //}
-            //else
-            //{
-            //    req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
-            //}
-            //req.Referer = uri;
-            //req.CookieContainer = Cookies;
-            //req.Method = "POST";
-            //req.ContentType = "application/x-www-form-urlencoded";
 
             var uri = RequestResponse.GetAuthenticatorUri(sisi, state.ToString(), challengeHash);
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, uri.ToString(), Cookies);
@@ -955,12 +939,6 @@ namespace ISBoxerEVELauncher.Games.EVE
                     App.Settings.Store();
                 }
             }
-
-            //string uri = "https://login.eveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            //if (sisi)
-            //{
-            //    uri = "https://sisilogin.testeveonline.com/Account/Challenge?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dtoken%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken";
-            //}
 
             var uri = RequestResponse.GetCharacterChallengeUri(sisi, state.ToString(), challengeHash);
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, uri.ToString(), Cookies);
@@ -1255,11 +1233,11 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult Launch(string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID)
         {
-            //string ssoToken;
-            //LoginResult lr = GetSSOToken(sisi, out ssoToken);
-            //if (lr != LoginResult.Success)
-            //    return lr;
-            if (!App.Launch(gameName, gameProfileName, sisi, dxVersion, characterID, TranquilityToken))
+            Token ssoToken;
+            LoginResult lr = GetSSOToken(sisi, out ssoToken);
+            if (lr != LoginResult.Success)
+                return lr;
+            if (!App.Launch(gameName, gameProfileName, sisi, dxVersion, characterID, ssoToken))
                 return LoginResult.Error;
 
             return LoginResult.Success;
@@ -1312,7 +1290,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             return Username;
         }
 
-        EVEAccount Launchers.ILaunchTarget.EVEAccount
+        EVEAccount ILaunchTarget.EVEAccount
         {
             get { return this; }
         }

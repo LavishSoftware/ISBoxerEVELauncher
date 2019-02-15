@@ -15,6 +15,7 @@ using ISBoxerEVELauncher.Extensions;
 using ISBoxerEVELauncher.InnerSpace;
 using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.Interface;
 
 namespace ISBoxerEVELauncher
 {
@@ -48,7 +49,7 @@ namespace ISBoxerEVELauncher
 
         public static string DetectedEVESharedCachePath
         {
-            get                            
+            get
             {
                 RegistryKey hkcu = Registry.CurrentUser;
                 RegistryKey PathKey = hkcu.OpenSubKey(@"SOFTWARE\CCP\EVEONLINE");
@@ -80,7 +81,7 @@ namespace ISBoxerEVELauncher
                             _Settings.Store();
                         }
                     }
-                    catch(System.IO.FileNotFoundException e)
+                    catch (System.IO.FileNotFoundException e)
                     {
                         _Settings = new Settings();
                         _Settings.Store();
@@ -120,7 +121,7 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public static string ISPath
         {
-            get 
+            get
             {
                 // already detected?
                 if (!string.IsNullOrEmpty(_ISPath))
@@ -151,7 +152,7 @@ namespace ISBoxerEVELauncher
                 }
 
                 // didn't find it. maybe not even installed.
-                return BaseDirectory; 
+                return BaseDirectory;
             }
             set
             {
@@ -164,11 +165,11 @@ namespace ISBoxerEVELauncher
             InnerSpaceGameProfile gpSingularity = Settings.SingularityGameProfile;
             InnerSpaceGameProfile gpTranquility = Settings.TranquilityGameProfile;
 
-            if (_GameProfiles==null)
+            if (_GameProfiles == null)
             {
                 _GameProfiles = new ObservableCollection<InnerSpaceGameProfile>();
             }
-            else               
+            else
                 _GameProfiles.Clear();
 
             if (GameConfiguration != null)
@@ -199,7 +200,7 @@ namespace ISBoxerEVELauncher
             if (string.IsNullOrWhiteSpace(gameName) || string.IsNullOrWhiteSpace(gameProfileName))
                 return null;
 
-            if (GameConfiguration == null || GameConfiguration.Sets==null)
+            if (GameConfiguration == null || GameConfiguration.Sets == null)
                 return null;
 
             Set gameSet = GameConfiguration.FindSet(gameName);
@@ -216,8 +217,8 @@ namespace ISBoxerEVELauncher
         static Set _GameConfiguration;
         public static Set GameConfiguration { get { return _GameConfiguration; } private set { _GameConfiguration = value; ReloadGameProfiles(); } }
         static ObservableCollection<InnerSpaceGameProfile> _GameProfiles;
-        public static ObservableCollection<InnerSpaceGameProfile> GameProfiles 
-        { 
+        public static ObservableCollection<InnerSpaceGameProfile> GameProfiles
+        {
             get
             {
                 if (_GameProfiles == null)
@@ -235,7 +236,7 @@ namespace ISBoxerEVELauncher
 
         public static InnerSpaceGameProfile FindGlobalGameProfile(InnerSpaceGameProfile likeThis)
         {
-            if (GameProfiles == null || likeThis==null)
+            if (GameProfiles == null || likeThis == null)
                 return likeThis;
 
             InnerSpaceGameProfile found = GameProfiles.FirstOrDefault(q => q.Game.Equals(likeThis.Game, StringComparison.InvariantCultureIgnoreCase) && q.GameProfile.Equals(likeThis.GameProfile, StringComparison.InvariantCultureIgnoreCase));
@@ -244,7 +245,7 @@ namespace ISBoxerEVELauncher
 
             return found;
         }
- 
+
         static bool AddGameToXML(string gameName, string gameProfileName, string executablePath, string executableName, string parameters)
         {
             // not running, just edit the XML
@@ -330,7 +331,7 @@ namespace ISBoxerEVELauncher
         /// <returns></returns>
         public static bool AddGame(string gameName, string gameProfileName, string executablePath, string executableName, string parameters)
         {
-            string isboxerFilename = System.IO.Path.Combine(ISPath,"ISBoxer Toolkit.exe");
+            string isboxerFilename = System.IO.Path.Combine(ISPath, "ISBoxer Toolkit.exe");
             while (true)
             {
                 System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("InnerSpace");
@@ -346,7 +347,7 @@ namespace ISBoxerEVELauncher
 
                 if (!System.IO.File.Exists(isboxerFilename))
                 {
-                    switch(MessageBox.Show("ISBoxer EVE Launcher has determined that Inner Space is running. Please Exit Inner Space and click OK to try again, otherwise click Cancel.", "Adding a Game this way requires Inner Space to be closed", MessageBoxButton.OKCancel))
+                    switch (MessageBox.Show("ISBoxer EVE Launcher has determined that Inner Space is running. Please Exit Inner Space and click OK to try again, otherwise click Cancel.", "Adding a Game this way requires Inner Space to be closed", MessageBoxButton.OKCancel))
                     {
                         case MessageBoxResult.OK:
                             continue;
@@ -400,9 +401,9 @@ namespace ISBoxerEVELauncher
                 cmdLine += " -addparam \"/triPlatform=" + dxVersion.ToString() + "\"";
             }
 
-            if (characterID!=0)
+            if (characterID != 0)
             {
-                cmdLine += " -addparam \"/character="+characterID+"\"";
+                cmdLine += " -addparam \"/character=" + characterID + "\"";
             }
 
             if (sisi)
@@ -414,7 +415,7 @@ namespace ISBoxerEVELauncher
                 cmdLine += " -addparam \"/server:tranquility\"";
             }
 
-            cmdLine += " -addparam \"/settingsprofile=Default\" -addparam \"/machineHash=" + App.Settings.MachineHash + "\"";
+            cmdLine += " -addparam \"settingsprofile=ISBEL\" -addparam \"/machineHash=" + App.Settings.MachineHash + "\" \"\"";
 
             try
             {
@@ -444,7 +445,7 @@ namespace ISBoxerEVELauncher
                 throw new ArgumentNullException("sharedCachePath");
 
             string args = "/noconsole /ssoToken=" + token.TokenString;
-            if (dxVersion!= DirectXVersion.Default)
+            if (dxVersion != DirectXVersion.Default)
             {
                 args += " /triPlatform=" + dxVersion.ToString();
             }
@@ -463,7 +464,7 @@ namespace ISBoxerEVELauncher
                 args += " /character=" + characterID;
             }
 
-            args += " /settingsprofile=Default /machineHash=" + App.Settings.MachineHash + " \"\"";
+            args += " /settingsprofile=ISBEL /machineHash=" + App.Settings.MachineHash + " \"\"";
 
             string executable;
             if (sisi)
@@ -479,11 +480,11 @@ namespace ISBoxerEVELauncher
 
             try
             {
-                System.Diagnostics.Process.Start(executable,args);
+                System.Diagnostics.Process.Start(executable, args);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MessageBox.Show("Launch failed. executable="+executable+"; args="+args+System.Environment.NewLine+e.ToString());
+                MessageBox.Show("Launch failed. executable=" + executable + "; args=" + args + System.Environment.NewLine + e.ToString());
                 return false;
             }
             return true;
@@ -496,15 +497,19 @@ namespace ISBoxerEVELauncher
 
         public static void ProcessCommandLine(IEnumerable<string> Args)
         {
+
             if (Args == null || Args.Count() == 0)
+            {
+                ProfileManager.MigrateSettingsToISBEL();
                 return;
+            }
 
             List<string> LaunchAccountNames = new List<string>();
 
             bool useInnerSpace = false;
             foreach (string s in Args)
             {
-                switch(s.ToLowerInvariant())
+                switch (s.ToLowerInvariant())
                 {
                     case "-dx9":
                         Settings.UseDirectXVersion = DirectXVersion.dx9;
@@ -539,21 +544,24 @@ namespace ISBoxerEVELauncher
             }
 
             if (LaunchAccountNames.Count == 0)
+            {
+
                 return;
+            }
 
-            List<Launchers.ILaunchTarget> LaunchAccounts = new List<Launchers.ILaunchTarget>();
+            List<ILaunchTarget> LaunchAccounts = new List<ILaunchTarget>();
 
-            foreach(string name in LaunchAccountNames)
+            foreach (string name in LaunchAccountNames)
             {
                 EVEAccount acct = Settings.Accounts.FirstOrDefault(q => q.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (acct!=null)
+                if (acct != null)
                 {
                     LaunchAccounts.Add(acct);
                     continue;
                 }
 
                 EVECharacter ec = Settings.Characters.FirstOrDefault(q => q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (ec!=null)
+                if (ec != null)
                 {
                     LaunchAccounts.Add(ec);
                     continue;
@@ -563,7 +571,7 @@ namespace ISBoxerEVELauncher
                 return;
             }
 
-            Launchers.ILauncher launcher;
+            ILauncher launcher;
             if (useInnerSpace)
             {
                 InnerSpaceGameProfile gp;
@@ -582,11 +590,11 @@ namespace ISBoxerEVELauncher
                     return;
                 }
 
-                launcher = new Launchers.InnerSpaceLauncher(gp, Settings.UseDirectXVersion, Settings.UseSingularity);
+                launcher = new Launchers.InnerSpace(gp, Settings.UseDirectXVersion, Settings.UseSingularity);
             }
             else
             {
-                launcher = new Launchers.DirectLauncher(Settings.EVESharedCachePath, Settings.UseDirectXVersion, Settings.UseSingularity);
+                launcher = new Launchers.Direct(Settings.EVESharedCachePath, Settings.UseDirectXVersion, Settings.UseSingularity);
             }
             Windows.LaunchProgressWindow lpw = new Windows.LaunchProgressWindow(LaunchAccounts, launcher);
             lpw.ShowDialog();
@@ -608,7 +616,7 @@ namespace ISBoxerEVELauncher
 
             //Note:  https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.mainwindowhandle?view=netframework-4.7
             //When the Main window is hidden, it will return a MainWindowHandle of 0.   This makes the following code fail when trying to find the master window that is minimized to the system tray:
-            IEnumerable<Process> processList = Process.GetProcesses().Where(q => q.NameMatches(currentProcess) && (q.MainWindowHandle!=IntPtr.Zero || q.Id==currentProcess.Id));
+            IEnumerable<Process> processList = Process.GetProcesses().Where(q => q.NameMatches(currentProcess) && (q.MainWindowHandle != IntPtr.Zero || q.Id == currentProcess.Id));
 
             if (processList == null)
                 return null;
@@ -632,7 +640,7 @@ namespace ISBoxerEVELauncher
                         if (processes[i].MainModuleNameMatches(currentProcess))
                             return processes[i];
                     }
-                    catch(System.ComponentModel.Win32Exception we)
+                    catch (System.ComponentModel.Win32Exception we)
                     {
                         if (we.NativeErrorCode == 5)
                         {
@@ -706,7 +714,7 @@ namespace ISBoxerEVELauncher
             {
                 ReloadGameConfiguration();
 
-                if (GameConfiguration!=null || System.IO.File.Exists(ISExecutable))
+                if (GameConfiguration != null || System.IO.File.Exists(ISExecutable))
                 {
                     HasInnerSpace = true;
                 }
@@ -717,7 +725,7 @@ namespace ISBoxerEVELauncher
                 Current.MainWindow = mainWindow;
                 mainWindow.Show();
 
-                
+
 
                 ProcessCommandLine(CommandLine);
             }
@@ -725,7 +733,7 @@ namespace ISBoxerEVELauncher
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("Exception unhandled by ISBoxer EVE Launcher: "+e.ExceptionObject.ToString());
+            MessageBox.Show("Exception unhandled by ISBoxer EVE Launcher: " + e.ExceptionObject.ToString());
         }
 
     }

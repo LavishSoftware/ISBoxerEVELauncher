@@ -5,13 +5,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ISBoxerEVELauncher.Interface;
 
 namespace ISBoxerEVELauncher.Games.EVE
 {
     /// <summary>
     /// An EVE Online Character 
     /// </summary>
-    public class EVECharacter : ISBoxerEVELauncher.Launchers.ILaunchTarget
+    public class EVECharacter : ILaunchTarget
     {
         /// <summary>
         /// Name of the Character
@@ -101,7 +102,7 @@ namespace ISBoxerEVELauncher.Games.EVE
         }
 
         [XmlIgnore]
-        EVEAccount Launchers.ILaunchTarget.EVEAccount
+        EVEAccount ILaunchTarget.EVEAccount
         {
             get { return EVEAccount; }
         }

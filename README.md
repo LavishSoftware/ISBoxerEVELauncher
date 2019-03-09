@@ -1,13 +1,13 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.32 Timeout on token was incorrect.
+
 * Version 1.0.0.31 Fix the Launch with InnerSpace function.  ISBEL will now default to using the settings_ISBEL/ as the default settings folder.
   If you previously had a settings/ folder from an old ISBEL installation these will be auto migrated across to the new ISBEL settings folder.
   If you have a virtual file in your ISBoxer profile for the settings/ folder, you will need to rename this to settings_ISBEL/
 
 * Version 1.0.0.30 updated to include other auth functions.  Adjusted the error reponse to hopefully provide much better info when something goes wrong.
-
-* Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
 
 # What is ISBoxer EVE Launcher?
 ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Online multiboxing team -- securely -- with ISBoxer, but can also be used without ISBoxer at all.
@@ -17,7 +17,7 @@ ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Onl
 If password storage is enabled, ISBoxer EVE Launcher keeps your EVE passwords cryptographically secure, allowing you to keep any number of EVE accounts safely ready for instant login.
 
 # Download
-**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.31.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
+**The official ISBoxer EVE Launcher download at https://www.lavishsoft.com/downloads/mods/Lavish.ISBoxerEVELauncher.1.0.0.32.zip** is digitally signed by Lavish Software LLC. Downloading from any other source could potentially compromise your EVE Accounts and passwords, though building the launcher yourself should of course be fine!
 
 # Installation
 Un-zip the ISBoxer EVE Launcher.exe file into the location of your choice. If intending to use with Inner Space/ISBoxer, it is recommended to place the file in the Inner Space folder.

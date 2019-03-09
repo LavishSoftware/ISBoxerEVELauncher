@@ -72,7 +72,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             {
                 _authObj = resp;
                 TokenString = resp.access_token;
-                Expiration = DateTime.Now.AddMinutes(resp.expires_in);
+                Expiration = DateTime.Now.AddSeconds(resp.expires_in).AddMinutes(-1);
             }
 
             public override string ToString()

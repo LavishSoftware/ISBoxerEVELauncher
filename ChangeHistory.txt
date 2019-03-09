@@ -1,4 +1,5 @@
-﻿
+﻿* Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
+
 * Version 1.0.0.28 includes a community-supplied fix for the new SSOv2 token requirement, currently supporting Tranquility but not Singularity
 
 * Version 1.0.0.27 uses a separate cookies file per EVE account, for better simultaneous login support

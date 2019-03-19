@@ -65,6 +65,7 @@ namespace ISBoxerEVELauncher
 
         public static string[] CommandLine;
         public static bool ExitAfterLaunch;
+        public static bool searchCharactersOnly;
 
         static Settings _Settings;
         public static Settings Settings
@@ -534,6 +535,9 @@ namespace ISBoxerEVELauncher
                     case "-exit":
                         ExitAfterLaunch = true;
                         break;
+                    case "-c":
+                        searchCharactersOnly = true;
+                        break;
                     case "null":
                         // ignore
                         break;
@@ -553,18 +557,30 @@ namespace ISBoxerEVELauncher
 
             foreach (string name in LaunchAccountNames)
             {
-                EVEAccount acct = Settings.Accounts.FirstOrDefault(q => q.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (acct != null)
+                if (searchCharactersOnly)
                 {
-                    LaunchAccounts.Add(acct);
-                    continue;
+                    EVECharacter ec = Settings.Characters.FirstOrDefault(q => q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                    if (ec != null)
+                    {
+                        LaunchAccounts.Add(ec);
+                        continue;
+                    }
                 }
-
-                EVECharacter ec = Settings.Characters.FirstOrDefault(q => q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (ec != null)
+                else
                 {
-                    LaunchAccounts.Add(ec);
-                    continue;
+                    EVEAccount acct = Settings.Accounts.FirstOrDefault(q => q.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                    if (acct != null)
+                    {
+                        LaunchAccounts.Add(acct);
+                        continue;
+                    }
+
+                    EVECharacter ec = Settings.Characters.FirstOrDefault(q => q.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                    if (ec != null)
+                    {
+                        LaunchAccounts.Add(ec);
+                        continue;
+                    }
                 }
 
                 MessageBox.Show("Unrecognized EVE Account or Character name '" + name + "' -- if this is correct, please use Add Account/Character to enable it before launching.");

@@ -894,7 +894,9 @@ namespace ISBoxerEVELauncher.Windows
                 foreach (EVECharacter acct in launchCharacters)
                 {
                     string flags = string.Empty;
-                    if (cagpw.UseEVEDirect)
+                     flags += "-c ";
+
+               if (cagpw.UseEVEDirect)
                         flags += "-eve ";
                     else
                         flags += "-innerspace ";

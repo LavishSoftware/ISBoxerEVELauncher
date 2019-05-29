@@ -1,6 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.33 Merge in character launch only option.  Have InnerSpace game profiles create an x64 option.
+
 * Version 1.0.0.32 Timeout on token was incorrect.
 
 * Version 1.0.0.31 Fix the Launch with InnerSpace function.  ISBEL will now default to using the settings_ISBEL/ as the default settings folder.

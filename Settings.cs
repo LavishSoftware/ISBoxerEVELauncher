@@ -68,7 +68,14 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public bool UseSingularity { get { return _UseSingularity; } set { _UseSingularity = value; OnPropertyChanged("UseSingularity"); } }
 
-        float _LaunchDelay;
+      bool _X64;
+      /// <summary>
+      /// Flag to indicate whether shoudl try and launch the x64 client
+      /// </summary>
+      public bool X64 { get { return _X64; } set { _X64 = value; OnPropertyChanged("X64"); } }
+
+
+      float _LaunchDelay;
         /// <summary>
         /// Delay between game launches, in seconds
         /// </summary>

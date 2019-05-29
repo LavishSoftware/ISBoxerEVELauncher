@@ -24,9 +24,10 @@
                 </StackPanel>
             </GroupBox>
             <DockPanel Margin="5,0,5,0">
-                <CheckBox Margin="0,0,30,0" Content="Use Singularity server" VerticalAlignment="Center" IsChecked="{Binding ElementName=mainWindow, Path=UseSingularity}"/>
-                <CheckBox Content="Use DirectX 9" VerticalAlignment="Center" IsThreeState="True" IsChecked="{Binding ElementName=mainWindow, Path=UseDirectX9}"/>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="30,0,0,0">
+                <CheckBox Margin="0,0,15,0" Content="Use Singularity server" VerticalAlignment="Center" IsChecked="{Binding ElementName=mainWindow, Path=UseSingularity}"/>
+                <CheckBox Margin="0,0,15,0" Content="Use DirectX 9" VerticalAlignment="Center" IsThreeState="True" IsChecked="{Binding ElementName=mainWindow, Path=UseDirectX9}"/>
+                <!--<CheckBox Margin="0,0,15,0" Content="x64" VerticalAlignment="Center" IsThreeState="False" IsChecked="{Binding ElementName=mainWindow, Path=X64}"/> -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="15,0,0,0">
                     <TextBlock>Delay</TextBlock>
                     <TextBox Name="textLaunchDelay" Width="30" Margin="4,0,4,0" Text="{Binding ElementName=mainWindow, Path=LaunchDelay}" />
                     <TextBlock>seconds between game launches</TextBlock>

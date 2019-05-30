@@ -121,7 +121,7 @@ namespace ISBoxerEVELauncher
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return Path.Combine(GetTranquilityPath(), "bin\\exefile.exe");
+            return Path.Combine(GetTranquilityPath(), (X64 ? "bin64" : "bin") + "\\exefile.exe");
         }
         public string GetSingularityPath()
         {
@@ -133,7 +133,7 @@ namespace ISBoxerEVELauncher
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return Path.Combine(GetSingularityPath(), "bin\\exefile.exe");
+            return Path.Combine(GetSingularityPath(), (X64?"bin64":"bin") + "\\exefile.exe");
         }
 
         string _MasterKeyCheck;

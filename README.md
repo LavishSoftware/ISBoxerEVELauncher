@@ -1,6 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.34 Fix x64 launch properly.
+
 * Version 1.0.0.33 Merge in character launch only option.  Have InnerSpace game profiles create an x64 option.
 
 * Version 1.0.0.32 Timeout on token was incorrect.

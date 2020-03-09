@@ -715,10 +715,7 @@ namespace ISBoxerEVELauncher
       private void ApplicationStart(object sender, StartupEventArgs e)
       {
          AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-                  | SecurityProtocolType.Tls11
-                  | SecurityProtocolType.Tls12
-                  | SecurityProtocolType.Ssl3;
+         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
 
          CommandLine = e.Args;
 

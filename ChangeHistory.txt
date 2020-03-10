@@ -1,4 +1,18 @@
-﻿* Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
+﻿* Version 1.0.0.35 HTTPS protocol deprecation
+
+* Version 1.0.0.34 Fix x64 launch properly.
+
+* Version 1.0.0.33 Merge in character launch only option.  Have InnerSpace game profiles create an x64 option.
+
+* Version 1.0.0.32 Timeout on token was incorrect.
+
+* Version 1.0.0.31 Fix the Launch with InnerSpace function.  ISBEL will now default to using the settings_ISBEL/ as the default settings folder.
+  If you previously had a settings/ folder from an old ISBEL installation these will be auto migrated across to the new ISBEL settings folder.
+  If you have a virtual file in your ISBoxer profile for the settings/ folder, you will need to rename this to settings_ISBEL/
+
+* Version 1.0.0.30 updated to include other auth functions.  Adjusted the error reponse to hopefully provide much better info when something goes wrong.
+
+* Version 1.0.0.29 updated SSO process to include Singularity.  Verified Email Authentication functions.  Other authentication/validations may not work at this stage.  Delete accounts now correctly deletes accounts, and associated cookes.
 
 * Version 1.0.0.28 includes a community-supplied fix for the new SSOv2 token requirement, currently supporting Tranquility but not Singularity
 

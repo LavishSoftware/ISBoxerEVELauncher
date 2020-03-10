@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lavish Software LLC")]
 [assembly: AssemblyProduct("ISBoxer EVE Launcher")]
-[assembly: AssemblyCopyright("Copyright © 2016-2019")]
+[assembly: AssemblyCopyright("Copyright © 2016-2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.34")]
-[assembly: AssemblyFileVersion("1.0.0.34")]
+[assembly: AssemblyVersion("1.0.0.35")]
+[assembly: AssemblyFileVersion("1.0.0.35")]

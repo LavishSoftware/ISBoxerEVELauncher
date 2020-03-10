@@ -1,17 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
-* Version 1.0.0.34 Fix x64 launch properly.
+* Version 1.0.0.35 Deprecate older HTTPS protocols
 
-* Version 1.0.0.33 Merge in character launch only option.  Have InnerSpace game profiles create an x64 option.
-
-* Version 1.0.0.32 Timeout on token was incorrect.
-
-* Version 1.0.0.31 Fix the Launch with InnerSpace function.  ISBEL will now default to using the settings_ISBEL/ as the default settings folder.
-  If you previously had a settings/ folder from an old ISBEL installation these will be auto migrated across to the new ISBEL settings folder.
-  If you have a virtual file in your ISBoxer profile for the settings/ folder, you will need to rename this to settings_ISBEL/
-
-* Version 1.0.0.30 updated to include other auth functions.  Adjusted the error reponse to hopefully provide much better info when something goes wrong.
 
 # What is ISBoxer EVE Launcher?
 ISBoxer EVE Launcher is an EVE Launcher designed to improve launching an EVE Online multiboxing team -- securely -- with ISBoxer, but can also be used without ISBoxer at all.

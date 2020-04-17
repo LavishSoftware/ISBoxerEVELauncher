@@ -68,7 +68,13 @@ namespace ISBoxerEVELauncher
         /// </summary>
         public bool UseSingularity { get { return _UseSingularity; } set { _UseSingularity = value; OnPropertyChanged("UseSingularity"); } }
 
-      bool _X64;
+        bool _UseExtendedSelectionMode;
+        /// <summary>
+        /// Use extended selection mode for account listing
+        /// </summary>
+        public bool UseExtendedSelectionMode { get { return _UseSingularity; } set { _UseSingularity = value; OnPropertyChanged(nameof(UseExtendedSelectionMode)); } }
+
+        bool _X64;
       /// <summary>
       /// Flag to indicate whether shoudl try and launch the x64 client
       /// </summary>

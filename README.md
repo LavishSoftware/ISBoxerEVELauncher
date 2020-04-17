@@ -1,6 +1,8 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
+* Version 1.0.0.36 Added extended selection mode option for character list.
+
 * Version 1.0.0.35 Deprecate older HTTPS protocols
 
 

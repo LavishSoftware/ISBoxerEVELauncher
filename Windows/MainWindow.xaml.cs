@@ -76,6 +76,9 @@ namespace ISBoxerEVELauncher.Windows
          listAccounts.ItemContainerStyle = itemContainerStyle;
 
          checkSavePasswords.IsChecked = App.Settings.UseMasterKey;
+         checkSelectionModeExtended.IsChecked = checkCharacterSelectionModeExtended.IsChecked = UseExtendedSelectionMode;
+
+         listAccounts.SelectionMode = listCharacters.SelectionMode = UseExtendedSelectionMode ? SelectionMode.Extended : SelectionMode.Multiple;
 
          App.Settings.PropertyChanged += Settings_PropertyChanged;
 
@@ -364,6 +367,19 @@ namespace ISBoxerEVELauncher.Windows
          }
       }
 
+      public bool UseExtendedSelectionMode
+      {
+         get
+         {
+            return App.Settings.UseExtendedSelectionMode;
+         }
+         set
+         {
+            App.Settings.UseExtendedSelectionMode = value;
+            App.Settings.Store();
+         }
+      }
+
       public bool X64
       {
          get
@@ -576,11 +592,14 @@ namespace ISBoxerEVELauncher.Windows
                      checkSavePasswords.IsChecked = true;
                      return;
                }
-
-
-
             }
          }
+      }
+      private void checkSelectionModeExtended_Click(object sender, RoutedEventArgs e)
+      {
+         UseExtendedSelectionMode = !UseExtendedSelectionMode;
+         checkSelectionModeExtended.IsChecked = checkCharacterSelectionModeExtended.IsChecked = UseExtendedSelectionMode;
+         listAccounts.SelectionMode = listCharacters.SelectionMode = UseExtendedSelectionMode ? SelectionMode.Extended : SelectionMode.Multiple;
       }
 
       private void buttonLaunchNonIS_Click(object sender, RoutedEventArgs e)

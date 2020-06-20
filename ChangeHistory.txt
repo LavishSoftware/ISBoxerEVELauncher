@@ -1,4 +1,6 @@
-﻿* Version 1.0.0.35 HTTPS protocol deprecation
+﻿* Version 1.0.0.36 Added option for extended selection mode for listviews.
+
+* Version 1.0.0.35 HTTPS protocol deprecation
 
 * Version 1.0.0.34 Fix x64 launch properly.
 

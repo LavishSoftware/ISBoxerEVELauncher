@@ -27,7 +27,7 @@ namespace ISBoxerEVELauncher.Web
         //public const string logonRedirectURI = "redirect_uri={0}/launcher?client_id=eveLauncherTQ&state={1}&code_challenge_method=S256&code_challenge={2}&ignoreClientStyle=true&showRemember=true";
 
         public const string originUri = "https://launcher.eveonline.com";
-        public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.0.22/";
+        public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.4.15/";
 
 
         
@@ -45,7 +45,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
         }
 
@@ -60,7 +59,6 @@ namespace ISBoxerEVELauncher.Web
             //&amp;state=5617f90c-efdb-41a1-b00d-6f4f24bbeee4
             //&amp;code_challenge_method=S256
             //&amp;code_challenge=nC-B19HKX8ZZYfOEN_bg-YZSjVAMieqEB3nJXFyfQQc
-            //&amp;ignoreClientStyle=true
             //&amp;showRemember=true
 
             return new Uri(auth, UriKind.Relative)
@@ -72,7 +70,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true");
         }
 
@@ -118,7 +115,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -136,7 +132,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -154,7 +149,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -173,7 +167,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }

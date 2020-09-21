@@ -518,7 +518,6 @@ namespace ISBoxerEVELauncher.Windows
                      MessageBox.Show("Failed to log in: " + lr.ToString() + ". Account NOT added.");
                      return;
                   }
-                  break;
             }
 
 
@@ -594,7 +593,6 @@ namespace ISBoxerEVELauncher.Windows
          if (launchAccounts.Count == 0)
             return;
 
-         InnerSpaceGameProfile gp;
          if (string.IsNullOrWhiteSpace(App.Settings.EVESharedCachePath))
          {
             MessageBox.Show("Please set the EVE SharedCache path first!");
@@ -863,7 +861,6 @@ namespace ISBoxerEVELauncher.Windows
          if (launchCharacters.Count == 0)
             return;
 
-         InnerSpaceGameProfile gp;
          if (string.IsNullOrWhiteSpace(App.Settings.EVESharedCachePath))
          {
             MessageBox.Show("Please set the EVE SharedCache path first!");

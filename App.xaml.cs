@@ -83,7 +83,7 @@ namespace ISBoxerEVELauncher
                      _Settings.Store();
                   }
                }
-               catch (System.IO.FileNotFoundException e)
+               catch (System.IO.FileNotFoundException)
                {
                   _Settings = new Settings();
                   _Settings.Store();

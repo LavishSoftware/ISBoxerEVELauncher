@@ -138,7 +138,7 @@ namespace ISBoxerEVELauncher.InnerSpace
                     return true;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 //                MessageBox.Show(e.ToString());
 //                return false;
@@ -258,11 +258,11 @@ namespace ISBoxerEVELauncher.InnerSpace
                     return set;
                 }
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (System.IO.FileNotFoundException)
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception)
             {
 //                MessageBox.Show("Error loading file " + filename + "... " + Environment.NewLine + e.ToString());
 //                return null;

@@ -430,11 +430,11 @@ namespace ISBoxerEVELauncher
                     return settings;
                 }
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (System.IO.FileNotFoundException)
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //                MessageBox.Show("Error loading file " + filename + "... " + Environment.NewLine + e.ToString());
                 //                return null;
@@ -482,7 +482,7 @@ namespace ISBoxerEVELauncher
                     s.Serialize(w, this);
                 }
             }
-            catch (UnauthorizedAccessException uae)
+            catch (UnauthorizedAccessException)
             {
                 if (cannotSave)
                     return;
@@ -491,7 +491,7 @@ namespace ISBoxerEVELauncher
                 System.Windows.MessageBox.Show("ISBoxer EVE Launcher cannot save its Settings to " + filename + ". You may need to Run as Administrator!");
                 return;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

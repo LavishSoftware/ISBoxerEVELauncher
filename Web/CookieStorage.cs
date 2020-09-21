@@ -66,7 +66,7 @@ namespace ISBoxerEVELauncher.Web
 
                 System.IO.File.Delete(tempFile);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (fileExists)
                 {

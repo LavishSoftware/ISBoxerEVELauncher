@@ -53,7 +53,7 @@ namespace ISBoxerEVELauncher.Web
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(_body);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -66,7 +66,7 @@ namespace ISBoxerEVELauncher.Web
             {
                 dynamic json = JsonConvert.DeserializeObject(_body);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

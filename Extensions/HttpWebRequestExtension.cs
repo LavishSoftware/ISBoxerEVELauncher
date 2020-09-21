@@ -32,7 +32,7 @@ namespace ISBoxerEVELauncher.Extensions
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             { }
         }
 
@@ -49,7 +49,7 @@ namespace ISBoxerEVELauncher.Extensions
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             { }
         }
 

@@ -792,7 +792,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             {
                 result = GetAccessToken(sisi, req, out accessToken);
             }
-            catch (System.Net.WebException we)
+            catch (System.Net.WebException)
             {
                 result = GetAccessToken(sisi, out accessToken);
             }
@@ -1061,7 +1061,7 @@ namespace ISBoxerEVELauncher.Games.EVE
                         GetAccessToken(sisi, code, out response);
                         accessToken = new Token(JsonConvert.DeserializeObject<authObj>(response.Body));
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
                         urw.ShowDialog();
@@ -1213,7 +1213,6 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetSSOToken(bool sisi, out Token ssoToken)
         {
-            Token accessToken;
             LoginResult lr = this.GetAccessToken(sisi, out ssoToken);
            
             return lr;

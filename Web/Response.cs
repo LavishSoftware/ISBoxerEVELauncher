@@ -20,8 +20,6 @@ namespace ISBoxerEVELauncher.Web
         string _responseBody;
         Uri _responseUri = null;
 
-        private string _body;
-
         public Response(HttpWebRequest request)
         {
             using (var response = (HttpWebResponse)request.GetResponse())
@@ -51,7 +49,7 @@ namespace ISBoxerEVELauncher.Web
             try
             {
                 HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(_body);
+                doc.LoadHtml(_responseBody);
             }
             catch (Exception)
             {
@@ -64,7 +62,7 @@ namespace ISBoxerEVELauncher.Web
         {
             try
             {
-                dynamic json = JsonConvert.DeserializeObject(_body);
+                dynamic json = JsonConvert.DeserializeObject(_responseBody);
             }
             catch (Exception)
             {

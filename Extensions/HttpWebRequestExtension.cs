@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using ISBoxerEVELauncher.Security;
+using System.Reflection;
 
 namespace ISBoxerEVELauncher.Extensions
 {
@@ -50,6 +51,12 @@ namespace ISBoxerEVELauncher.Extensions
             }
             catch (Exception e)
             { }
+        }
+
+        public static void SetCustomheaders(this HttpWebRequest webRequest, WebHeaderCollection webHeaderCollection)
+        {
+            var field = typeof(HttpWebRequest).GetField("_HttpRequestHeaders", BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(webRequest, webHeaderCollection);
         }
     }
 

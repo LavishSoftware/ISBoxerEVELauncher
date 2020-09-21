@@ -179,6 +179,15 @@ namespace ISBoxerEVELauncher.Web
             req.Method = methodType;
             req.Timeout = 30000;
             req.AllowAutoRedirect = true;
+
+            var t = req.Headers.GetType();
+
+            var customHeaders = new CustomWebHeaderCollection(new System.Collections.Generic.Dictionary<string, string>()
+            {
+                ["User-Agent"] = @"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.12.3 Chrome/69.0.3497.128 Safari/537.36",
+            });
+            req.SetCustomheaders(customHeaders);
+
             if (origin)
             {
                 if (referer == RequestResponse.refererUri)

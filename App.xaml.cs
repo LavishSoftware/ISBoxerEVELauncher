@@ -715,16 +715,10 @@ namespace ISBoxerEVELauncher
       private void ApplicationStart(object sender, StartupEventArgs e)
       {
          AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-         // add in tls2 and tls3 as options as they are not included as the default, and are not the system default for some dumbass reason. TLS 1.3 is not a recognised enum in this version of .net, so use the hex code.
-         ServicePointManager.SecurityProtocol |= (SecurityProtocolType.Tls12 | (SecurityProtocolType)0x00003000);
+         // Allows the operating system to choose the best protocol to use, and to block protocols that are not secure. Unless your app has a specific reason not to, you should use this value.
+         ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 
-         // remove SSL3, TLS1.0 and TLS 1.1 as options
-         ServicePointManager.SecurityProtocol &= ~(SecurityProtocolType.Ssl3| SecurityProtocolType.Tls | SecurityProtocolType.Tls11);
-
-         // Allow a 100 continuation
-         ServicePointManager.Expect100Continue = true;
-
-            CommandLine = e.Args;
+         CommandLine = e.Args;
 
          if (!TransmitCommandLine())
          {

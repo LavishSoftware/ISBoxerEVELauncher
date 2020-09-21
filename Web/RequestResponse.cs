@@ -199,7 +199,14 @@ namespace ISBoxerEVELauncher.Web
             }
             if (!string.IsNullOrWhiteSpace(referer))
             {
-                req.Referer = referer;
+                if (referer == "URL")
+                {
+                    req.Referer = req.RequestUri.ToString();
+                }
+                else
+                {
+                    req.Referer = referer;
+                }
             }
             if (cookies != null)
             {

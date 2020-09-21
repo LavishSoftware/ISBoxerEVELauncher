@@ -1138,7 +1138,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             Response response;
             verificationToken = null;
 
-            var req = RequestResponse.CreateGetRequest(uri, sisi, false, RequestResponse.refererUri, Cookies);
+            var req = RequestResponse.CreateGetRequest(uri, sisi, true, "URL", Cookies);
             req.ContentLength = 0;
 
             var result = RequestResponse.GetHttpWebResponse(req, UpdateCookieStorage, out response);
@@ -1188,7 +1188,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             string RequestVerificationToken = string.Empty;
             var result = GetRequestVerificationToken(uri, sisi, out RequestVerificationToken);
 
-            var req = RequestResponse.CreatePostRequest(uri, sisi, true, RequestResponse.refererUri, Cookies);
+            var req = RequestResponse.CreatePostRequest(uri, sisi, true, "URL", Cookies);
 
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {

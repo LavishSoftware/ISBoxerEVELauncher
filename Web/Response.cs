@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Extensions;
 
 namespace ISBoxerEVELauncher.Web
@@ -34,9 +35,47 @@ namespace ISBoxerEVELauncher.Web
             }
         }
 
+        public Response(HttpWebRequest request, string responseBody)
+        {
+            _requestUri = request.RequestUri;
+            _origin = request.Headers["Origin"];
+            _referer = request.Referer;
+            _response = HttpStatusCode.OK;
+            _responseLocation = null;
+            _responseBody = responseBody;
+            _responseUri = _requestUri;
+        }
+
+        public Response(HttpWebRequest request, WebRequestType requestType)
+        {
+            _requestUri = request.RequestUri;
+            _origin = request.Headers["Origin"];
+            _referer = request.Referer;
+            _response = HttpStatusCode.OK;
+            _responseLocation = null;
+
+            switch (requestType)
+            {
+                case WebRequestType.RequestVerificationToken:
+                    _responseBody = App.myLB.strHTML_RequestVerificationToken;
+                    _responseUri = new Uri(App.myLB.strURL_RequestVerificationToken, UriKind.Absolute);
+                    break;
+                case WebRequestType.VerficationCode:
+                    _responseBody = App.myLB.strHTML_VerficationCode;
+                    _responseUri = new Uri(App.myLB.strURL_VerficationCode, UriKind.Absolute);
+                    break;
+                case WebRequestType.Result:
+                    _responseBody = App.myLB.strHTML_Result;
+                    _responseUri = new Uri(App.myLB.strURL_Result, UriKind.Absolute);
+                    break;
+            }
+
+        }
+
         public string Body
         {
             get { return _responseBody; }
+            set { value = _responseBody; }
         }
 
         public Uri ResponseUri

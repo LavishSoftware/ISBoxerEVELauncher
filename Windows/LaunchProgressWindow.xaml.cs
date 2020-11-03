@@ -14,9 +14,15 @@ namespace ISBoxerEVELauncher.Windows
     /// </summary>
     public partial class LaunchProgressWindow : Window, INotifyPropertyChanged
     {
-        public ObservableCollection<ILaunchTarget> Accounts { get; set; }
+        public ObservableCollection<ILaunchTarget> Accounts
+        {
+            get; set;
+        }
 
-        public ObservableCollection<ILaunchTarget> AccountsLaunched { get; set; }
+        public ObservableCollection<ILaunchTarget> AccountsLaunched
+        {
+            get; set;
+        }
 
         float _DelaySeconds;
         public float DelaySeconds
@@ -32,13 +38,22 @@ namespace ISBoxerEVELauncher.Windows
             }
         }
 
-        public bool AutoClose { get; set; }
+        public bool AutoClose
+        {
+            get; set;
+        }
 
         DateTime LastLaunch = DateTime.MinValue;
 
-        public ILauncher Launcher { get; set; }
+        public ILauncher Launcher
+        {
+            get; set;
+        }
 
-        public int NumErrors { get; set; }
+        public int NumErrors
+        {
+            get; set;
+        }
 
         public LaunchProgressWindow(IEnumerable<ILaunchTarget> accounts, ILauncher launcher)
         {
@@ -74,13 +89,13 @@ namespace ISBoxerEVELauncher.Windows
                 Timer.Stop();
                 Timer = null;
             }
-            if (AutoClose && NumErrors==0)
+            if (AutoClose && NumErrors == 0)
                 this.Close();
         }
 
         void Timer_Tick(object sender, EventArgs e)
         {
-            if (Accounts.Count==0)
+            if (Accounts.Count == 0)
             {
                 Stop();
                 return;
@@ -115,12 +130,12 @@ namespace ISBoxerEVELauncher.Windows
             ILaunchTarget a = Accounts[0];
             LoginResult lr = LoginResult.Error;
             try
-            {            
-                 lr = Launcher.Launch(a);
-            }
-            catch(ArgumentNullException ane)
             {
-                switch(ane.ParamName)
+                lr = Launcher.Launch(a);
+            }
+            catch (ArgumentNullException ane)
+            {
+                switch (ane.ParamName)
                 {
                     case "sharedCachePath":
                         {
@@ -147,24 +162,24 @@ namespace ISBoxerEVELauncher.Windows
                         break;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 AddDetailsLine(ex.ToString());
             }
-                switch(lr)
-                {
-                    case LoginResult.Success:
-                        AccountsLaunched.Add(a);
-                        Accounts.Remove(a);
-                        LastLaunch = DateTime.Now;
-                        AddDetailsLine("Account '"+a.EVEAccount.Username+"' launched");
-                        break;
-                    default:
-                        AddDetailsLine("Account '" + a.EVEAccount.Username + "' failed to launch: " + lr.ToString() + ". Aborting!");
-                        NumErrors++;
-                        Stop();
-                        break;
-                }
+            switch (lr)
+            {
+                case LoginResult.Success:
+                    AccountsLaunched.Add(a);
+                    Accounts.Remove(a);
+                    LastLaunch = DateTime.Now;
+                    AddDetailsLine("Account '" + a.EVEAccount.Username + "' launched");
+                    break;
+                default:
+                    AddDetailsLine("Account '" + a.EVEAccount.Username + "' failed to launch: " + lr.ToString() + ". Aborting!");
+                    NumErrors++;
+                    Stop();
+                    break;
+            }
         }
 
         public void AddDetailsLine(string text)

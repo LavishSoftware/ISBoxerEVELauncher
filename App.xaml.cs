@@ -17,6 +17,7 @@ using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Games.EVE;
 using ISBoxerEVELauncher.Interface;
 using System.Net;
+using ISBoxerEVELauncher.Windows;
 
 namespace ISBoxerEVELauncher
 {
@@ -26,6 +27,8 @@ namespace ISBoxerEVELauncher
    public partial class App : Application
    {
       public static bool HasInnerSpace { get; set; }
+      public static LoginBrowser myLB =new LoginBrowser();
+      public static string strUserName {get; set; }
 
       public static string AppVersion
       {

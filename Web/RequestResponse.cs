@@ -3,9 +3,13 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Web;
+using System.Windows;
+using System.Windows.Threading;
 using ISBoxerEVELauncher.Extensions;
 using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Windows;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ISBoxerEVELauncher.Web
@@ -227,13 +231,33 @@ namespace ISBoxerEVELauncher.Web
             return req;
         }
 
-        public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response)
+        public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response, bool tofModified = false)
         {
             response = null;
 
             try
             {
-                response = new Response(webRequest);
+                if (tofModified)
+                {
+                    App.myLB = new LoginBrowser();
+                    App.myLB.chromiumWebBrowser.Text = App.strUserName;
+                    App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
+
+                    App.myLB.ShowDialog();
+                }
+
+                if (!tofModified)
+                {
+                    response = new Response(webRequest);
+                }
+                else
+                {
+                    //response.Body = strHTML;
+                    if (App.myLB.strHTML_RequestVerificationToken == "")
+                        return LoginResult.Error;
+                    response = new Response(webRequest, WebRequestType.RequestVerificationToken);
+                }
+                
                 if (updateCookies != null)
                 {
                     updateCookies();
@@ -253,8 +277,12 @@ namespace ISBoxerEVELauncher.Web
                             return LoginResult.Error;
                         }
                     default:
-                        throw;
+                        if (tofModified)
+                            throw;
+                        break;
                 }
+
+                GetHttpWebResponse(webRequest, updateCookies, out response, true);
             }
             
             return LoginResult.Success;

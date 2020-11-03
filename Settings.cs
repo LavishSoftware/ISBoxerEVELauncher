@@ -12,6 +12,7 @@ using ISBoxerEVELauncher.Games.EVE;
 using ISBoxerEVELauncher.InnerSpace;
 using ISBoxerEVELauncher.Security;
 using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Windows;
 
 namespace ISBoxerEVELauncher
 {

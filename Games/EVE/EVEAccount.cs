@@ -39,7 +39,10 @@ namespace ISBoxerEVELauncher.Games.EVE
         [XmlIgnore]
         private string code;
 
-        public string Profile { get; set; }
+        public string Profile
+        {
+            get; set;
+        }
 
 
         public EVEAccount()
@@ -94,11 +97,17 @@ namespace ISBoxerEVELauncher.Games.EVE
             /// <summary>
             /// The actual token data
             /// </summary>
-            public string TokenString { get; set; }
+            public string TokenString
+            {
+                get; set;
+            }
             /// <summary>
             /// When the token is good until...
             /// </summary>
-            public DateTime Expiration { get; set; }
+            public DateTime Expiration
+            {
+                get; set;
+            }
         }
 
         CookieContainer _Cookies;
@@ -158,7 +167,18 @@ namespace ISBoxerEVELauncher.Games.EVE
         /// <summary>
         /// EVE Account username
         /// </summary>
-        public string Username { get { return _Username; } set { _Username = value; OnPropertyChanged("Username"); } }
+        public string Username
+        {
+            get
+            {
+                return _Username;
+            }
+            set
+            {
+                _Username = value;
+                OnPropertyChanged("Username");
+            }
+        }
 
         /// <summary>
         /// Old cookie storage. If found in the XML, it will automatically be split into separate storage
@@ -179,7 +199,10 @@ namespace ISBoxerEVELauncher.Games.EVE
             }
         }
 
-        public static bool ShouldUgradeCookieStorage { get; private set; }
+        public static bool ShouldUgradeCookieStorage
+        {
+            get; private set;
+        }
         /// <summary>
         /// New method of storing cookies
         /// </summary>
@@ -203,7 +226,20 @@ namespace ISBoxerEVELauncher.Games.EVE
         /// A Secure (and non-plaintext) representation of the password. This will NOT be stored in XML.
         /// </summary>
         [XmlIgnore]
-        public System.Security.SecureString SecurePassword { get { return _SecurePassword; } set { _SecurePassword = value; OnPropertyChanged("SecurePassword"); EncryptedPassword = null; EncryptedPasswordIV = null; } }
+        public System.Security.SecureString SecurePassword
+        {
+            get
+            {
+                return _SecurePassword;
+            }
+            set
+            {
+                _SecurePassword = value;
+                OnPropertyChanged("SecurePassword");
+                EncryptedPassword = null;
+                EncryptedPasswordIV = null;
+            }
+        }
 
         string _EncryptedPassword;
         /// <summary>
@@ -215,14 +251,29 @@ namespace ISBoxerEVELauncher.Games.EVE
             {
                 return _EncryptedPassword;
             }
-            set { _EncryptedPassword = value; OnPropertyChanged("EncryptedPassword"); }
+            set
+            {
+                _EncryptedPassword = value;
+                OnPropertyChanged("EncryptedPassword");
+            }
         }
 
         string _EncryptedPasswordIV;
         /// <summary>
         /// The Initialization Vector used to encrypt the password
         /// </summary>
-        public string EncryptedPasswordIV { get { return _EncryptedPasswordIV; } set { _EncryptedPasswordIV = value; OnPropertyChanged("EncryptedPasswordIV"); } }
+        public string EncryptedPasswordIV
+        {
+            get
+            {
+                return _EncryptedPasswordIV;
+            }
+            set
+            {
+                _EncryptedPasswordIV = value;
+                OnPropertyChanged("EncryptedPasswordIV");
+            }
+        }
 
         /// <summary>
         /// Sets the encrypted password to the given SecureString, if possible
@@ -364,7 +415,20 @@ namespace ISBoxerEVELauncher.Games.EVE
         /// A Secure (and non-plaintext) representation of the CharacterName. This will NOT be stored in XML.
         /// </summary>
         [XmlIgnore]
-        public System.Security.SecureString SecureCharacterName { get { return _SecureCharacterName; } set { _SecureCharacterName = value; OnPropertyChanged("SecureCharacterName"); EncryptedCharacterName = null; EncryptedCharacterNameIV = null; } }
+        public System.Security.SecureString SecureCharacterName
+        {
+            get
+            {
+                return _SecureCharacterName;
+            }
+            set
+            {
+                _SecureCharacterName = value;
+                OnPropertyChanged("SecureCharacterName");
+                EncryptedCharacterName = null;
+                EncryptedCharacterNameIV = null;
+            }
+        }
 
         string _EncryptedCharacterName;
         /// <summary>
@@ -376,14 +440,29 @@ namespace ISBoxerEVELauncher.Games.EVE
             {
                 return _EncryptedCharacterName;
             }
-            set { _EncryptedCharacterName = value; OnPropertyChanged("EncryptedCharacterName"); }
+            set
+            {
+                _EncryptedCharacterName = value;
+                OnPropertyChanged("EncryptedCharacterName");
+            }
         }
 
         string _EncryptedCharacterNameIV;
         /// <summary>
         /// The Initialization Vector used to encrypt the CharacterName
         /// </summary>
-        public string EncryptedCharacterNameIV { get { return _EncryptedCharacterNameIV; } set { _EncryptedCharacterNameIV = value; OnPropertyChanged("EncryptedCharacterNameIV"); } }
+        public string EncryptedCharacterNameIV
+        {
+            get
+            {
+                return _EncryptedCharacterNameIV;
+            }
+            set
+            {
+                _EncryptedCharacterNameIV = value;
+                OnPropertyChanged("EncryptedCharacterNameIV");
+            }
+        }
 
         /// <summary>
         /// Attempts to prepare the encrypted verison of the currently active SecureCharacterName
@@ -509,14 +588,36 @@ namespace ISBoxerEVELauncher.Games.EVE
         /// AccessToken for Tranquility. Lasts up to 11 hours?
         /// </summary>
         [XmlIgnore]
-        public Token TranquilityToken { get { return _TranquilityToken; } set { _TranquilityToken = value; OnPropertyChanged("TranquilityToken"); } }
+        public Token TranquilityToken
+        {
+            get
+            {
+                return _TranquilityToken;
+            }
+            set
+            {
+                _TranquilityToken = value;
+                OnPropertyChanged("TranquilityToken");
+            }
+        }
 
         Token _SisiToken;
         /// <summary>
         /// AccessToken for Singularity. Lasts up to 11 hours?
         /// </summary>
         [XmlIgnore]
-        public Token SisiToken { get { return _SisiToken; } set { _SisiToken = value; OnPropertyChanged("SisiToken"); } }
+        public Token SisiToken
+        {
+            get
+            {
+                return _SisiToken;
+            }
+            set
+            {
+                _SisiToken = value;
+                OnPropertyChanged("SisiToken");
+            }
+        }
 
         #region Refresh Tokens
         /* This section is for experimental implemtnation using Refresh Tokens, which are used by the official EVE Launcher and described as insecure.
@@ -989,88 +1090,99 @@ namespace ISBoxerEVELauncher.Games.EVE
 
             try
             {
-                response = new Response(req);
-                
-                    string responseBody = response.Body;
-                    UpdateCookieStorage();
+                if (App.myLB.strHTML_RequestVerificationToken == "")
+                {
+                    response = new Response(req);
+                }
+                else
+                {
+                    response = new Response(req, WebRequestType.Result);
+                }
 
-                    if (responseBody.Contains("Incorrect character name entered"))
-                    {
-                        accessToken = null;
-                        SecurePassword = null;
-                        SecureCharacterName = null;
-                        return LoginResult.InvalidCharacterChallenge;
-                    }
 
-                    if (responseBody.Contains("Invalid username / password"))
-                    {
-                        accessToken = null;
-                        SecurePassword = null;
-                        return LoginResult.InvalidUsernameOrPassword;
-                    }
+                string responseBody = response.Body;
+                UpdateCookieStorage();
 
-                    // I'm just guessing on this one at the moment.
-                    if (responseBody.Contains("Invalid authenticat")
-                        || (responseBody.Contains("Verification code mismatch") && responseBody.Contains("/account/authenticator"))
-                        )
-                    {
-                        accessToken = null;
-                        SecurePassword = null;
-                        return LoginResult.InvalidAuthenticatorChallenge;
-                    }
-                    //The 2FA page now has "Character challenge" in the text but it is hidden. This should fix it from
-                    //Coming up during 2FA challenge
-                    if (responseBody.Contains("Character challenge") && !responseBody.Contains("visuallyhidden"))
-                    {
-                        return GetCharacterChallenge(sisi, out accessToken);
-                    }
+                if (responseBody.Contains("Incorrect character name entered"))
+                {
+                    accessToken = null;
+                    SecurePassword = null;
+                    SecureCharacterName = null;
+                    return LoginResult.InvalidCharacterChallenge;
+                }
 
-                    if (responseBody.Contains("Email verification required"))
-                    {
-                        return GetEmailChallenge(sisi, responseBody, out accessToken);
-                    }
+                if (responseBody.Contains("Invalid username / password"))
+                {
+                    accessToken = null;
+                    SecurePassword = null;
+                    return LoginResult.InvalidUsernameOrPassword;
+                }
 
-                    if (responseBody.Contains("Authenticator is enabled"))
-                    {
-                        return GetAuthenticatorChallenge(sisi, out accessToken);
-                    }
+                // I'm just guessing on this one at the moment.
+                if (responseBody.Contains("Invalid authenticat")
+                    || (responseBody.Contains("Verification code mismatch") && responseBody.Contains("/account/authenticator"))
+                    )
+                {
+                    accessToken = null;
+                    SecurePassword = null;
+                    return LoginResult.InvalidAuthenticatorChallenge;
+                }
+                //The 2FA page now has "Character challenge" in the text but it is hidden. This should fix it from
+                //Coming up during 2FA challenge
+                if (responseBody.Contains("Character challenge") && !responseBody.Contains("visuallyhidden"))
+                {
+                    return GetCharacterChallenge(sisi, out accessToken);
+                }
 
-                    if (responseBody.Contains("Please enter the verification code "))
-                    {
-                        return GetEmailCodeChallenge(sisi, responseBody, out accessToken);
-                    }
+                if (responseBody.Contains("Email verification required"))
+                {
+                    return GetEmailChallenge(sisi, responseBody, out accessToken);
+                }
 
-                    if (responseBody.Contains("Security Warning"))
-                    {
-                        return GetSecurityWarningChallenge(sisi, responseBody, response.ResponseUri, out accessToken);
-                    }
+                if (responseBody.Contains("Authenticator is enabled"))
+                {
+                    return GetAuthenticatorChallenge(sisi, out accessToken);
+                }
 
-                    if (responseBody.ToLower().Contains("form action=\"/oauth/eula\""))
-                    {
-                        return GetEULAChallenge(sisi, responseBody, response.ResponseUri, out accessToken);
-                    }
+                if (responseBody.Contains("Please enter the verification code "))
+                {
+                    return GetEmailCodeChallenge(sisi, responseBody, out accessToken);
+                }
 
-                    try
-                    {
-                        code = HttpUtility.ParseQueryString(response.ResponseUri.ToString()).Get("code");
-                        if (code == null)
-                        {
-                            
-                            return LoginResult.Error;
-                        }
-                        GetAccessToken(sisi, code, out response);
-                        accessToken = new Token(JsonConvert.DeserializeObject<authObj>(response.Body));
-                    }
-                    catch (Exception)
-                    {
-                        Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
-                        urw.ShowDialog();
+                if (responseBody.Contains("Security Warning"))
+                {
+                    return GetSecurityWarningChallenge(sisi, responseBody, response.ResponseUri, out accessToken);
+                }
 
-                        // can't get the token
-                        accessToken = null;
-                        SecurePassword = null;
-                        return LoginResult.TokenFailure;
+                if (responseBody.ToLower().Contains("form action=\"/oauth/eula\""))
+                {
+                    return GetEULAChallenge(sisi, responseBody, response.ResponseUri, out accessToken);
+                }
+
+                try
+                {
+
+                    code = HttpUtility.ParseQueryString(response.ResponseUri.OriginalString).Get("code");
+
+
+                    if (code == null)
+                    {
+
+                        return LoginResult.Error;
                     }
+                    GetAccessToken(sisi, code, out response);
+                    accessToken = new Token(JsonConvert.DeserializeObject<authObj>(response.Body));
+                }
+                catch (Exception)
+                {
+                    Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
+                    urw.ShowDialog();
+
+                    // can't get the token
+                    accessToken = null;
+                    SecurePassword = null;
+                    return LoginResult.TokenFailure;
+                }
 
                 if (!sisi)
                 {
@@ -1102,7 +1214,10 @@ namespace ISBoxerEVELauncher.Games.EVE
         public class authObj
         {
             private int _expiresIn;
-            public string access_token { get; set; }
+            public string access_token
+            {
+                get; set;
+            }
             public int expires_in
             {
                 get
@@ -1115,10 +1230,19 @@ namespace ISBoxerEVELauncher.Games.EVE
                     Expiration = DateTime.Now.AddMinutes(_expiresIn);
                 }
             }
-            public string token_type { get; set; }
-            public string refresh_token { get; set; }
+            public string token_type
+            {
+                get; set;
+            }
+            public string refresh_token
+            {
+                get; set;
+            }
 
-            public DateTime Expiration { get; private set; }
+            public DateTime Expiration
+            {
+                get; private set;
+            }
 
         }
 
@@ -1140,7 +1264,8 @@ namespace ISBoxerEVELauncher.Games.EVE
 
             var req = RequestResponse.CreateGetRequest(uri, sisi, true, "URL", Cookies);
             req.ContentLength = 0;
-
+            //App.strUserName = Username;
+            
             var result = RequestResponse.GetHttpWebResponse(req, UpdateCookieStorage, out response);
 
             if (result == LoginResult.Success)
@@ -1182,6 +1307,7 @@ namespace ISBoxerEVELauncher.Games.EVE
                 }
             }
 
+            App.strUserName = Username;
 
             var uri = RequestResponse.GetLoginUri(sisi, state.ToString(), challengeHash);
 
@@ -1214,7 +1340,7 @@ namespace ISBoxerEVELauncher.Games.EVE
         public LoginResult GetSSOToken(bool sisi, out Token ssoToken)
         {
             LoginResult lr = this.GetAccessToken(sisi, out ssoToken);
-           
+
             return lr;
         }
 
@@ -1291,12 +1417,18 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         EVEAccount ILaunchTarget.EVEAccount
         {
-            get { return this; }
+            get
+            {
+                return this;
+            }
         }
 
         public long CharacterID
         {
-            get { return 0; }
+            get
+            {
+                return 0;
+            }
         }
     }
 }

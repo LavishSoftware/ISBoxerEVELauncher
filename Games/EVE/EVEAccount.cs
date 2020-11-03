@@ -16,6 +16,7 @@ using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Web;
 using System.Security.Cryptography;
 using ISBoxerEVELauncher.Interface;
+using ISBoxerEVELauncher;
 
 
 namespace ISBoxerEVELauncher.Games.EVE

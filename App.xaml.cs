@@ -734,15 +734,13 @@ namespace ISBoxerEVELauncher
                HasInnerSpace = true;
             }
 
-            var mainWindow = new Windows.MainWindow();
-            //Re-enable normal shutdown mode.
-            Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            Current.MainWindow = mainWindow;
-            mainWindow.Show();
+                var mainWindow = new Windows.MainWindow();
+                //Re-enable normal shutdown mode.
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                Current.MainWindow = mainWindow;
+                mainWindow.Show();
 
-
-
-            ProcessCommandLine(CommandLine);
+                ProcessCommandLine(CommandLine);
          }
       }
 

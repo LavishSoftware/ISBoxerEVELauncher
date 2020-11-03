@@ -14,18 +14,40 @@ namespace ISBoxerEVELauncher.Windows
 {
     public partial class LoginBrowser : Form
     {
-        public string strCurrentAddress { get; set; }
-        public string strHTML_RequestVerificationToken { get; set; }
-        public string strURL_RequestVerificationToken { get; set; }
-        public string strHTML_VerficationCode { get; set; }
-        public string strURL_VerficationCode { get; set; }
-        public string strHTML_Result { get; set; }
-        public string strURL_Result { get; set; }
+        public string strCurrentAddress
+        {
+            get; set;
+        }
+        public string strHTML_RequestVerificationToken
+        {
+            get; set;
+        }
+        public string strURL_RequestVerificationToken
+        {
+            get; set;
+        }
+        public string strHTML_VerficationCode
+        {
+            get; set;
+        }
+        public string strURL_VerficationCode
+        {
+            get; set;
+        }
+        public string strHTML_Result
+        {
+            get; set;
+        }
+        public string strURL_Result
+        {
+            get; set;
+        }
 
         public LoginBrowser()
         {
             InitializeComponent();
             Clearup();
+            toolStripTextBox_Addressbar.Size = new Size(toolStrip_Main.Size.Width - toolStripButton_Refresh.Size.Width - 20, toolStripTextBox_Addressbar.Size.Height);
         }
 
         public void Clearup()
@@ -42,6 +64,7 @@ namespace ISBoxerEVELauncher.Windows
         private void chromiumWebBrowser_AddressChanged(object sender, CefSharp.AddressChangedEventArgs e)
         {
             strCurrentAddress = e.Address;
+            this.InvokeOnUiThreadIfRequired(() => toolStripTextBox_Addressbar.Text = e.Address);
         }
 
         private void chromiumWebBrowser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
@@ -53,16 +76,12 @@ namespace ISBoxerEVELauncher.Windows
 
                 const string needle = "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"";
                 int hashStart = taskHtml.Result.IndexOf(needle, StringComparison.Ordinal);
-                if (hashStart == -1)
-                {
-
-                }
-                else
+                if (hashStart != -1)
                 {
                     strHTML_RequestVerificationToken = taskHtml.Result;
                     strURL_RequestVerificationToken = strCurrentAddress;
                 }
-                
+
                 if (taskHtml.Result.Contains("Be sure to click the prompt above to login to the EVE Online launcher"))
                 {
                     strHTML_Result = taskHtml.Result;
@@ -81,8 +100,17 @@ namespace ISBoxerEVELauncher.Windows
             });
         }
 
+        private void LoginBrowser_Resize(object sender, EventArgs e)
+        {
+            toolStripTextBox_Addressbar.Size = new Size(toolStrip_Main.Size.Width - toolStripButton_Refresh.Size.Width - 20, toolStripTextBox_Addressbar.Size.Height);
+        }
 
+        private void toolStripButton_Refresh_Click(object sender, EventArgs e)
+        {
+            if (toolStripTextBox_Addressbar.Text != "")
+            {
+                this.InvokeOnUiThreadIfRequired(() => chromiumWebBrowser.Load(toolStripTextBox_Addressbar.Text));
+            }
+        }
     }
-
-
 }

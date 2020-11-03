@@ -823,7 +823,7 @@ namespace ISBoxerEVELauncher.Windows
          List<EVECharacter> launchCharacters = new List<EVECharacter>();
          foreach (EVECharacter a in listCharacters.SelectedItems)
          {
-            launchCharacters.Add(a);
+             launchCharacters.Add(a);
          }
 
          if (launchCharacters.Count == 0)

@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using ISBoxerEVELauncher.Extensions;
 using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Windows;
+using ISBoxerEVELauncher;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ISBoxerEVELauncher.Web
@@ -34,7 +35,7 @@ namespace ISBoxerEVELauncher.Web
         public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.4.15/";
 
 
-        
+
 
         public static Uri GetLoginUri(bool sisi, string state, string challengeHash)
         {
@@ -95,9 +96,9 @@ namespace ISBoxerEVELauncher.Web
         public static byte[] GetSsoTokenRequestBody(bool sisi, string authCode, byte[] challengeCode)
         {
 
-            return 
+            return
                 Encoding.UTF8.GetBytes(new Uri("/", UriKind.Relative)
-                .AddQuery("grant_type","authorization_code")
+                .AddQuery("grant_type", "authorization_code")
                 .AddQuery("client_id", "eveLauncherTQ")
                 .AddQuery("redirect_uri", new Uri(new Uri(sisi ? RequestResponse.sisiBaseUri : RequestResponse.tqBaseUri), launcher)
                     .AddQuery("client_id", "eveLauncherTQ").ToString())
@@ -231,33 +232,41 @@ namespace ISBoxerEVELauncher.Web
             return req;
         }
 
-        public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response, bool tofModified = false)
+        public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response)
         {
             response = null;
+            bool tofModified = false;
+
+            try
+            {
+                response = new Response(webRequest);
+            }
+            catch (Exception e)
+            {
+                tofModified = true;
+            }
 
             try
             {
                 if (tofModified)
                 {
                     App.myLB = new LoginBrowser();
-                    App.myLB.chromiumWebBrowser.Text = App.strUserName;
+                    App.myLB.Clearup();
+                    App.myLB.Text = "EVE - " + App.strUserName;
+                    
                     App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
-
+                    
                     App.myLB.ShowDialog();
                 }
 
-                if (!tofModified)
-                {
-                    response = new Response(webRequest);
-                }
-                else
+                if (tofModified)
                 {
                     //response.Body = strHTML;
-                    if (App.myLB.strHTML_RequestVerificationToken == "")
+                    if (App.myLB.strHTML_Result == "")
                         return LoginResult.Error;
                     response = new Response(webRequest, WebRequestType.RequestVerificationToken);
                 }
-                
+
                 if (updateCookies != null)
                 {
                     updateCookies();
@@ -277,14 +286,11 @@ namespace ISBoxerEVELauncher.Web
                             return LoginResult.Error;
                         }
                     default:
-                        if (tofModified)
-                            throw;
+                        throw;
                         break;
                 }
-
-                GetHttpWebResponse(webRequest, updateCookies, out response, true);
             }
-            
+
             return LoginResult.Success;
         }
 
@@ -329,8 +335,8 @@ namespace ISBoxerEVELauncher.Web
             return body.Substring(fieldStart, fieldEnd - fieldStart);
         }
 
-       
 
-       
+
+
     }
 }

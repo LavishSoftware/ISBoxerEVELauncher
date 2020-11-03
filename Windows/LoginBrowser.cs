@@ -14,17 +14,29 @@ namespace ISBoxerEVELauncher.Windows
 {
     public partial class LoginBrowser : Form
     {
-        public string strCurrentAddress = "";
-        public string strHTML_RequestVerificationToken = "";
-        public string strURL_RequestVerificationToken = "";
-        public string strHTML_VerficationCode = "";
-        public string strURL_VerficationCode = "";
-        public string strHTML_Result = "";
-        public string strURL_Result = "";
+        public string strCurrentAddress { get; set; }
+        public string strHTML_RequestVerificationToken { get; set; }
+        public string strURL_RequestVerificationToken { get; set; }
+        public string strHTML_VerficationCode { get; set; }
+        public string strURL_VerficationCode { get; set; }
+        public string strHTML_Result { get; set; }
+        public string strURL_Result { get; set; }
 
         public LoginBrowser()
         {
             InitializeComponent();
+            Clearup();
+        }
+
+        public void Clearup()
+        {
+            strCurrentAddress = "";
+            strHTML_RequestVerificationToken = "";
+            strURL_RequestVerificationToken = "";
+            strHTML_VerficationCode = "";
+            strURL_VerficationCode = "";
+            strHTML_Result = "";
+            strURL_Result = "";
         }
 
         private void chromiumWebBrowser_AddressChanged(object sender, CefSharp.AddressChangedEventArgs e)

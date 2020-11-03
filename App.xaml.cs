@@ -19,6 +19,7 @@ using ISBoxerEVELauncher.Interface;
 using System.Net;
 using ISBoxerEVELauncher.Windows;
 
+
 namespace ISBoxerEVELauncher
 {
    /// <summary>
@@ -27,8 +28,9 @@ namespace ISBoxerEVELauncher
    public partial class App : Application
    {
       public static bool HasInnerSpace { get; set; }
-      public static LoginBrowser myLB =new LoginBrowser();
+      public static LoginBrowser myLB = new LoginBrowser();
       public static string strUserName {get; set; }
+
 
       public static string AppVersion
       {

@@ -1314,6 +1314,12 @@ namespace ISBoxerEVELauncher.Games.EVE
             string RequestVerificationToken = string.Empty;
             var result = GetRequestVerificationToken(uri, sisi, out RequestVerificationToken);
 
+            if (result == LoginResult.Error)
+            {
+                accessToken = null;
+                return result;
+            }
+
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, "URL", Cookies);
 
             using (SecureBytesWrapper body = new SecureBytesWrapper())

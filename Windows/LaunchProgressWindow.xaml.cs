@@ -174,6 +174,11 @@ namespace ISBoxerEVELauncher.Windows
                     LastLaunch = DateTime.Now;
                     AddDetailsLine("Account '" + a.EVEAccount.Username + "' launched");
                     break;
+                case LoginResult.Error:
+                    Accounts.Remove(a);
+                    LastLaunch = DateTime.Now;
+                    AddDetailsLine("Account '" + a.EVEAccount.Username + "' cannot be launched, skip to the next one if there is any.");
+                    break;
                 default:
                     AddDetailsLine("Account '" + a.EVEAccount.Username + "' failed to launch: " + lr.ToString() + ". Aborting!");
                     NumErrors++;

@@ -82,7 +82,14 @@ namespace ISBoxerEVELauncher.Windows
                     strURL_RequestVerificationToken = strCurrentAddress;
                 }
 
-                if (taskHtml.Result.Contains("Be sure to click the prompt above to login to the EVE Online launcher"))
+                if (taskHtml.Result.Contains("Log in to your account") && !taskHtml.Result.Contains("Invalid username / password"))
+                {
+                    this.chromiumWebBrowser.EvaluateScriptAsync("document.getElementById('UserName').value = '" + App.strUserName + "';");
+                    this.chromiumWebBrowser.EvaluateScriptAsync("document.getElementById('Password').value = '" + App.strPassword + "';");
+                    this.chromiumWebBrowser.EvaluateScriptAsync("document.getElementById('RememberMe').click();");
+                    this.chromiumWebBrowser.EvaluateScriptAsync("document.forms['loginForm'].submit();");
+                }
+                else if (taskHtml.Result.Contains("Be sure to click the prompt above to login to the EVE Online launcher"))
                 {
                     strHTML_Result = taskHtml.Result;
                     strURL_Result = strCurrentAddress;
@@ -98,6 +105,7 @@ namespace ISBoxerEVELauncher.Windows
                 }
 
             });
+
         }
 
         private void LoginBrowser_Resize(object sender, EventArgs e)

@@ -1309,7 +1309,6 @@ namespace ISBoxerEVELauncher.Games.EVE
             }
 
             App.strUserName = Username;
-            App.strPassword = new System.Net.NetworkCredential(string.Empty, SecurePassword).Password;
 
             var uri = RequestResponse.GetLoginUri(sisi, state.ToString(), challengeHash);
 

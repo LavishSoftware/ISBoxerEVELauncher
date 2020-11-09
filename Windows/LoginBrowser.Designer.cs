@@ -74,7 +74,7 @@
             this.toolStripButton_Refresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_Refresh.Name = "toolStripButton_Refresh";
             this.toolStripButton_Refresh.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton_Refresh.Text = "Refresh";
+            this.toolStripButton_Refresh.Text = "toolStripButton1";
             this.toolStripButton_Refresh.Click += new System.EventHandler(this.toolStripButton_Refresh_Click);
             // 
             // LoginBrowser

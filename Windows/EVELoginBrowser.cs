@@ -140,5 +140,10 @@ namespace ISBoxerEVELauncher.Windows
         {
             toolStripTextBox_Addressbar.Size = new Size(toolStrip_Main.Size.Width - toolStripButton_Refresh.Size.Width - 20, toolStripTextBox_Addressbar.Size.Height);
         }
+
+        private void toolStripButton_Refresh_Click(object sender, EventArgs e)
+        {
+            webBrowser_EVE.Refresh();
+        }
     }
 }

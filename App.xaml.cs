@@ -14,7 +14,6 @@ using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Games.EVE;
 using ISBoxerEVELauncher.Interface;
 using System.Net;
-using CefSharp.WinForms;
 using ISBoxerEVELauncher.Windows;
 
 
@@ -29,7 +28,7 @@ namespace ISBoxerEVELauncher
         {
             get; set;
         }
-        public static LoginBrowser myLB = new LoginBrowser();
+        public static EVELoginBrowser myLB = new EVELoginBrowser();
         public static string strUserName
         {
             get; set;
@@ -752,13 +751,6 @@ namespace ISBoxerEVELauncher
                 {
                     HasInnerSpace = true;
                 }
-
-                CefSettings settings = new CefSettings();
-                settings.CachePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\CEF";
-
-                CefSharp.Cef.Initialize(settings);
-
-
 
                 var mainWindow = new Windows.MainWindow();
                 //Re-enable normal shutdown mode.

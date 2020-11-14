@@ -250,11 +250,12 @@ namespace ISBoxerEVELauncher.Web
             {
                 if (tofModified)
                 {
-                    App.myLB = new LoginBrowser();
+                    App.myLB = new EVELoginBrowser();
                     App.myLB.Clearup();
                     App.myLB.Text = "EVE - " + App.strUserName;
                     
-                    App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
+                    //App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
+                    App.myLB.webBrowser_EVE.Navigate(webRequest.Address);
                     
                     App.myLB.ShowDialog();
                 }

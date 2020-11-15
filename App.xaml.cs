@@ -29,6 +29,7 @@ namespace ISBoxerEVELauncher
             get; set;
         }
         public static EVELoginBrowser myLB = new EVELoginBrowser();
+        public static byte[] requestBody;
         public static string strUserName
         {
             get; set;

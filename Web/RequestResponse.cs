@@ -12,6 +12,7 @@ using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Windows;
 using ISBoxerEVELauncher;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
 
 namespace ISBoxerEVELauncher.Web
 {
@@ -255,8 +256,16 @@ namespace ISBoxerEVELauncher.Web
                     App.myLB.Text = "EVE - " + App.strUserName;
                     
                     //App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
-                    App.myLB.webBrowser_EVE.Navigate(webRequest.Address);
-                    
+                    if (webRequest.Method == "GET")
+                    {
+                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address);
+                    }
+                    else
+                    {
+                        SetRegistery();
+                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address, string.Empty, App.requestBody, webRequest.Headers.ToString());
+                    }
+
                     App.myLB.ShowDialog();
                 }
 
@@ -265,7 +274,14 @@ namespace ISBoxerEVELauncher.Web
                     //response.Body = strHTML;
                     if (App.myLB.strHTML_Result == "")
                         return LoginResult.Error;
-                    response = new Response(webRequest, WebRequestType.RequestVerificationToken);
+                    if (webRequest.Method == "GET")
+                    {
+                        response = new Response(webRequest, WebRequestType.RequestVerificationToken);
+                    }
+                    else
+                    {
+                        response = new Response(webRequest, WebRequestType.Result);
+                    }
                 }
 
                 if (updateCookies != null)
@@ -295,6 +311,33 @@ namespace ISBoxerEVELauncher.Web
             return LoginResult.Success;
         }
 
+        private static bool SetRegistery()
+        {
+            try
+            {
+                using (var hklm = RegistryKey.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Registry64))
+                {
+                    if (hklm.OpenSubKey(@"MIME\Database\Content Type\application/json", true) == null)
+                    {
+                        hklm.CreateSubKey(@"MIME\Database\Content Type\application/json");
+                    }
+                    using (RegistryKey key = hklm.OpenSubKey(@"MIME\Database\Content Type\application/json", true))
+                    {
+                        if (key != null)
+                        {
+                            key.SetValue("CLSID", "{25336920-03F9-11cf-8FD0-00AA00686F13}");
+                            key.SetValue("Encoding", new byte[] { 0x80, 0x00, 0x00, 0x00 });
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return false;
+        }
 
         public static string GetRequestVerificationTokenResponse(Response response)
         {

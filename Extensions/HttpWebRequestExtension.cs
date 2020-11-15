@@ -23,7 +23,7 @@ namespace ISBoxerEVELauncher.Extensions
         {
 
             webRequest.ContentLength = body.Length;
-
+            App.requestBody = body;
             try
             {
                 using (Stream reqStream = webRequest.GetRequestStream())

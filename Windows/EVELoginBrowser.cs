@@ -118,7 +118,7 @@ namespace ISBoxerEVELauncher.Windows
                     webBrowser_EVE.Document.GetElementById("RememberMe").InvokeMember("click");
                     webBrowser_EVE.Document.Forms["loginForm"].InvokeMember("submit");
                 }
-                else if (webBrowser_EVE.DocumentText.Contains("Be sure to click the prompt above to login to the EVE Online launcher"))
+                else if (webBrowser_EVE.DocumentText.Contains("Be sure to click the prompt above to login to the EVE Online launcher") || webBrowser_EVE.DocumentText.Contains("{\"access_token\":\""))
                 {
                     strHTML_Result = webBrowser_EVE.DocumentText;
                     strURL_Result = strCurrentAddress;

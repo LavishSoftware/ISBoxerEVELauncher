@@ -1,18 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Web;
-using System.Windows;
-using System.Windows.Threading;
+﻿using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Extensions;
-using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Windows;
-using ISBoxerEVELauncher;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
+using System;
+using System.Net;
+using System.Text;
+using System.Windows;
 
 namespace ISBoxerEVELauncher.Web
 {
@@ -254,7 +248,7 @@ namespace ISBoxerEVELauncher.Web
                     App.myLB = new EVELoginBrowser();
                     App.myLB.Clearup();
                     App.myLB.Text = "EVE - " + App.strUserName;
-                    
+
                     //App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
                     if (webRequest.Method == "GET")
                     {

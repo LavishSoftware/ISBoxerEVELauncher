@@ -1,13 +1,9 @@
-﻿using ISBoxerEVELauncher;
+﻿using ISBoxerEVELauncher.Security;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using ISBoxerEVELauncher.Security;
 using System.Reflection;
+using System.Text;
 
 namespace ISBoxerEVELauncher.Extensions
 {
@@ -33,7 +29,8 @@ namespace ISBoxerEVELauncher.Extensions
 
             }
             catch (Exception)
-            { }
+            {
+            }
         }
 
         public static void SetBody(this HttpWebRequest webRequest, SecureBytesWrapper body)
@@ -50,7 +47,8 @@ namespace ISBoxerEVELauncher.Extensions
 
             }
             catch (Exception)
-            { }
+            {
+            }
         }
 
         public static void SetCustomheaders(this HttpWebRequest webRequest, WebHeaderCollection webHeaderCollection)

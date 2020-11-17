@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ISBoxerEVELauncher.Games.EVE;
-using ISBoxerEVELauncher.Enums;
-using ISBoxerEVELauncher.InnerSpace;
+﻿using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Interface;
+using System;
 
 namespace ISBoxerEVELauncher.Launchers
 {
@@ -19,9 +13,18 @@ namespace ISBoxerEVELauncher.Launchers
             UseSingularity = useSingularity;
         }
 
-        public string SharedCachePath { get; set; }
-        public DirectXVersion UseDirectXVersion { get; set; }
-        public bool UseSingularity { get; set; }
+        public string SharedCachePath
+        {
+            get; set;
+        }
+        public DirectXVersion UseDirectXVersion
+        {
+            get; set;
+        }
+        public bool UseSingularity
+        {
+            get; set;
+        }
 
         public LoginResult Launch(ILaunchTarget launchTarget)
         {
@@ -30,7 +33,10 @@ namespace ISBoxerEVELauncher.Launchers
 
         public string LauncherText
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

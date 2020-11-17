@@ -1,7 +1,7 @@
-﻿using System;
-using ISBoxerEVELauncher.Enums;
+﻿using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.InnerSpace;
 using ISBoxerEVELauncher.Interface;
+using System;
 
 
 namespace ISBoxerEVELauncher.Launchers
@@ -16,9 +16,18 @@ namespace ISBoxerEVELauncher.Launchers
             UseSingularity = useSingularity;
         }
 
-        public InnerSpaceGameProfile GameProfile { get; set; }
-        public DirectXVersion UseDirectXVersion { get; set; }
-        public bool UseSingularity { get; set; }
+        public InnerSpaceGameProfile GameProfile
+        {
+            get; set;
+        }
+        public DirectXVersion UseDirectXVersion
+        {
+            get; set;
+        }
+        public bool UseSingularity
+        {
+            get; set;
+        }
 
         public LoginResult Launch(ILaunchTarget launchTarget)
         {
@@ -29,7 +38,10 @@ namespace ISBoxerEVELauncher.Launchers
 
         public string LauncherText
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

@@ -46,6 +46,7 @@
             this.webBrowser_EVE.TabIndex = 0;
             this.webBrowser_EVE.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser_EVE_DocumentCompleted);
             this.webBrowser_EVE.Navigated += new System.Windows.Forms.WebBrowserNavigatedEventHandler(this.webBrowser_EVE_Navigated);
+            this.webBrowser_EVE.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.webBrowser_EVE_Navigating);
             // 
             // toolStrip_Main
             // 

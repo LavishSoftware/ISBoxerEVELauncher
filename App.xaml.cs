@@ -1,20 +1,20 @@
-﻿using System;
+﻿using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Interface;
+using ISBoxerEVELauncher.Windows;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using Microsoft.Win32;
-using ISBoxerEVELauncher.Extensions;
-using ISBoxerEVELauncher.InnerSpace;
-using ISBoxerEVELauncher.Enums;
-using ISBoxerEVELauncher.Games.EVE;
-using ISBoxerEVELauncher.Interface;
-using System.Net;
-using ISBoxerEVELauncher.Windows;
 
 
 namespace ISBoxerEVELauncher

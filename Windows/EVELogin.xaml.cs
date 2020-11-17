@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ISBoxerEVELauncher.Games.EVE;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using ISBoxerEVELauncher.Games.EVE;
 
 
 namespace ISBoxerEVELauncher.Windows
@@ -21,7 +9,10 @@ namespace ISBoxerEVELauncher.Windows
     /// </summary>
     public partial class EVELogin : Window
     {
-        public EVEAccount Account { get; private set; }
+        public EVEAccount Account
+        {
+            get; private set;
+        }
         public EVELogin(EVEAccount account, bool readOnly)
         {
             Account = account;
@@ -46,7 +37,7 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
-            if (textPassword.SecurePassword.Length==0)
+            if (textPassword.SecurePassword.Length == 0)
             {
                 MessageBox.Show("A Password is required!");
                 return;

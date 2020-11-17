@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace ISBoxerEVELauncher.Windows
 {
@@ -95,7 +83,7 @@ namespace ISBoxerEVELauncher.Windows
             //body = body.Replace("\"/Images/eve.png\"", "\"https://login.eveonline.com/Images/eve.png\"");
             this.webBrowser.NavigateToString(body);
             /**/
-            
+
             string header = @"<html><head>
     <meta charset=""utf-8"" />
     <title>Email verification required</title>
@@ -104,7 +92,7 @@ namespace ISBoxerEVELauncher.Windows
             int startIndex = body.IndexOf("<section");
             int endIndex = body.IndexOf("</section>");
 
-            
+
 
             string sectionOnly = body.Substring(startIndex, (endIndex - startIndex) + "</section>".Length);
             this.webBrowser.NavigateToString(header + sectionOnly);

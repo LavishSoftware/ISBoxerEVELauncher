@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ISBoxerEVELauncher.Interface;
+using System;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ISBoxerEVELauncher.Interface;
 
 namespace ISBoxerEVELauncher.Games.EVE
 {
@@ -17,12 +13,18 @@ namespace ISBoxerEVELauncher.Games.EVE
         /// <summary>
         /// Name of the Character
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Name of the EVE Account this Character is on
         /// </summary>
-        public string EVEAccountName { get; set; }
+        public string EVEAccountName
+        {
+            get; set;
+        }
 
         /// <summary>
         /// EVE Account this Character is on
@@ -30,7 +32,7 @@ namespace ISBoxerEVELauncher.Games.EVE
         [XmlIgnore]
         public EVEAccount EVEAccount
         {
-            get 
+            get
             {
                 return App.Settings.FindEVEAccount(EVEAccountName);
             }
@@ -47,12 +49,18 @@ namespace ISBoxerEVELauncher.Games.EVE
         /// <summary>
         /// Character ID as reported by ESI ...
         /// </summary>
-        public long CharacterID { get; set; }
+        public long CharacterID
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Use Singularity for this Character
         /// </summary>
-        public bool UseSingularity { get; set; }
+        public bool UseSingularity
+        {
+            get; set;
+        }
 
         public long GetCharacterID()
         {
@@ -63,7 +71,7 @@ namespace ISBoxerEVELauncher.Games.EVE
         public static long GetCharacterID(bool sisi, string characterName)
         {
 
-            string uri = string.Format("https://esi.evetech.net/latest/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true", (sisi?"singularity":"tranquility"), WebUtility.UrlEncode(characterName));
+            string uri = string.Format("https://esi.evetech.net/latest/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true", (sisi ? "singularity" : "tranquility"), WebUtility.UrlEncode(characterName));
 
             using (WebClient wc = new WebClient())
             {
@@ -74,7 +82,7 @@ namespace ISBoxerEVELauncher.Games.EVE
                         return 0;// Character does not exist
 
                     // Response is JSON, but since it's not complex we'll just strip the formatting instead of using a JSON parser.
-//                     {"character":[90664221]}
+                    //                     {"character":[90664221]}
 
                     string prefix = "{\"character\":[";
                     string suffix = "]}";
@@ -104,8 +112,11 @@ namespace ISBoxerEVELauncher.Games.EVE
         [XmlIgnore]
         EVEAccount ILaunchTarget.EVEAccount
         {
-            get { return EVEAccount; }
+            get
+            {
+                return EVEAccount;
+            }
         }
-    
+
     }
 }

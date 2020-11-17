@@ -1,13 +1,9 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Extensions;
+using Newtonsoft.Json;
+using System;
+using System.Net;
 
 namespace ISBoxerEVELauncher.Web
 {
@@ -74,13 +70,22 @@ namespace ISBoxerEVELauncher.Web
 
         public string Body
         {
-            get { return _responseBody; }
-            set { value = _responseBody; }
+            get
+            {
+                return _responseBody;
+            }
+            set
+            {
+                value = _responseBody;
+            }
         }
 
         public Uri ResponseUri
         {
-            get { return _responseUri; }
+            get
+            {
+                return _responseUri;
+            }
         }
 
         public bool IsHtml()

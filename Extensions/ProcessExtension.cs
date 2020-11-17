@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ISBoxerEVELauncher.Extensions
+﻿namespace ISBoxerEVELauncher.Extensions
 {
     public static class ProcessExtension
     {
@@ -36,7 +30,7 @@ namespace ISBoxerEVELauncher.Extensions
             return cleanA == cleanB;
         }
 
-       
+
 
     }
 }

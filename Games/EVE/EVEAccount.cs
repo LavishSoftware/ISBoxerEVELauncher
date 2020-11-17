@@ -1,5 +1,10 @@
 ﻿//#define REFRESH_TOKENS
 
+using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.Interface;
+using ISBoxerEVELauncher.Security;
+using ISBoxerEVELauncher.Web;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
@@ -7,16 +12,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Xml.Serialization;
-using ISBoxerEVELauncher.Security;
-using ISBoxerEVELauncher.Extensions;
-using ISBoxerEVELauncher.Enums;
-using ISBoxerEVELauncher.Web;
-using System.Security.Cryptography;
-using ISBoxerEVELauncher.Interface;
-using ISBoxerEVELauncher;
 
 
 namespace ISBoxerEVELauncher.Games.EVE
@@ -1266,7 +1265,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             var req = RequestResponse.CreateGetRequest(uri, sisi, true, "URL", Cookies);
             req.ContentLength = 0;
             //App.strUserName = Username;
-            
+
             var result = RequestResponse.GetHttpWebResponse(req, UpdateCookieStorage, out response);
 
             if (result == LoginResult.Success)

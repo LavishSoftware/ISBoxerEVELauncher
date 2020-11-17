@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace ISBoxerEVELauncher.Windows
 {
@@ -34,15 +22,27 @@ namespace ISBoxerEVELauncher.Windows
         string _Game;
         public string Game
         {
-            get { return _Game; }
-            set { _Game = value; }
+            get
+            {
+                return _Game;
+            }
+            set
+            {
+                _Game = value;
+            }
         }
 
         string _GameProfile;
         public string GameProfile
         {
-            get { return _GameProfile; }
-            set { _GameProfile = value; }
+            get
+            {
+                return _GameProfile;
+            }
+            set
+            {
+                _GameProfile = value;
+            }
         }
 
         private void buttonGo_Click(object sender, RoutedEventArgs e)

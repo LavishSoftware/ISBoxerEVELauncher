@@ -127,6 +127,10 @@ namespace ISBoxerEVELauncher.Windows
                 {
                     this.InvokeOnUiThreadIfRequired(() => this.Close());
                 }
+                else if (webBrowser_EVE.DocumentText.Contains("Please stand by, while we are checking your browser..."))
+                {
+                    webBrowser_EVE.Navigate(toolStripTextBox_Addressbar.Text);
+                }
             }
         }
 
@@ -137,7 +141,7 @@ namespace ISBoxerEVELauncher.Windows
 
         private void toolStripButton_Refresh_Click(object sender, EventArgs e)
         {
-            webBrowser_EVE.Refresh();
+            webBrowser_EVE.Navigate(toolStripTextBox_Addressbar.Text);
         }
 
         private void webBrowser_EVE_Navigating(object sender, WebBrowserNavigatingEventArgs e)

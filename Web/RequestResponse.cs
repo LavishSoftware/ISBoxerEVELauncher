@@ -249,10 +249,9 @@ namespace ISBoxerEVELauncher.Web
                     App.myLB.Clearup();
                     App.myLB.Text = "EVE - " + App.strUserName;
 
-                    //App.myLB.chromiumWebBrowser.Load(webRequest.Address.ToString());
                     if (webRequest.Method == "GET")
                     {
-                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address);
+                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString().Replace("https:", "http:"));
                     }
                     else
                     {
@@ -265,7 +264,6 @@ namespace ISBoxerEVELauncher.Web
 
                 if (tofModified)
                 {
-                    //response.Body = strHTML;
                     if (App.myLB.strHTML_Result == "")
                         return LoginResult.Error;
                     if (webRequest.Method == "GET")

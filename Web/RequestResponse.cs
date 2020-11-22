@@ -34,6 +34,7 @@ namespace ISBoxerEVELauncher.Web
 
         public static Uri GetLoginUri(bool sisi, string state, string challengeHash)
         {
+
             return new Uri(logon, UriKind.Relative)
                 .AddQuery("ReturnUrl",
                     new Uri(auth, UriKind.Relative)
@@ -76,6 +77,7 @@ namespace ISBoxerEVELauncher.Web
 
         public static HttpWebRequest CreateGetRequest(Uri uri, bool sisi, bool origin, string referer, CookieContainer cookies)
         {
+            //.Replace("https:", "http:")
             if (!uri.IsAbsoluteUri)
                 uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
             return CreateHttpWebRequest(uri, "GET", sisi, origin, referer, cookies);
@@ -251,6 +253,7 @@ namespace ISBoxerEVELauncher.Web
 
                     if (webRequest.Method == "GET")
                     {
+                        //.ToString().Replace("https:", "http:")
                         App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString().Replace("https:", "http:"));
                     }
                     else

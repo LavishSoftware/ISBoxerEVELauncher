@@ -61,7 +61,6 @@
             // 
             // toolStripTextBox_Addressbar
             // 
-            this.toolStripTextBox_Addressbar.Enabled = false;
             this.toolStripTextBox_Addressbar.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox_Addressbar.Name = "toolStripTextBox_Addressbar";
             this.toolStripTextBox_Addressbar.Size = new System.Drawing.Size(700, 39);

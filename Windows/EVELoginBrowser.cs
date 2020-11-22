@@ -2,7 +2,9 @@
 using Microsoft.Win32;
 using System;
 using System.Drawing;
+using System.Web;
 using System.Windows.Forms;
+using ISBoxerEVELauncher.Web;
 
 namespace ISBoxerEVELauncher.Windows
 {
@@ -110,6 +112,11 @@ namespace ISBoxerEVELauncher.Windows
                     webBrowser_EVE.Document.GetElementById("UserName").SetAttribute("value", App.strUserName);
                     webBrowser_EVE.Document.GetElementById("Password").SetAttribute("value", App.strPassword);
                     webBrowser_EVE.Document.GetElementById("RememberMe").InvokeMember("click");
+
+                    var cookies = BrowserCookie.GetCookieInternal(webBrowser_EVE.Url, false);
+
+                    string[] strCookies = HttpContext.Current.Response.Cookies.AllKeys;
+
                     webBrowser_EVE.Document.Forms["loginForm"].InvokeMember("submit");
                 }
                 else if (webBrowser_EVE.DocumentText.Contains("Be sure to click the prompt above to login to the EVE Online launcher") || webBrowser_EVE.DocumentText.Contains("{\"access_token\":\""))

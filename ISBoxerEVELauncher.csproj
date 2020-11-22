@@ -306,6 +306,7 @@
     <Compile Include="Interface\ILauncher.cs" />
     <Compile Include="Interface\ILaunchTarget.cs" />
     <Compile Include="Launchers\InnerSpace.cs" />
+    <Compile Include="Web\BrowserCookie.cs" />
     <Compile Include="Web\CookieStorage.cs" />
     <Compile Include="Games\EVE\EVECharacter.cs" />
     <Compile Include="Extensions\HttpWebResponseExtension.cs" />

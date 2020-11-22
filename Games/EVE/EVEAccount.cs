@@ -1264,7 +1264,6 @@ namespace ISBoxerEVELauncher.Games.EVE
 
             var req = RequestResponse.CreateGetRequest(uri, sisi, true, "URL", Cookies);
             req.ContentLength = 0;
-            //App.strUserName = Username;
 
             var result = RequestResponse.GetHttpWebResponse(req, UpdateCookieStorage, out response);
 

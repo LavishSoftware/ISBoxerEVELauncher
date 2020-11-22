@@ -742,6 +742,7 @@ namespace ISBoxerEVELauncher
             // Allows the operating system to choose the best protocol to use, and to block protocols that are not secure. Unless your app has a specific reason not to, you should use this value.
             ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 
+
             CommandLine = e.Args;
 
             if (!TransmitCommandLine())

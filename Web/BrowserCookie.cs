@@ -41,6 +41,8 @@ namespace ISBoxerEVELauncher.Web
         [SuppressUnmanagedCodeSecurity, SecurityCritical, DllImport("wininet.dll", EntryPoint = "InternetGetCookieExW", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]
         internal static extern bool InternetGetCookieEx([In] string Url, [In] string cookieName, [Out] StringBuilder cookieData, [In, Out] ref uint pchCookieData, uint flags, IntPtr reserved);
 
+        [DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        internal static extern bool InternetSetCookie(string lpszUrlName, string lpszCookieName, string lpszCookieData);
         #endregion
     }
 
@@ -107,6 +109,11 @@ namespace ISBoxerEVELauncher.Web
 
             UriComponents components = (uri.IsAbsoluteUri ? UriComponents.AbsoluteUri : UriComponents.SerializationInfoString);
             return new StringBuilder(uri.GetComponents(components, UriFormat.SafeUnescaped), 2083).ToString();
+        }
+
+        public static void SetCookieInternal(string _URL, string _name, string _data)
+        {
+            NativeMethods.InternetSetCookie(_URL, _name, _data);
         }
     }
 }

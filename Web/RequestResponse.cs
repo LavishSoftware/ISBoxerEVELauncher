@@ -79,7 +79,7 @@ namespace ISBoxerEVELauncher.Web
         {
             //.Replace("https:", "http:")
             if (!uri.IsAbsoluteUri)
-                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
+                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri.Replace("https:", "http:"), uri.ToString()));
             return CreateHttpWebRequest(uri, "GET", sisi, origin, referer, cookies);
         }
         public static HttpWebRequest CreatePostRequest(Uri uri, bool sisi, bool origin, string referer, CookieContainer cookies)
@@ -249,11 +249,13 @@ namespace ISBoxerEVELauncher.Web
                 {
                     App.myLB = new EVELoginBrowser();
                     App.myLB.Clearup();
+                    
                     App.myLB.Text = "EVE - " + App.strUserName;
 
                     if (webRequest.Method == "GET")
                     {
                         //.ToString().Replace("https:", "http:")
+                        //var cookies = webRequest.CookieContainer.GetCookies(new Uri(tqBaseUri));
                         App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString().Replace("https:", "http:"));
                     }
                     else
@@ -374,8 +376,8 @@ namespace ISBoxerEVELauncher.Web
             return body.Substring(fieldStart, fieldEnd - fieldStart);
         }
 
-
-
-
+      
     }
+
+
 }

@@ -2,14 +2,32 @@
 using Microsoft.Win32;
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Windows.Forms;
 using ISBoxerEVELauncher.Web;
+
 
 namespace ISBoxerEVELauncher.Windows
 {
     public partial class EVELoginBrowser : Form
     {
+        //private static void SuppressCookiePersistence()
+        //{
+        //    int flag = INTERNET_SUPPRESS_COOKIE_PERSIST;
+        //    if (!InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SUPPRESS_BEHAVIOR, ref flag, sizeof(int)))
+        //    {
+        //        var ex = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+        //        throw ex;
+        //    }
+        //}
+
+        //const int INTERNET_OPTION_SUPPRESS_BEHAVIOR = 81;
+        //const int INTERNET_SUPPRESS_COOKIE_PERSIST = 3;
+
+        //[DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        //public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, ref int flag, int dwBufferLength);
+
         public string strCurrentAddress
         {
             get; set;
@@ -65,7 +83,7 @@ namespace ISBoxerEVELauncher.Windows
                     Key.SetValue(System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".exe", RegVal, RegistryValueKind.DWord);
 
             InitializeComponent();
-
+            //SuppressCookiePersistence();
             webBrowser_EVE.ScriptErrorsSuppressed = true;
             Clearup();
             toolStripTextBox_Addressbar.Size = new Size(toolStrip_Main.Size.Width - toolStripButton_Refresh.Size.Width - 20, toolStripTextBox_Addressbar.Size.Height);
@@ -113,9 +131,7 @@ namespace ISBoxerEVELauncher.Windows
                     webBrowser_EVE.Document.GetElementById("Password").SetAttribute("value", App.strPassword);
                     webBrowser_EVE.Document.GetElementById("RememberMe").InvokeMember("click");
 
-                    var cookies = BrowserCookie.GetCookieInternal(webBrowser_EVE.Url, false);
-
-                    string[] strCookies = HttpContext.Current.Response.Cookies.AllKeys;
+                    //var cookies = BrowserCookie.GetCookieInternal(webBrowser_EVE.Url, false);
 
                     webBrowser_EVE.Document.Forms["loginForm"].InvokeMember("submit");
                 }

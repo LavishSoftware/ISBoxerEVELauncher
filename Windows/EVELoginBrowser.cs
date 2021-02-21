@@ -7,7 +7,6 @@ using System.Web;
 using System.Windows.Forms;
 using ISBoxerEVELauncher.Web;
 
-
 namespace ISBoxerEVELauncher.Windows
 {
     public partial class EVELoginBrowser : Form
@@ -150,10 +149,13 @@ namespace ISBoxerEVELauncher.Windows
                 {
                     this.InvokeOnUiThreadIfRequired(() => this.Close());
                 }
+                //Remove this part as now the browser will handle the refresh itself.
+                /*
                 else if (webBrowser_EVE.DocumentText.Contains("Please stand by, while we are checking your browser..."))
                 {
-                    webBrowser_EVE.Navigate(toolStripTextBox_Addressbar.Text);
+                    //webBrowser_EVE.Navigate(toolStripTextBox_Addressbar.Text);
                 }
+                */
             }
         }
 

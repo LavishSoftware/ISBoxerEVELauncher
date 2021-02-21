@@ -22,11 +22,13 @@ namespace ISBoxerEVELauncher.Extensions
             App.requestBody = body;
             try
             {
-                using (Stream reqStream = webRequest.GetRequestStream())
+                if (!App.tofCaptcha)
                 {
-                    reqStream.Write(body, 0, body.Length);
+                    using (Stream reqStream = webRequest.GetRequestStream())
+                    {
+                        reqStream.Write(body, 0, body.Length);
+                    }
                 }
-
             }
             catch (Exception)
             {

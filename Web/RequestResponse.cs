@@ -92,7 +92,6 @@ namespace ISBoxerEVELauncher.Web
 
         public static byte[] GetSsoTokenRequestBody(bool sisi, string authCode, byte[] challengeCode)
         {
-
             return
                 Encoding.UTF8.GetBytes(new Uri("/", UriKind.Relative)
                 .AddQuery("grant_type", "authorization_code")
@@ -101,7 +100,6 @@ namespace ISBoxerEVELauncher.Web
                     .AddQuery("client_id", "eveLauncherTQ").ToString())
                 .AddQuery("code", authCode)
                 .AddQuery("code_verifier", Base64UrlEncoder.Encode(challengeCode)).SafeQuery());
-
         }
 
         public static Uri GetVerifyTwoFactorUri(bool sisi, string state, string challengeHash)
@@ -232,24 +230,26 @@ namespace ISBoxerEVELauncher.Web
         public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response)
         {
             response = null;
-            bool tofModified = false;
 
             try
             {
-                response = new Response(webRequest);
+                if (!App.tofCaptcha)
+                {
+                    response = new Response(webRequest);
+                }
             }
             catch (Exception e)
             {
-                tofModified = true;
+                App.tofCaptcha = true;
             }
 
             try
             {
-                if (tofModified)
+                if (App.tofCaptcha)
                 {
                     App.myLB = new EVELoginBrowser();
                     App.myLB.Clearup();
-                    
+
                     App.myLB.Text = "EVE - " + App.strUserName;
 
                     if (webRequest.Method == "GET")
@@ -262,12 +262,13 @@ namespace ISBoxerEVELauncher.Web
                     {
                         SetRegistery();
                         App.myLB.webBrowser_EVE.Navigate(webRequest.Address, string.Empty, App.requestBody, webRequest.Headers.ToString());
+
                     }
 
                     App.myLB.ShowDialog();
                 }
 
-                if (tofModified)
+                if (App.tofCaptcha)
                 {
                     if (App.myLB.strHTML_Result == "")
                         return LoginResult.Error;
@@ -376,7 +377,7 @@ namespace ISBoxerEVELauncher.Web
             return body.Substring(fieldStart, fieldEnd - fieldStart);
         }
 
-      
+
     }
 
 

@@ -30,6 +30,7 @@ namespace ISBoxerEVELauncher
         }
         public static EVELoginBrowser myLB = new EVELoginBrowser();
         public static byte[] requestBody;
+        public static bool tofCaptcha;
         public static string strUserName
         {
             get; set;
@@ -753,6 +754,8 @@ namespace ISBoxerEVELauncher
                 {
                     HasInnerSpace = true;
                 }
+
+                tofCaptcha = false;
 
                 var mainWindow = new Windows.MainWindow();
                 //Re-enable normal shutdown mode.

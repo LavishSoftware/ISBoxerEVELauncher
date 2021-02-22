@@ -254,9 +254,7 @@ namespace ISBoxerEVELauncher.Web
 
                     if (webRequest.Method == "GET")
                     {
-                        //.ToString().Replace("https:", "http:")
-                        //var cookies = webRequest.CookieContainer.GetCookies(new Uri(tqBaseUri));
-                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString().Replace("https:", "http:"));
+                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString());
                     }
                     else
                     {

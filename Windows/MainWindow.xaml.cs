@@ -72,7 +72,7 @@ namespace ISBoxerEVELauncher.Windows
 
             App.Settings.PropertyChanged += Settings_PropertyChanged;
 
-            this.Title += " (v" + VersionString + " - Beta 1)";
+            this.Title += " (v" + VersionString + ")";
 
 
             NotifyIcon = new System.Windows.Forms.NotifyIcon();

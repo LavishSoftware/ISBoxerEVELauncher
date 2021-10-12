@@ -79,7 +79,7 @@ namespace ISBoxerEVELauncher.Web
         {
             //.Replace("https:", "http:")
             if (!uri.IsAbsoluteUri)
-                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri.Replace("https:", "http:"), uri.ToString()));
+                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
             return CreateHttpWebRequest(uri, "GET", sisi, origin, referer, cookies);
         }
         public static HttpWebRequest CreatePostRequest(Uri uri, bool sisi, bool origin, string referer, CookieContainer cookies)

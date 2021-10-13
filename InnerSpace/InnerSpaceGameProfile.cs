@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ISBoxerEVELauncher.Enums;
 using System.Xml.Serialization;
-using ISBoxerEVELauncher.Enums;
 
 namespace ISBoxerEVELauncher.InnerSpace
 {
@@ -17,8 +12,14 @@ namespace ISBoxerEVELauncher.InnerSpace
 
         }
 
-        public string Game { get; set; }
-        public string GameProfile { get; set; }
+        public string Game
+        {
+            get; set;
+        }
+        public string GameProfile
+        {
+            get; set;
+        }
 
         [XmlIgnore]
         public RelatedExecutable Executable
@@ -33,7 +34,7 @@ namespace ISBoxerEVELauncher.InnerSpace
                 if (executableSetting == null)
                     return RelatedExecutable.InvalidGameProfile;
 
-                switch(executableSetting.Value.ToLowerInvariant())
+                switch (executableSetting.Value.ToLowerInvariant())
                 {
                     case "eve.exe":
                         return RelatedExecutable.EVELauncher;

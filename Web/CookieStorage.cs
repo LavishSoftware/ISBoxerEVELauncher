@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ISBoxerEVELauncher.Extensions;
+﻿using ISBoxerEVELauncher.Extensions;
 using ISBoxerEVELauncher.Games.EVE;
+using System;
+using System.Text;
 
 namespace ISBoxerEVELauncher.Web
 {
@@ -13,7 +10,7 @@ namespace ISBoxerEVELauncher.Web
         public static string GetCookieStoragePath()
         {
             string path = System.IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                "ISBoxer EVE Launcher","Cookies");
+                "ISBoxer EVE Launcher", "Cookies");
 
             System.IO.Directory.CreateDirectory(path);
 
@@ -66,7 +63,7 @@ namespace ISBoxerEVELauncher.Web
 
                 System.IO.File.Delete(tempFile);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (fileExists)
                 {

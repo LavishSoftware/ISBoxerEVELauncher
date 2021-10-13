@@ -18,18 +18,19 @@ namespace ISBoxerEVELauncher.Security
         private byte[] _bytes = null;
         public SecureStringWrapper(SecureString secureString)
             : this(secureString, Encoding.UTF8)
-        { }
-
-        public SecureStringWrapper(SecureString secureString, Encoding encoding)
-    {
-        if (secureString == null)
         {
-            throw new ArgumentNullException("secureString");
         }
 
-        this.encoding = encoding ?? Encoding.UTF8;
-        this.secureString = secureString;
-    }
+        public SecureStringWrapper(SecureString secureString, Encoding encoding)
+        {
+            if (secureString == null)
+            {
+                throw new ArgumentNullException("secureString");
+            }
+
+            this.encoding = encoding ?? Encoding.UTF8;
+            this.secureString = secureString;
+        }
 
         public bool HasData
         {
@@ -124,7 +125,10 @@ namespace ISBoxerEVELauncher.Security
 
         private void Destroy()
         {
-            if (_bytes == null) { return; }
+            if (_bytes == null)
+            {
+                return;
+            }
 
             for (int i = 0; i < _bytes.Length; i++)
             {
@@ -139,6 +143,6 @@ namespace ISBoxerEVELauncher.Security
         }
     }
 
-   
+
 
 }

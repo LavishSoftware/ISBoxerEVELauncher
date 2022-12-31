@@ -1,9 +1,7 @@
 ![Screenshot](http://i.imgur.com/fe1Y7cl.png)
 # Recent changes
 
-* Version 1.0.0.36 Added extended selection mode option for character list.
-
-* Version 1.0.0.35 Deprecate older HTTPS protocols
+* Version 1.0.0.41 Merge double branched branches (essentially this is the .40 brnach from skysky6)
 
 
 # What is ISBoxer EVE Launcher?
@@ -114,7 +112,7 @@ Tip: Most people asking for help so far have missed parts of Step #7, #9, or #12
 # Command-line parameters
 ISBoxer EVE Launcher supports the following command-line parameters:
 
-**-dx9** - Enable DirectX 9 mode
+**-dx12** - Enable DirectX 12 mode
 
 **-dx11** - Enable DirectX 11 mode
 
@@ -136,11 +134,11 @@ Accounts/Characters are all launched after the command line is fully processed f
 
 Examples:
 
-1. Launch account1 and account2 via exefile.exe with DirectX 9 and Tranquility server: ISBoxerEVELauncher.exe -dx9 -tranquility -eve account1 account2
+1. Launch account1 and account2 via exefile.exe with DirectX 12 and Tranquility server: ISBoxerEVELauncher.exe -dx12 -tranquility -eve account1 account2
 
 2. Launch account1 and account2 via Inner Space with DirectX 11 and Singularity server: ISBoxerEVELauncher.exe -dx11 -singularity -innerspace account1 account2
 
-3. Launch MyChracter One and MyCharacter Two via exefile.exe with DirectX 9 and Tranquility server: ISBoxerEVELauncher.exe -dx9 -tranquility -eve "MyCharacter One" "MyCharacter Two"
+3. Launch MyChracter One and MyCharacter Two via exefile.exe with DirectX 12 and Tranquility server: ISBoxerEVELauncher.exe -dx12 -tranquility -eve "MyCharacter One" "MyCharacter Two"
 
 # Notes on Security of this and other EVE Launchers
 This EVE Launcher is designed first and foremost to protect your accounts. Your passwords are never kept in memory in plaintext, never stored as the same string twice in your Settings file (all your passwords the same? check the file and you cannot tell), and can only be stored if protected by a Master Password. **This makes the ISBoxer EVE Launcher, as far as we can tell, more secure than the official EVE Launcher**, which indicates that saving the accounts through it is insecure -- we would agree with that.

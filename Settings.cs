@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Games.EVE;
+using ISBoxerEVELauncher.InnerSpace;
+using ISBoxerEVELauncher.Security;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ISBoxerEVELauncher.Games.EVE;
-using ISBoxerEVELauncher.InnerSpace;
-using ISBoxerEVELauncher.Security;
-using ISBoxerEVELauncher.Enums;
 
 namespace ISBoxerEVELauncher
 {
@@ -33,12 +31,18 @@ namespace ISBoxerEVELauncher
         /// <summary>
         /// List of EVE Accounts we've presumably verified access to. (A user may have manually edited the Settings file.)
         /// </summary>
-        public ObservableCollection<EVEAccount> Accounts { get; set; }
+        public ObservableCollection<EVEAccount> Accounts
+        {
+            get; set;
+        }
 
         /// <summary>
         /// List of known EVE Characters, for use with auto-login
         /// </summary>
-        public ObservableCollection<EVECharacter> Characters { get; set; }
+        public ObservableCollection<EVECharacter> Characters
+        {
+            get; set;
+        }
 
 
         public EVEAccount FindEVEAccount(string name)
@@ -54,50 +58,103 @@ namespace ISBoxerEVELauncher
         /// <summary>
         /// An Inner Space Game Profile to use for launching Tranquility clients
         /// </summary>
-        public InnerSpaceGameProfile TranquilityGameProfile { get { return _TranquilityGameProfile; } set { _TranquilityGameProfile = value; OnPropertyChanged("TranquilityGameProfile"); } }
+        public InnerSpaceGameProfile TranquilityGameProfile
+        {
+            get
+            {
+                return _TranquilityGameProfile;
+            }
+            set
+            {
+                _TranquilityGameProfile = value;
+                OnPropertyChanged("TranquilityGameProfile");
+            }
+        }
 
         InnerSpaceGameProfile _SingularityGameProfile;
         /// <summary>
         /// An Inner Space Game Profile to use for launching Singularity clients
         /// </summary>
-        public InnerSpaceGameProfile SingularityGameProfile { get { return _SingularityGameProfile; } set { _SingularityGameProfile = value; OnPropertyChanged("SingularityGameProfile"); } }
+        public InnerSpaceGameProfile SingularityGameProfile
+        {
+            get
+            {
+                return _SingularityGameProfile;
+            }
+            set
+            {
+                _SingularityGameProfile = value;
+                OnPropertyChanged("SingularityGameProfile");
+            }
+        }
 
         bool _UseSingularity;
         /// <summary>
         /// If Singularity is to be used for in-app Launch button clicks
         /// </summary>
-        public bool UseSingularity { get { return _UseSingularity; } set { _UseSingularity = value; OnPropertyChanged("UseSingularity"); } }
+        public bool UseSingularity
+        {
+            get
+            {
+                return _UseSingularity;
+            }
+            set
+            {
+                _UseSingularity = value;
+                OnPropertyChanged("UseSingularity");
+            }
+        }
 
-        bool _UseExtendedSelectionMode;
-        /// <summary>
-        /// Use extended selection mode for account listing
-        /// </summary>
-        public bool UseExtendedSelectionMode { get { return _UseSingularity; } set { _UseSingularity = value; OnPropertyChanged(nameof(UseExtendedSelectionMode)); } }
-
-        bool _X64;
-      /// <summary>
-      /// Flag to indicate whether shoudl try and launch the x64 client
-      /// </summary>
-      public bool X64 { get { return _X64; } set { _X64 = value; OnPropertyChanged("X64"); } }
-
-
-      float _LaunchDelay;
+        float _LaunchDelay;
         /// <summary>
         /// Delay between game launches, in seconds
         /// </summary>
-        public float LaunchDelay { get { return _LaunchDelay; } set { _LaunchDelay = value; OnPropertyChanged("LaunchDelay"); } }
+        public float LaunchDelay
+        {
+            get
+            {
+                return _LaunchDelay;
+            }
+            set
+            {
+                _LaunchDelay = value;
+                OnPropertyChanged("LaunchDelay");
+            }
+        }
 
         DirectXVersion _UseDirectXVersion;
         /// <summary>
         /// DirectX version to be used for in-app Launch button clicks
         /// </summary>
-        public DirectXVersion UseDirectXVersion { get { return _UseDirectXVersion; } set { _UseDirectXVersion = value; OnPropertyChanged("UseDirectXVersion"); } }
+        public DirectXVersion UseDirectXVersion
+        {
+            get
+            {
+                return _UseDirectXVersion;
+            }
+            set
+            {
+                _UseDirectXVersion = value;
+                OnPropertyChanged("UseDirectXVersion");
+            }
+        }
 
         string _EVESharedCachePath;
         /// <summary>
         /// Path to SharedCache
         /// </summary>
-        public string EVESharedCachePath { get { return _EVESharedCachePath; } set { _EVESharedCachePath = value; OnPropertyChanged("EVESharedCachePath"); } }
+        public string EVESharedCachePath
+        {
+            get
+            {
+                return _EVESharedCachePath;
+            }
+            set
+            {
+                _EVESharedCachePath = value;
+                OnPropertyChanged("EVESharedCachePath");
+            }
+        }
 
 
         string _machineHash;
@@ -111,7 +168,11 @@ namespace ISBoxerEVELauncher
                 }
                 return _machineHash;
             }
-            set { _machineHash = value; OnPropertyChanged("MachineHash"); }
+            set
+            {
+                _machineHash = value;
+                OnPropertyChanged("MachineHash");
+            }
         }
 
 
@@ -127,7 +188,7 @@ namespace ISBoxerEVELauncher
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return Path.Combine(GetTranquilityPath(), (X64 ? "bin64" : "bin") + "\\exefile.exe");
+            return Path.Combine(GetTranquilityPath(), "bin64\\exefile.exe");
         }
         public string GetSingularityPath()
         {
@@ -139,26 +200,60 @@ namespace ISBoxerEVELauncher
         {
             if (string.IsNullOrEmpty(EVESharedCachePath))
                 return null;
-            return Path.Combine(GetSingularityPath(), (X64?"bin64":"bin") + "\\exefile.exe");
+            return Path.Combine(GetSingularityPath(), "bin64\\exefile.exe");
         }
 
         string _MasterKeyCheck;
         /// <summary>
         /// A SHA256 hash encoded as Base64, used to check whether the user entered the correct Master Password
         /// </summary>
-        public string MasterKeyCheck { get { return _MasterKeyCheck; } set { _MasterKeyCheck = value; OnPropertyChanged("MasterKeyCheck"); OnPropertyChanged("UseMasterKey"); } }
+        public string MasterKeyCheck
+        {
+            get
+            {
+                return _MasterKeyCheck;
+            }
+            set
+            {
+                _MasterKeyCheck = value;
+                OnPropertyChanged("MasterKeyCheck");
+                OnPropertyChanged("UseMasterKey");
+            }
+        }
 
         string _MasterKeyCheckIV;
         /// <summary>
         /// A Base64 Initialization Vector used to ensure the MasterKeyCheck is not the same twice for the same Master Password
         /// </summary>
-        public string MasterKeyCheckIV { get { return _MasterKeyCheckIV; } set { _MasterKeyCheckIV = value; OnPropertyChanged("MasterKeyCheckIV"); } }
+        public string MasterKeyCheckIV
+        {
+            get
+            {
+                return _MasterKeyCheckIV;
+            }
+            set
+            {
+                _MasterKeyCheckIV = value;
+                OnPropertyChanged("MasterKeyCheckIV");
+            }
+        }
 
         DateTime _EULAAccepted;
         /// <summary>
         /// We'll show the EULA because CCP will prefer it and we're all friends here. But only when it has actually changed since our user has been shown the EULA, if we can help it...
         /// </summary>
-        public DateTime EULAAccepted { get { return _EULAAccepted; } set { _EULAAccepted = value; OnPropertyChanged("EULAAccepted"); } }
+        public DateTime EULAAccepted
+        {
+            get
+            {
+                return _EULAAccepted;
+            }
+            set
+            {
+                _EULAAccepted = value;
+                OnPropertyChanged("EULAAccepted");
+            }
+        }
 
         /// <summary>
         /// Has a Master Key been configured?
@@ -209,7 +304,18 @@ namespace ISBoxerEVELauncher
         /// The time Master Key was requested from the master ISBoxer EVE Launcher instance
         /// </summary>
         [XmlIgnore]
-        public DateTime MasterKeyRequested { get { return _MasterKeyRequested; } set { _MasterKeyRequested = value; OnPropertyChanged("MasterKeyRequested"); } }
+        public DateTime MasterKeyRequested
+        {
+            get
+            {
+                return _MasterKeyRequested;
+            }
+            set
+            {
+                _MasterKeyRequested = value;
+                OnPropertyChanged("MasterKeyRequested");
+            }
+        }
 
 
         /// <summary>
@@ -436,11 +542,11 @@ namespace ISBoxerEVELauncher
                     return settings;
                 }
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (System.IO.FileNotFoundException)
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //                MessageBox.Show("Error loading file " + filename + "... " + Environment.NewLine + e.ToString());
                 //                return null;
@@ -488,7 +594,7 @@ namespace ISBoxerEVELauncher
                     s.Serialize(w, this);
                 }
             }
-            catch (UnauthorizedAccessException uae)
+            catch (UnauthorizedAccessException)
             {
                 if (cannotSave)
                     return;
@@ -497,7 +603,7 @@ namespace ISBoxerEVELauncher
                 System.Windows.MessageBox.Show("ISBoxer EVE Launcher cannot save its Settings to " + filename + ". You may need to Run as Administrator!");
                 return;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

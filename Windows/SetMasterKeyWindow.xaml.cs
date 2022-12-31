@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ISBoxerEVELauncher.Windows
 {
@@ -80,14 +69,14 @@ namespace ISBoxerEVELauncher.Windows
                     Marshal.ZeroFreeBSTR(bstr2);
                 }
             }
-        } 
+        }
 
         private void buttonGo_Click(object sender, RoutedEventArgs e)
         {
             SecureString s1 = textPassword.SecurePassword;
             SecureString s2 = textPasswordVerify.SecurePassword;
             e.Handled = true;
-            if (s1==null || s1.Length<1)
+            if (s1 == null || s1.Length < 1)
             {
                 MessageBox.Show("Password is required. Please try again!");
                 return;
@@ -99,7 +88,7 @@ namespace ISBoxerEVELauncher.Windows
                 return;
             }
 
-            if (!SecureStringEqual(s1,s2))
+            if (!SecureStringEqual(s1, s2))
             {
                 MessageBox.Show("Passwords do not match. Please try again!");
                 return;
@@ -117,6 +106,6 @@ namespace ISBoxerEVELauncher.Windows
             this.Close();
         }
 
-        
+
     }
 }

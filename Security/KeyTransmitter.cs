@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -43,13 +40,28 @@ namespace ISBoxerEVELauncher.Security
                 this.Dispose();
             }
 
-            ECDiffieHellmanCng DH { get; set; }
-           
-            SecureBytesWrapper LocalPublicKey { get; set; }
-            SecureBytesWrapper LocalPrivateKey { get; set; }
+            ECDiffieHellmanCng DH
+            {
+                get; set;
+            }
 
-            public IntPtr RemoteWindow { get; set; }
-            public System.Diagnostics.Process Process { get; set; }
+            SecureBytesWrapper LocalPublicKey
+            {
+                get; set;
+            }
+            SecureBytesWrapper LocalPrivateKey
+            {
+                get; set;
+            }
+
+            public IntPtr RemoteWindow
+            {
+                get; set;
+            }
+            public System.Diagnostics.Process Process
+            {
+                get; set;
+            }
 
             public void SetRemotePublicKey(byte[] bytes)
             {
@@ -122,8 +134,8 @@ namespace ISBoxerEVELauncher.Security
                 byte[] iv = new byte[ivLength];
                 Buffer.BlockCopy(combinedMessage, sizeof(int), iv, 0, ivLength);
 
-                byte[] encryptedMessage = new byte[cds.cbData - (ivLength + sizeof(int)) ];
-                Buffer.BlockCopy(combinedMessage, sizeof(int)+ivLength, encryptedMessage, 0, encryptedMessage.Length);
+                byte[] encryptedMessage = new byte[cds.cbData - (ivLength + sizeof(int))];
+                Buffer.BlockCopy(combinedMessage, sizeof(int) + ivLength, encryptedMessage, 0, encryptedMessage.Length);
 
                 using (SecureBytesWrapper sbw = new SecureBytesWrapper())
                 {
@@ -154,7 +166,7 @@ namespace ISBoxerEVELauncher.Security
                 byte[] encryptedMessage;
                 byte[] iv;
 
-                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey,true))
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
                 {
                     Encrypt(sbwKey.Bytes, out encryptedMessage, out iv);
                 }
@@ -201,7 +213,7 @@ namespace ISBoxerEVELauncher.Security
                     LocalPrivateKey.Dispose();
                     LocalPrivateKey = null;
                 }
-                if (DH!=null)
+                if (DH != null)
                 {
                     DH.Dispose();
                     DH = null;
@@ -210,7 +222,7 @@ namespace ISBoxerEVELauncher.Security
                 {
                     LocalPublicKey.Dispose();
                     LocalPublicKey = null;
-                }                
+                }
             }
         }
 
@@ -232,7 +244,7 @@ namespace ISBoxerEVELauncher.Security
                 Sessions.Add(session);
             }
 
-            session.TransmitPublicKey(window,true);
+            session.TransmitPublicKey(window, true);
         }
 
         public static bool ReceiveTransmission(Windows.MainWindow window, IntPtr remoteWindow, System.Diagnostics.Process remoteProcess, Windows.COPYDATASTRUCT cds)
@@ -245,7 +257,7 @@ namespace ISBoxerEVELauncher.Security
                 Sessions.Add(session);
             }
 
-            switch((long)cds.dwData)
+            switch ((long)cds.dwData)
             {
                 case 10:
                     if (!App.Settings.HasPasswordMasterKey)
@@ -253,7 +265,7 @@ namespace ISBoxerEVELauncher.Security
                         return false;
                     }
                     session.ReceivePublicKeyTransmission(cds);
-                    session.TransmitPublicKey(window,false);
+                    session.TransmitPublicKey(window, false);
                     session.TransmitEncryptedMasterKey(window);
                     return true;
                 case 11:

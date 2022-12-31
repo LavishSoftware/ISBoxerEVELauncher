@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
+﻿using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Extensions;
-using ISBoxerEVELauncher.Enums;
+using ISBoxerEVELauncher.Windows;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
+using System;
+using System.Net;
+using System.Text;
+using System.Windows;
 
 namespace ISBoxerEVELauncher.Web
 {
@@ -16,7 +16,7 @@ namespace ISBoxerEVELauncher.Web
         //public const string logoff = "/account/logoff";
         private const string auth = "/v2/oauth/authorize";
         private const string eula = "/v2/oauth/eula";
-        private const string logon = "/account/logon";
+        private const string logon = "/Account/LogOn";
         private const string launcher = "launcher";
         public const string token = "/v2/oauth/token";
         private const string tqBaseUri = "https://login.eveonline.com";
@@ -27,13 +27,14 @@ namespace ISBoxerEVELauncher.Web
         //public const string logonRedirectURI = "redirect_uri={0}/launcher?client_id=eveLauncherTQ&state={1}&code_challenge_method=S256&code_challenge={2}&ignoreClientStyle=true&showRemember=true";
 
         public const string originUri = "https://launcher.eveonline.com";
-        public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.0.22/";
+        public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.4.15/";
 
 
-        
+
 
         public static Uri GetLoginUri(bool sisi, string state, string challengeHash)
         {
+
             return new Uri(logon, UriKind.Relative)
                 .AddQuery("ReturnUrl",
                     new Uri(auth, UriKind.Relative)
@@ -45,7 +46,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
         }
 
@@ -60,7 +60,6 @@ namespace ISBoxerEVELauncher.Web
             //&amp;state=5617f90c-efdb-41a1-b00d-6f4f24bbeee4
             //&amp;code_challenge_method=S256
             //&amp;code_challenge=nC-B19HKX8ZZYfOEN_bg-YZSjVAMieqEB3nJXFyfQQc
-            //&amp;ignoreClientStyle=true
             //&amp;showRemember=true
 
             return new Uri(auth, UriKind.Relative)
@@ -72,13 +71,13 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true");
         }
 
 
         public static HttpWebRequest CreateGetRequest(Uri uri, bool sisi, bool origin, string referer, CookieContainer cookies)
         {
+            //.Replace("https:", "http:")
             if (!uri.IsAbsoluteUri)
                 uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
             return CreateHttpWebRequest(uri, "GET", sisi, origin, referer, cookies);
@@ -93,16 +92,14 @@ namespace ISBoxerEVELauncher.Web
 
         public static byte[] GetSsoTokenRequestBody(bool sisi, string authCode, byte[] challengeCode)
         {
-
-            return 
+            return
                 Encoding.UTF8.GetBytes(new Uri("/", UriKind.Relative)
-                .AddQuery("grant_type","authorization_code")
+                .AddQuery("grant_type", "authorization_code")
                 .AddQuery("client_id", "eveLauncherTQ")
                 .AddQuery("redirect_uri", new Uri(new Uri(sisi ? RequestResponse.sisiBaseUri : RequestResponse.tqBaseUri), launcher)
                     .AddQuery("client_id", "eveLauncherTQ").ToString())
                 .AddQuery("code", authCode)
                 .AddQuery("code_verifier", Base64UrlEncoder.Encode(challengeCode)).SafeQuery());
-
         }
 
         public static Uri GetVerifyTwoFactorUri(bool sisi, string state, string challengeHash)
@@ -118,7 +115,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -136,7 +132,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -154,7 +149,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -173,7 +167,6 @@ namespace ISBoxerEVELauncher.Web
                         .AddQuery("state", state)
                         .AddQuery("code_challenge_method", "S256")
                         .AddQuery("code_challenge", challengeHash)
-                        .AddQuery("ignoreClientStyle", "true")
                         .AddQuery("showRemember", "true").ToString());
 
         }
@@ -186,6 +179,15 @@ namespace ISBoxerEVELauncher.Web
             req.Method = methodType;
             req.Timeout = 30000;
             req.AllowAutoRedirect = true;
+
+            var t = req.Headers.GetType();
+
+            var customHeaders = new CustomWebHeaderCollection(new System.Collections.Generic.Dictionary<string, string>()
+            {
+                ["User-Agent"] = @"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.12.3 Chrome/69.0.3497.128 Safari/537.36",
+            });
+            req.SetCustomheaders(customHeaders);
+
             if (origin)
             {
                 if (referer == RequestResponse.refererUri)
@@ -206,7 +208,14 @@ namespace ISBoxerEVELauncher.Web
             }
             if (!string.IsNullOrWhiteSpace(referer))
             {
-                req.Referer = referer;
+                if (referer == "URL")
+                {
+                    req.Referer = req.RequestUri.ToString();
+                }
+                else
+                {
+                    req.Referer = referer;
+                }
             }
             if (cookies != null)
             {
@@ -224,7 +233,53 @@ namespace ISBoxerEVELauncher.Web
 
             try
             {
-                response = new Response(webRequest);
+                if (!App.tofCaptcha)
+                {
+                    response = new Response(webRequest);
+                }
+            }
+            catch (Exception e)
+            {
+                App.tofCaptcha = true;
+            }
+
+            try
+            {
+                if (App.tofCaptcha)
+                {
+                    App.myLB = new EVELoginBrowser();
+                    App.myLB.Clearup();
+
+                    App.myLB.Text = "EVE - " + App.strUserName;
+
+                    if (webRequest.Method == "GET")
+                    {
+                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString());
+                    }
+                    else
+                    {
+                        SetRegistery();
+                        App.myLB.webBrowser_EVE.Navigate(webRequest.Address, string.Empty, App.requestBody, webRequest.Headers.ToString());
+
+                    }
+
+                    App.myLB.ShowDialog();
+                }
+
+                if (App.tofCaptcha)
+                {
+                    if (App.myLB.strHTML_Result == "")
+                        return LoginResult.Error;
+                    if (webRequest.Method == "GET")
+                    {
+                        response = new Response(webRequest, WebRequestType.RequestVerificationToken);
+                    }
+                    else
+                    {
+                        response = new Response(webRequest, WebRequestType.Result);
+                    }
+                }
+
                 if (updateCookies != null)
                 {
                     updateCookies();
@@ -245,12 +300,40 @@ namespace ISBoxerEVELauncher.Web
                         }
                     default:
                         throw;
+                        break;
                 }
             }
-            
+
             return LoginResult.Success;
         }
 
+        private static bool SetRegistery()
+        {
+            try
+            {
+                using (var hklm = RegistryKey.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Registry64))
+                {
+                    if (hklm.OpenSubKey(@"MIME\Database\Content Type\application/json", true) == null)
+                    {
+                        hklm.CreateSubKey(@"MIME\Database\Content Type\application/json");
+                    }
+                    using (RegistryKey key = hklm.OpenSubKey(@"MIME\Database\Content Type\application/json", true))
+                    {
+                        if (key != null)
+                        {
+                            key.SetValue("CLSID", "{25336920-03F9-11cf-8FD0-00AA00686F13}");
+                            key.SetValue("Encoding", new byte[] { 0x80, 0x00, 0x00, 0x00 });
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return false;
+        }
 
         public static string GetRequestVerificationTokenResponse(Response response)
         {
@@ -292,8 +375,8 @@ namespace ISBoxerEVELauncher.Web
             return body.Substring(fieldStart, fieldEnd - fieldStart);
         }
 
-       
 
-       
     }
+
+
 }

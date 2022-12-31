@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lavish Software LLC")]
 [assembly: AssemblyProduct("ISBoxer EVE Launcher")]
-[assembly: AssemblyCopyright("Copyright © 2016-2020")]
+[assembly: AssemblyCopyright("Copyright © 2016-2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

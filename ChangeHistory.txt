@@ -1,4 +1,9 @@
-﻿* Version 1.0.0.35 HTTPS protocol deprecation
+﻿
+* Version 1.0.0.41 Merge back to Master from multi branch tree
+
+* Version 1.0.0.40 Added DX12 support, added refreshToken to the authentication process, removed x64 option (this is now the default)
+
+* Version 1.0.0.35 HTTPS protocol deprecation
 
 * Version 1.0.0.34 Fix x64 launch properly.
 

@@ -123,7 +123,10 @@ namespace ISBoxerEVELauncher.Security
 
         private void Destroy()
         {
-            if (_Bytes == null) { return; }
+            if (_Bytes == null)
+            {
+                return;
+            }
 
             for (int i = 0; i < _Bytes.Length; i++)
             {

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using System.Text;
-using System.Xml.Serialization;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace ISBoxerEVELauncher.InnerSpace
 {
@@ -25,15 +23,21 @@ namespace ISBoxerEVELauncher.InnerSpace
         public string Name;
 
         [XmlElement(typeof(Set), ElementName = "Set")]
-        public List<Set> Sets { get; set; }
+        public List<Set> Sets
+        {
+            get; set;
+        }
         [XmlElement(typeof(Setting), ElementName = "Setting")]
-        public List<Setting> Settings { get; set; }
+        public List<Setting> Settings
+        {
+            get; set;
+        }
 
         Dictionary<string, Set> setsDictionary;
         /// <summary>
         /// It is recommended only to use this convenience dictionary when treating the Set as read-only
         /// </summary>
-        [XmlIgnore]       
+        [XmlIgnore]
         public Dictionary<string, Set> SetsDictionary
         {
             get
@@ -138,10 +142,10 @@ namespace ISBoxerEVELauncher.InnerSpace
                     return true;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-//                MessageBox.Show(e.ToString());
-//                return false;
+                //                MessageBox.Show(e.ToString());
+                //                return false;
                 throw;
             }
         }
@@ -258,14 +262,14 @@ namespace ISBoxerEVELauncher.InnerSpace
                     return set;
                 }
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (System.IO.FileNotFoundException)
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-//                MessageBox.Show("Error loading file " + filename + "... " + Environment.NewLine + e.ToString());
-//                return null;
+                //                MessageBox.Show("Error loading file " + filename + "... " + Environment.NewLine + e.ToString());
+                //                return null;
                 throw;
             }
         }

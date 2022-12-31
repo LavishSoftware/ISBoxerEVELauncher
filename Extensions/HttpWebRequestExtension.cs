@@ -1,12 +1,9 @@
-﻿using ISBoxerEVELauncher;
+﻿using ISBoxerEVELauncher.Security;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using ISBoxerEVELauncher.Security;
 
 namespace ISBoxerEVELauncher.Extensions
 {
@@ -22,17 +19,20 @@ namespace ISBoxerEVELauncher.Extensions
         {
 
             webRequest.ContentLength = body.Length;
-
+            App.requestBody = body;
             try
             {
-                using (Stream reqStream = webRequest.GetRequestStream())
+                if (!App.tofCaptcha)
                 {
-                    reqStream.Write(body, 0, body.Length);
+                    using (Stream reqStream = webRequest.GetRequestStream())
+                    {
+                        reqStream.Write(body, 0, body.Length);
+                    }
                 }
-
             }
-            catch (Exception e)
-            { }
+            catch (Exception)
+            {
+            }
         }
 
         public static void SetBody(this HttpWebRequest webRequest, SecureBytesWrapper body)
@@ -48,8 +48,15 @@ namespace ISBoxerEVELauncher.Extensions
                 }
 
             }
-            catch (Exception e)
-            { }
+            catch (Exception)
+            {
+            }
+        }
+
+        public static void SetCustomheaders(this HttpWebRequest webRequest, WebHeaderCollection webHeaderCollection)
+        {
+            var field = typeof(HttpWebRequest).GetField("_HttpRequestHeaders", BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(webRequest, webHeaderCollection);
         }
     }
 

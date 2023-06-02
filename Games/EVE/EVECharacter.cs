@@ -1,7 +1,11 @@
 ﻿using ISBoxerEVELauncher.Interface;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Net;
+using System.Text;
 using System.Xml.Serialization;
+using static ISBoxerEVELauncher.Games.EVE.EVEAccount;
 
 namespace ISBoxerEVELauncher.Games.EVE
 {
@@ -71,36 +75,22 @@ namespace ISBoxerEVELauncher.Games.EVE
         public static long GetCharacterID(bool sisi, string characterName)
         {
 
-            string uri = string.Format("https://esi.evetech.net/latest/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true", (sisi ? "singularity" : "tranquility"), WebUtility.UrlEncode(characterName));
-
+            string uri = string.Format("https://esi.evetech.net/latest/universe/ids/?datasource={0}&language=en", (sisi ? "singularity" : "tranquility"));
+            string postData = string.Format("[ \"{0}\" ]", characterName);
+            byte[] byteArray = Encoding.ASCII.GetBytes(postData);
             using (WebClient wc = new WebClient())
             {
                 try
                 {
-                    string outputString = wc.DownloadString(uri);
+                    byte[] result = wc.UploadData(uri, "POST", byteArray);
+                    string outputString = Encoding.ASCII.GetString(result);
                     if (outputString.Equals("{}"))
                         return 0;// Character does not exist
 
-                    // Response is JSON, but since it's not complex we'll just strip the formatting instead of using a JSON parser.
-                    //                     {"character":[90664221]}
-
-                    string prefix = "{\"character\":[";
-                    string suffix = "]}";
-
-                    if (!outputString.StartsWith(prefix))
-                    {
-                        throw new FormatException("Expected {\"character\":[#####]} but got " + outputString);
-                    }
-
-                    if (!outputString.EndsWith(suffix))
-                    {
-                        throw new FormatException("Expected {\"character\":[#####]} but got " + outputString);
-                    }
-
-                    outputString = outputString.Substring(prefix.Length);
-                    outputString = outputString.Substring(0, outputString.Length - suffix.Length);
-
-                    return long.Parse(outputString);
+                    var getResult = JObject.Parse(outputString);
+                    var id = getResult["characters"][0]["id"];
+                    return long.Parse(id.ToString());
+                    
                 }
                 catch
                 {

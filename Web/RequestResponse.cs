@@ -29,8 +29,17 @@ namespace ISBoxerEVELauncher.Web
         public const string originUri = "https://launcher.eveonline.com";
         public const string refererUri = "https://launcher.eveonline.com/6-0-x/6.4.15/";
 
-
-
+        public static Uri FullUri(bool sisi, Uri uri)
+        {
+            if (!uri.IsAbsoluteUri)
+                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
+            return uri;
+        }
+        
+        public static Uri GetTokenUri(bool sisi)
+        {
+            return new Uri(token, UriKind.Relative);
+        }
 
         public static Uri GetLoginUri(bool sisi, string state, string challengeHash)
         {

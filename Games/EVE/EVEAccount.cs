@@ -16,6 +16,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Xml.Serialization;
+using ISBoxerEVELauncher.Windows;
 
 
 namespace ISBoxerEVELauncher.Games.EVE
@@ -224,6 +225,23 @@ namespace ISBoxerEVELauncher.Games.EVE
             set
             {
                 ISBoxerEVELauncher.Web.CookieStorage.SetCookies(this, value);
+            }
+        }
+
+        string _WebView2CookieStorage;
+        /// <summary>
+        /// WebView2 cookie storage (JSON format) - separate from HttpWebRequest cookies
+        /// </summary>
+        public string WebView2CookieStorage
+        {
+            get
+            {
+                return _WebView2CookieStorage;
+            }
+            set
+            {
+                _WebView2CookieStorage = value;
+                OnPropertyChanged("WebView2CookieStorage");
             }
         }
 
@@ -1321,6 +1339,14 @@ namespace ISBoxerEVELauncher.Games.EVE
             App.strUserName = Username;
             App.strPassword = new System.Net.NetworkCredential(string.Empty, SecurePassword).Password;
 
+            if (App.Settings.ManualLogin)
+            {
+                var manualLoginWindow = new EVEManualLogin(this, sisi);
+                manualLoginWindow.ShowDialog();
+                accessToken = manualLoginWindow.AccessToken;
+                return manualLoginWindow.LoginResult;
+            }
+            
             var uri = RequestResponse.GetLoginUri(sisi, state.ToString(), challengeHash);
 
             string RequestVerificationToken = string.Empty;

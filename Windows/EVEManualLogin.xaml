@@ -1,0 +1,20 @@
+﻿<Window x:Class="ISBoxerEVELauncher.Windows.EVEManualLogin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:ISBoxerEVELauncher.Windows"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        mc:Ignorable="d"
+        Name="EVEManualLoginWindow"
+        WindowStartupLocation="CenterScreen"
+        Title="EVE Manual Login" Height="600" Width="900">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="10,10,10,5">
+            <TextBlock DockPanel.Dock="Left" FontWeight="Bold" FontSize="12" Text="URL: " />
+            <TextBlock FontSize="12" Text="{Binding ElementName=EVEManualLoginWindow, Path=LoginUrl}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Top" Margin="10,0,10,10" TextWrapping="Wrap" Text="{Binding ElementName=EVEManualLoginWindow, Path=Instructions}" />
+        <wv2:WebView2 Name="WebView2" />
+    </DockPanel>
+</Window>

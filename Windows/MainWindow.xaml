@@ -117,6 +117,8 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                <CheckBox DockPanel.Dock="Top" Content="Manual login" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=ManualLogin}" />
+                                <CheckBox DockPanel.Dock="Top" Content="Manual Autofill" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=ManualLoginAutofill}" />
                                 <CheckBox DockPanel.Dock="Top" Content="Debug Mode" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=DebugMode}" />
                                 <TextBlock DockPanel.Dock="Top" Margin="5,5,0,0" Foreground="Red" FontWeight="Bold" TextWrapping="Wrap" Text="WARNING: DEBUG LOGS MAY CONTAIN SENSITIVE DATA. NEVER SHARE DEBUG OUTPUT WITH ANYONE.">
                                     <TextBlock.Style>
@@ -149,7 +151,7 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <DockPanel  Margin="5,0,0,0" Width="187" Height="186">
+                        <DockPanel  Margin="5,0,0,0" Width="187" Height="240">
                             <CheckBox DockPanel.Dock="Top" x:Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding IsChecked, ElementName=checkSavePasswords}" />
                             <Button DockPanel.Dock="Top" x:Name="buttonAddCharacter" Content="Add Character" Click="buttonAddCharacter_Click" Margin="0,3,0,0" />
                             <Button DockPanel.Dock="Top" x:Name="buttonDeleteCharacter" Content="Delete Character(s)" Click="buttonDeleteCharacter_Click" Margin="0,3,0,0" VerticalAlignment="Top" >

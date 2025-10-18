@@ -407,13 +407,39 @@ namespace ISBoxerEVELauncher.Windows
 
         public bool DebugMode
         {
-            get 
+            get
             {
                 return App.Settings.DebugMode;
             }
             set
             {
                 App.Settings.DebugMode = value;
+                App.Settings.Store();
+            }
+        }
+
+        public bool ManualLogin
+        {
+            get
+            {
+                return App.Settings.ManualLogin;
+            }
+            set
+            {
+                App.Settings.ManualLogin = value;
+                App.Settings.Store();
+            }
+        }
+        
+        public bool ManualLoginAutofill
+        {
+            get
+            {
+                return App.Settings.ManualLoginAutofill;
+            }
+            set
+            {
+                App.Settings.ManualLoginAutofill = value;
                 App.Settings.Store();
             }
         }

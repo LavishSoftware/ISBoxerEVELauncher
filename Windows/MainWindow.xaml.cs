@@ -405,6 +405,19 @@ namespace ISBoxerEVELauncher.Windows
             }
         }
 
+        public bool DebugMode
+        {
+            get 
+            {
+                return App.Settings.DebugMode;
+            }
+            set
+            {
+                App.Settings.DebugMode = value;
+                App.Settings.Store();
+            }
+        }
+
         private void buttonBrowse_Click(object sender, RoutedEventArgs e)
         {
             //            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog() { InitialDirectory = EVESharedCachePath, CheckPathExists=true, RestoreDirectory=true,  };
@@ -940,9 +953,6 @@ namespace ISBoxerEVELauncher.Windows
             {
                 Characters.Remove(toDelete);
             }
-
         }
-
-
     }
 }

@@ -116,8 +116,20 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Button.Style>
-
                                 </Button>
+                                <CheckBox DockPanel.Dock="Top" Content="Debug Mode" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=DebugMode}" />
+                                <TextBlock DockPanel.Dock="Top" Margin="5,5,0,0" Foreground="Red" FontWeight="Bold" TextWrapping="Wrap" Text="WARNING: DEBUG LOGS MAY CONTAIN SENSITIVE DATA. NEVER SHARE DEBUG OUTPUT WITH ANYONE.">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=mainWindow, Path=DebugMode}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </DockPanel>
                     </StackPanel>

@@ -316,7 +316,20 @@ namespace ISBoxerEVELauncher
                 OnPropertyChanged("MasterKeyRequested");
             }
         }
-
+        
+        private bool _debugMode = false;
+        /// <summary>
+        /// If Debug Mode is enabled
+        /// </summary>
+        public bool DebugMode
+        {
+            get => _debugMode;
+            set
+            {
+                _debugMode = value;
+                OnPropertyChanged(nameof(DebugMode));
+            }
+        }
 
         /// <summary>
         /// This is used to generate the Master Key Check, along with an IV and the Master Key

@@ -27,6 +27,7 @@ namespace ISBoxerEVELauncher.Games.EVE
     /// </summary>
     public class EVEAccount : INotifyPropertyChanged, IDisposable, ILaunchTarget
     {
+        private const string LogCategory = "EVEAccount";
 
         [XmlIgnore]
         private Guid challengeCodeSource;
@@ -1092,6 +1093,8 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetAccessToken(bool sisi, HttpWebRequest req, out Token accessToken)
         {
+            Utils.Debug.Info($"GetAccessToken - Request URI: {req.RequestUri} | Sisi: {sisi}", LogCategory);
+
             accessToken = null;
             Response response = null;
 
@@ -1109,6 +1112,8 @@ namespace ISBoxerEVELauncher.Games.EVE
 
                 string responseBody = response.Body;
                 UpdateCookieStorage();
+
+                Utils.Debug.Info($"GetAccessToken - Response:{Environment.NewLine}{response.ToString()}", LogCategory);
 
                 if (responseBody.Contains("Incorrect character name entered"))
                 {

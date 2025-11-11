@@ -118,7 +118,6 @@ namespace ISBoxerEVELauncher.Windows
                     string script = $@"
                         document.getElementById('UserName').value = '{_account.Username}';
                         document.getElementById('Password').value = '{password}';
-                        document.getElementById('RememberMe').click();
                         document.forms['loginForm'].submit();
                     ";
                     await WebView2.CoreWebView2.ExecuteScriptAsync(script);

@@ -22,12 +22,31 @@ namespace ISBoxerEVELauncher.Web
             string filename = eveAccount.Username.ToLowerInvariant().SHA256();
             return System.IO.Path.Combine(GetCookieStoragePath(), filename);
         }
+        
+        public static string GetWebViewCookiesFilename(EVEAccount eveAccount)
+        {
+            string filename = eveAccount.Username.ToLowerInvariant().SHA256() + "_webview";
+            return System.IO.Path.Combine(GetCookieStoragePath(), filename);
+        }
 
         public static string GetCookies(EVEAccount eveAccount)
         {
             try
             {
                 string filePath = GetCookiesFilename(eveAccount);
+                return System.IO.File.ReadAllText(filePath, Encoding.ASCII);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+        
+        public static string GetWebViewCookies(EVEAccount eveAccount)
+        {
+            try
+            {
+                string filePath = GetWebViewCookiesFilename(eveAccount) + "_webview";
                 return System.IO.File.ReadAllText(filePath, Encoding.ASCII);
             }
             catch
@@ -85,11 +104,22 @@ namespace ISBoxerEVELauncher.Web
             string filePath = GetCookiesFilename(eveAccount);
             WriteAllTextSafe(filePath, cookies, Encoding.ASCII);
         }
-
+        
+        public static void SetWebViewCookies(EVEAccount eveAccount, string cookies)
+        {
+            string filePath = GetWebViewCookiesFilename(eveAccount) + "_webview";
+            WriteAllTextSafe(filePath, cookies, Encoding.ASCII);
+        }
 
         public static void DeleteCookies(EVEAccount eveAccount)
         {
             string filePath = GetCookiesFilename(eveAccount);
+            System.IO.File.Delete(filePath);
+        }
+        
+        public static void DeleteWebViewCookies(EVEAccount eveAccount)
+        {
+            string filePath = GetWebViewCookiesFilename(eveAccount) + "_webview";
             System.IO.File.Delete(filePath);
         }
     }

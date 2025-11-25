@@ -228,20 +228,19 @@ namespace ISBoxerEVELauncher.Games.EVE
             }
         }
 
-        string _WebView2CookieStorage;
         /// <summary>
         /// WebView2 cookie storage (JSON format) - separate from HttpWebRequest cookies
         /// </summary>
+        [XmlIgnore]
         public string WebView2CookieStorage
         {
             get
             {
-                return _WebView2CookieStorage;
+                return ISBoxerEVELauncher.Web.CookieStorage.GetWebViewCookies(this);
             }
             set
             {
-                _WebView2CookieStorage = value;
-                OnPropertyChanged("WebView2CookieStorage");
+                ISBoxerEVELauncher.Web.CookieStorage.SetWebViewCookies(this, value);
             }
         }
 
@@ -1449,6 +1448,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             this.EncryptedCharacterNameIV = null;
 
             ISBoxerEVELauncher.Web.CookieStorage.DeleteCookies(this);
+            ISBoxerEVELauncher.Web.CookieStorage.DeleteWebViewCookies(this);
             this.Username = null;
             this.Cookies = null;
             //this.NewCookieStorage = null;

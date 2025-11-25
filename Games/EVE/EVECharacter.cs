@@ -1,5 +1,8 @@
 ﻿using ISBoxerEVELauncher.Interface;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Net;
 using System.Xml.Serialization;
 
@@ -71,36 +74,25 @@ namespace ISBoxerEVELauncher.Games.EVE
         public static long GetCharacterID(bool sisi, string characterName)
         {
 
-            string uri = string.Format("https://esi.evetech.net/latest/search/?categories=character&datasource={0}&language=en-us&search={1}&strict=true", (sisi ? "singularity" : "tranquility"), WebUtility.UrlEncode(characterName));
+            string uri = string.Format("https://esi.evetech.net/latest/universe/ids/?categories=character&datasource={0}&language=en-us&search={1}&strict=true", (sisi ? "singularity" : "tranquility"), WebUtility.UrlEncode(characterName));
 
             using (WebClient wc = new WebClient())
             {
                 try
                 {
-                    string outputString = wc.DownloadString(uri);
-                    if (outputString.Equals("{}"))
-                        return 0;// Character does not exist
 
-                    // Response is JSON, but since it's not complex we'll just strip the formatting instead of using a JSON parser.
-                    //                     {"character":[90664221]}
+                    var charjson = string.Format("[\"{0}\"]",characterName);
+                    wc.Headers[HttpRequestHeader.ContentType] = "application/json";
 
-                    string prefix = "{\"character\":[";
-                    string suffix = "]}";
+                    string outputString = wc.UploadString(uri,"POST",charjson);
 
-                    if (!outputString.StartsWith(prefix))
-                    {
-                        throw new FormatException("Expected {\"character\":[#####]} but got " + outputString);
-                    }
+                    var returnJson = JObject.Parse(outputString);
+                    //{"characters":[{"id":2112625428,"name":"CCP Zoetrope"}]}
 
-                    if (!outputString.EndsWith(suffix))
-                    {
-                        throw new FormatException("Expected {\"character\":[#####]} but got " + outputString);
-                    }
+                    var id = (long)returnJson["characters"][0]["id"];
 
-                    outputString = outputString.Substring(prefix.Length);
-                    outputString = outputString.Substring(0, outputString.Length - suffix.Length);
 
-                    return long.Parse(outputString);
+                    return id;
                 }
                 catch
                 {

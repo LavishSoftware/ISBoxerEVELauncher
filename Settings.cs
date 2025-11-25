@@ -316,7 +316,49 @@ namespace ISBoxerEVELauncher
                 OnPropertyChanged("MasterKeyRequested");
             }
         }
+        
+        private bool _debugMode = false;
+        /// <summary>
+        /// If Debug Mode is enabled
+        /// </summary>
+        public bool DebugMode
+        {
+            get => _debugMode;
+            set
+            {
+                _debugMode = value;
+                OnPropertyChanged(nameof(DebugMode));
+            }
+        }
 
+        private bool _manualLogin = false;
+        /// <summary>
+        /// If Manual Login is enabled
+        /// </summary>
+        public bool ManualLogin
+        {
+            get => _manualLogin;
+            set
+            {
+                _manualLogin = value;
+                OnPropertyChanged(nameof(ManualLogin));
+            }
+        }
+
+        private bool _manualLoginAutofill = true;
+
+        /// <summary>
+        /// If Manual Login Autofill is enabled
+        /// </summary>
+        public bool ManualLoginAutofill
+        {
+            get => _manualLoginAutofill;
+            set
+            {
+                _manualLoginAutofill = value;
+                OnPropertyChanged(nameof(ManualLoginAutofill));
+            }
+        }
 
         /// <summary>
         /// This is used to generate the Master Key Check, along with an IV and the Master Key

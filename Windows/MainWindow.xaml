@@ -48,38 +48,37 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
 
-                        <DockPanel Margin="5,0,0,0" Width="187" Height="186">
-                            <CheckBox DockPanel.Dock="Top" Name="checkSavePasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" />
-                            <Button DockPanel.Dock="Top" Name="buttonAddAccount" Content="Add Account"  Margin="0,3,0,0" Click="buttonAddAccount_Click" />
-                            <Button DockPanel.Dock="Top" Name="buttonDelete" Content="Delete Account(s)" Click="buttonDeleteAccount_Click" Margin="0,3,0,0" >
-                                <Button.Style>
-                                    <Style>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
-                                                <Setter Property="Button.IsEnabled" Value="false"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
+                        <ScrollViewer Margin="5,0,0,0" Width="187" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <CheckBox Name="checkSavePasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" />
+                                <Button Name="buttonAddAccount" Content="Add Account"  Margin="0,3,0,0" Click="buttonAddAccount_Click" />
+                                <Button Name="buttonDelete" Content="Delete Account(s)" Click="buttonDeleteAccount_Click" Margin="0,3,0,0" >
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
-                            <Button DockPanel.Dock="Top" Name="buttonCreateLauncherProfiles" Content="Create Inner Space Game Profile(s)" Click="buttonCreateLauncherProfiles_Click" Margin="0,3,0,0" VerticalAlignment="Bottom" ToolTip="Creates an Inner Space Game Profile to launch this Account via ISBoxer EVE Launcher" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
-                                <Button.Style>
-                                    <Style>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
-                                                <Setter Property="Button.IsEnabled" Value="false"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
+                                <Button Name="buttonCreateLauncherProfiles" Content="Create Inner Space Game Profile(s)" Click="buttonCreateLauncherProfiles_Click" Margin="0,3,0,0" ToolTip="Creates an Inner Space Game Profile to launch this Account via ISBoxer EVE Launcher" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
-                            <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom" >
+                                <TextBlock TextWrapping="Wrap" Margin="3,3,3,0" FontSize="10">If you are launching with ISBoxer, do not use the buttons below, unless testing</TextBlock>
 
-                                <TextBlock VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="3,0,3,0" FontSize="10">If you are launching with ISBoxer, do not use the buttons below, unless testing</TextBlock>
-
-                                <Button Name="buttonLaunchNonIS"  Click="buttonLaunchNonIS_Click" Margin="0,2,0,0" VerticalAlignment="Bottom">
+                                <Button Name="buttonLaunchNonIS"  Click="buttonLaunchNonIS_Click" Margin="0,2,0,0">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
                                             <TextBlock>Launch</TextBlock>
@@ -98,7 +97,7 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Button Name="buttonLaunchIS" Click="buttonLaunchIS_Click"  Margin="0,3,0,0" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}" VerticalAlignment="Bottom">
+                                <Button Name="buttonLaunchIS" Click="buttonLaunchIS_Click"  Margin="0,3,0,0" Visibility="{Binding ElementName=mainWindow, Path=InnerSpaceVisibility}">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
                                             <TextBlock>Launch</TextBlock>
@@ -116,10 +115,24 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Button.Style>
-
                                 </Button>
+                                <CheckBox Content="Manual login" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=ManualLogin}" />
+                                <CheckBox Content="Manual Autofill" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=ManualLoginAutofill}" />
+                                <CheckBox Content="Debug Mode" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=DebugMode}" />
+                                <TextBlock Margin="5,5,0,0" Foreground="Red" FontWeight="Bold" TextWrapping="Wrap" Text="WARNING: DEBUG LOGS MAY CONTAIN SENSITIVE DATA. NEVER SHARE DEBUG OUTPUT WITH ANYONE.">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=mainWindow, Path=DebugMode}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
-                        </DockPanel>
+                        </ScrollViewer>
                     </StackPanel>
                 </DockPanel>
             </TabItem>
@@ -137,7 +150,7 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <DockPanel  Margin="5,0,0,0" Width="187" Height="186">
+                        <DockPanel  Margin="5,0,0,0" Width="187" Height="240">
                             <CheckBox DockPanel.Dock="Top" x:Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding IsChecked, ElementName=checkSavePasswords}" />
                             <Button DockPanel.Dock="Top" x:Name="buttonAddCharacter" Content="Add Character" Click="buttonAddCharacter_Click" Margin="0,3,0,0" />
                             <Button DockPanel.Dock="Top" x:Name="buttonDeleteCharacter" Content="Delete Character(s)" Click="buttonDeleteCharacter_Click" Margin="0,3,0,0" VerticalAlignment="Top" >

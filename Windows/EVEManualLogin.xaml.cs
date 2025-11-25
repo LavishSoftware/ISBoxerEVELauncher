@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using ISBoxerEVELauncher.Utils;
 using ISBoxerEVELauncher.Web;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using Newtonsoft.Json;
 
 namespace ISBoxerEVELauncher.Windows
@@ -52,6 +54,17 @@ namespace ISBoxerEVELauncher.Windows
         {
             try
             {
+                // We set this into userdata folder as Innerspace folder is write protected
+                WebView2.CreationProperties = new CoreWebView2CreationProperties()
+                {
+                    ProfileName = _account.Username,
+                    UserDataFolder = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "ISBoxerEVELauncher",
+                        "WebViews",
+                        _account.Username)
+                };
+                
                 await WebView2.EnsureCoreWebView2Async(null);
 
                 // Load saved cookies if available

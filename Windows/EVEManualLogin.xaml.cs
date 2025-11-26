@@ -50,10 +50,49 @@ namespace ISBoxerEVELauncher.Windows
             InitializeWebView();
         }
 
+        private bool VerifyWebView2LoaderExists()
+        {
+            string appDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            if (string.IsNullOrEmpty(appDirectory))
+                return false;
+
+            string x86Path = Path.Combine(appDirectory, @"runtimes\win-x86\native\WebView2Loader.dll");
+            string x64Path = Path.Combine(appDirectory, @"runtimes\win-x64\native\WebView2Loader.dll");
+
+            Debug.Info($"Checking for WebView2Loader.dll in runtimes directories:");
+            Debug.Info($"  x86: {x86Path} - Exists: {File.Exists(x86Path)}");
+            Debug.Info($"  x64: {x64Path} - Exists: {File.Exists(x64Path)}");
+
+            bool hasWebView2Loader = File.Exists(x86Path) || File.Exists(x64Path);
+
+            if (!hasWebView2Loader)
+            {
+                MessageBox.Show(
+                    "WebView2Loader.dll is missing from the runtimes directory.\n\n" +
+                    "Please copy the 'runtimes' folder from the downloaded zip into the same folder as the launcher.\n\n" +
+                    "Expected location:\n" +
+                    "  runtimes\\win-x86\\native\\WebView2Loader.dll\n" +
+                    "  runtimes\\win-x64\\native\\WebView2Loader.dll",
+                    "WebView2 Missing",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+
+            return hasWebView2Loader;
+        }
+
         private async void InitializeWebView()
         {
             try
             {
+                // Verify WebView2Loader.dll exists in the runtimes directory
+                if (!VerifyWebView2LoaderExists())
+                {
+                    CloseWithResult(LoginResult.Error);
+                    return;
+                }
+
                 // We set this into userdata folder as Innerspace folder is write protected
                 WebView2.CreationProperties = new CoreWebView2CreationProperties()
                 {
@@ -248,8 +287,12 @@ namespace ISBoxerEVELauncher.Windows
         {
             try
             {
-                var cookieManager = WebView2.CoreWebView2.CookieManager;
+                var cookieManager = WebView2?.CoreWebView2?.CookieManager;
+                if (cookieManager == null)
+                    return;
                 var cookies = await cookieManager.GetCookiesAsync(null);
+                if (cookies == null || cookies.Count == 0)
+                    return;
 
                 var cookieDataList = cookies.Select(c => new CookieData
                 {

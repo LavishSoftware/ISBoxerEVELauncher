@@ -16,7 +16,7 @@ namespace ISBoxerEVELauncher.Web
         //public const string logoff = "/account/logoff";
         private const string auth = "/v2/oauth/authorize";
         private const string eula = "/v2/oauth/eula";
-        private const string logon = "/Account/LogOn";
+        private const string logon = "/account/logon";
         private const string launcher = "launcher";
         public const string token = "/v2/oauth/token";
         private const string tqBaseUri = "https://login.eveonline.com";

@@ -16,7 +16,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Xml.Serialization;
-using ISBoxerEVELauncher.Windows;
 
 
 namespace ISBoxerEVELauncher.Games.EVE
@@ -28,7 +27,6 @@ namespace ISBoxerEVELauncher.Games.EVE
     /// </summary>
     public class EVEAccount : INotifyPropertyChanged, IDisposable, ILaunchTarget
     {
-        private const string LogCategory = "EVEAccount";
 
         [XmlIgnore]
         private Guid challengeCodeSource;
@@ -225,23 +223,6 @@ namespace ISBoxerEVELauncher.Games.EVE
             set
             {
                 ISBoxerEVELauncher.Web.CookieStorage.SetCookies(this, value);
-            }
-        }
-
-        string _WebView2CookieStorage;
-        /// <summary>
-        /// WebView2 cookie storage (JSON format) - separate from HttpWebRequest cookies
-        /// </summary>
-        public string WebView2CookieStorage
-        {
-            get
-            {
-                return _WebView2CookieStorage;
-            }
-            set
-            {
-                _WebView2CookieStorage = value;
-                OnPropertyChanged("WebView2CookieStorage");
             }
         }
 
@@ -1111,8 +1092,6 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetAccessToken(bool sisi, HttpWebRequest req, out Token accessToken)
         {
-            Utils.Debug.Info($"GetAccessToken - Request URI: {req.RequestUri} | Sisi: {sisi}", LogCategory);
-
             accessToken = null;
             Response response = null;
 
@@ -1130,8 +1109,6 @@ namespace ISBoxerEVELauncher.Games.EVE
 
                 string responseBody = response.Body;
                 UpdateCookieStorage();
-
-                Utils.Debug.Info($"GetAccessToken - Response:{Environment.NewLine}{response.ToString()}", LogCategory);
 
                 if (responseBody.Contains("Incorrect character name entered"))
                 {
@@ -1339,14 +1316,6 @@ namespace ISBoxerEVELauncher.Games.EVE
             App.strUserName = Username;
             App.strPassword = new System.Net.NetworkCredential(string.Empty, SecurePassword).Password;
 
-            if (App.Settings.ManualLogin)
-            {
-                var manualLoginWindow = new EVEManualLogin(this, sisi);
-                manualLoginWindow.ShowDialog();
-                accessToken = manualLoginWindow.AccessToken;
-                return manualLoginWindow.LoginResult;
-            }
-            
             var uri = RequestResponse.GetLoginUri(sisi, state.ToString(), challengeHash);
 
             string RequestVerificationToken = string.Empty;

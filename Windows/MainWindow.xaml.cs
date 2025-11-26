@@ -443,6 +443,19 @@ namespace ISBoxerEVELauncher.Windows
                 App.Settings.Store();
             }
         }
+        
+        public bool UseRefreshTokens
+        {
+            get
+            {
+                return App.Settings.UseRefreshTokens;
+            }
+            set
+            {
+                App.Settings.UseRefreshTokens = value;
+                App.Settings.Store();
+            }
+        }
 
         private void buttonBrowse_Click(object sender, RoutedEventArgs e)
         {
@@ -978,6 +991,25 @@ namespace ISBoxerEVELauncher.Windows
             foreach (EVECharacter toDelete in deleteCharacters)
             {
                 Characters.Remove(toDelete);
+            }
+        }
+
+        private void buttonClearTokens_Click(object sender, RoutedEventArgs e)
+        {
+            switch (MessageBox.Show(
+                        "Are you sure you want to clear stored refresh tokens for the selected accounts? This will require all accounts to re-authenticate the next time they are used.",
+                        "Wait! You are about to clear all stored refresh tokens!", MessageBoxButton.YesNo))
+            {
+                case MessageBoxResult.Yes:
+                    foreach (EVEAccount acct in listAccounts.SelectedItems)
+                    {
+                        acct.ClearRefreshToken();
+                    }
+
+                    App.Settings.Store();
+                    break;
+                default:
+                    return;
             }
         }
     }

@@ -51,8 +51,24 @@
                         <ScrollViewer Margin="5,0,0,0" Width="187" VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <CheckBox Name="checkSavePasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" />
+                                <CheckBox Name="checkUseRefreshTokens" Content="Use OAuth2 Refresh Tokens" Margin="0,3,0,0" IsChecked="{Binding ElementName=mainWindow, Path=UseRefreshTokens}">
+                                    <CheckBox.ToolTip>
+                                        <TextBlock TextWrapping="Wrap" Width="200">Use OAuth2 Refresh Tokens to log in, instead of username and passwords.</TextBlock>
+                                    </CheckBox.ToolTip>
+                                </CheckBox>
                                 <Button Name="buttonAddAccount" Content="Add Account"  Margin="0,3,0,0" Click="buttonAddAccount_Click" />
                                 <Button Name="buttonDelete" Content="Delete Account(s)" Click="buttonDeleteAccount_Click" Margin="0,3,0,0" >
+                                    <Button.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding ="{Binding ElementName=listAccounts, Path=SelectedIndex}" Value="-1">
+                                                    <Setter Property="Button.IsEnabled" Value="false"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Name="buttonClearTokens" Content="Clear OAuth2 Refresh Tokens" Click="buttonClearTokens_Click" Margin="0,3,0,0" >
                                     <Button.Style>
                                         <Style>
                                             <Style.Triggers>
@@ -151,7 +167,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                         <DockPanel  Margin="5,0,0,0" Width="187" Height="240">
-                            <CheckBox DockPanel.Dock="Top" x:Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding IsChecked, ElementName=checkSavePasswords}" />
+                            <CheckBox DockPanel.Dock="Top" x:Name="checkSaveCharacterPasswords" Content="Save passwords (securely)" Margin="0,3,0,0" Click="checkSavePasswords_Click" IsChecked="{Binding IsChecked, ElementName=checkUseRefreshTokens}" />
                             <Button DockPanel.Dock="Top" x:Name="buttonAddCharacter" Content="Add Character" Click="buttonAddCharacter_Click" Margin="0,3,0,0" />
                             <Button DockPanel.Dock="Top" x:Name="buttonDeleteCharacter" Content="Delete Character(s)" Click="buttonDeleteCharacter_Click" Margin="0,3,0,0" VerticalAlignment="Top" >
                                 <Button.Style>
@@ -213,7 +229,6 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                
                             </StackPanel>
                         </DockPanel>
                     </StackPanel>

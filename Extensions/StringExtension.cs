@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 
 namespace ISBoxerEVELauncher.Extensions
 {
@@ -116,6 +117,20 @@ namespace ISBoxerEVELauncher.Extensions
         public static string SHA256(this string plaintext)
         {
             return ISBoxerEVELauncher.Security.SHA256.GenerateString(plaintext);
+        }
+        
+        public static SecureString ToSecureString(this string str)
+        {
+            if (str == null)
+                throw new ArgumentNullException("str");
+
+            var secureStr = new SecureString();
+            foreach (char c in str)
+            {
+                secureStr.AppendChar(c);
+            }
+            secureStr.MakeReadOnly();
+            return secureStr;
         }
     }
 }

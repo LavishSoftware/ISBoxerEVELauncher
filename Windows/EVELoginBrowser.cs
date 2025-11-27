@@ -128,7 +128,6 @@ namespace ISBoxerEVELauncher.Windows
                 {
                     webBrowser_EVE.Document.GetElementById("UserName").SetAttribute("value", App.strUserName);
                     webBrowser_EVE.Document.GetElementById("Password").SetAttribute("value", App.strPassword);
-                    webBrowser_EVE.Document.GetElementById("RememberMe").InvokeMember("click");
 
                     //var cookies = BrowserCookie.GetCookieInternal(webBrowser_EVE.Url, false);
 

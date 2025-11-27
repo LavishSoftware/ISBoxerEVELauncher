@@ -1,5 +1,6 @@
 ﻿using ISBoxerEVELauncher.Enums;
 using ISBoxerEVELauncher.Extensions;
+using ISBoxerEVELauncher.Utils;
 using ISBoxerEVELauncher.Windows;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
@@ -12,11 +13,12 @@ namespace ISBoxerEVELauncher.Web
 {
     public static class RequestResponse
     {
+        private const string LogCategory = "RequestResponse";
 
         //public const string logoff = "/account/logoff";
         private const string auth = "/v2/oauth/authorize";
         private const string eula = "/v2/oauth/eula";
-        private const string logon = "/Account/LogOn";
+        private const string logon = "/account/logon";
         private const string launcher = "launcher";
         public const string token = "/v2/oauth/token";
         private const string tqBaseUri = "https://login.eveonline.com";
@@ -86,16 +88,30 @@ namespace ISBoxerEVELauncher.Web
 
         public static HttpWebRequest CreateGetRequest(Uri uri, bool sisi, bool origin, string referer, CookieContainer cookies)
         {
+            Debug.Info($"CreateGetRequest - Starting | URI: {uri} | Sisi: {sisi} | Origin: {origin} | Referer: {referer}", LogCategory);
             //.Replace("https:", "http:")
             if (!uri.IsAbsoluteUri)
-                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
-            return CreateHttpWebRequest(uri, "GET", sisi, origin, referer, cookies);
+            {
+                var baseUri = sisi ? sisiBaseUri : tqBaseUri;
+                uri = new Uri(string.Concat(baseUri, uri.ToString()));
+                Debug.Info($"CreateGetRequest - Converted to absolute URI: {uri}", LogCategory);
+            }
+            var request = CreateHttpWebRequest(uri, "GET", sisi, origin, referer, cookies);
+            Debug.Info($"CreateGetRequest - Created request for: {request.RequestUri}", LogCategory);
+            return request;
         }
         public static HttpWebRequest CreatePostRequest(Uri uri, bool sisi, bool origin, string referer, CookieContainer cookies)
         {
+            Debug.Info($"CreatePostRequest - Starting | URI: {uri} | Sisi: {sisi} | Origin: {origin} | Referer: {referer}", LogCategory);
             if (!uri.IsAbsoluteUri)
-                uri = new Uri(string.Concat(sisi ? sisiBaseUri : tqBaseUri, uri.ToString()));
-            return CreateHttpWebRequest(uri, "POST", sisi, origin, referer, cookies);
+            {
+                var baseUri = sisi ? sisiBaseUri : tqBaseUri;
+                uri = new Uri(string.Concat(baseUri, uri.ToString()));
+                Debug.Info($"CreatePostRequest - Converted to absolute URI: {uri}", LogCategory);
+            }
+            var request = CreateHttpWebRequest(uri, "POST", sisi, origin, referer, cookies);
+            Debug.Info($"CreatePostRequest - Created request for: {request.RequestUri}", LogCategory);
+            return request;
         }
 
 
@@ -238,17 +254,22 @@ namespace ISBoxerEVELauncher.Web
 
         public static LoginResult GetHttpWebResponse(HttpWebRequest webRequest, Action updateCookies, out Response response)
         {
+            Debug.Info($"GetHttpWebResponse - Starting | URI: {webRequest.RequestUri} | Method: {webRequest.Method}", LogCategory);
             response = null;
 
             try
             {
+                Debug.Info($"GetHttpWebResponse - tofCaptcha flag: {App.tofCaptcha}", LogCategory);
                 if (!App.tofCaptcha)
                 {
+                    Debug.Info($"GetHttpWebResponse - Creating response from direct HTTP request", LogCategory);
                     response = new Response(webRequest);
+                    Debug.Info($"GetHttpWebResponse - Direct response created successfully", LogCategory);
                 }
             }
             catch (Exception e)
             {
+                Debug.Warning($"GetHttpWebResponse - Exception during direct request, enabling captcha flow: {e.Message}", LogCategory);
                 App.tofCaptcha = true;
             }
 
@@ -256,6 +277,7 @@ namespace ISBoxerEVELauncher.Web
             {
                 if (App.tofCaptcha)
                 {
+                    Debug.Info($"GetHttpWebResponse - Captcha flow enabled, opening browser window", LogCategory);
                     App.myLB = new EVELoginBrowser();
                     App.myLB.Clearup();
 
@@ -263,48 +285,61 @@ namespace ISBoxerEVELauncher.Web
 
                     if (webRequest.Method == "GET")
                     {
+                        Debug.Info($"GetHttpWebResponse - Browser navigating to (GET): {webRequest.Address}", LogCategory);
                         App.myLB.webBrowser_EVE.Navigate(webRequest.Address.ToString());
                     }
                     else
                     {
+                        Debug.Info($"GetHttpWebResponse - Browser navigating to (POST): {webRequest.Address}", LogCategory);
                         SetRegistery();
                         App.myLB.webBrowser_EVE.Navigate(webRequest.Address, string.Empty, App.requestBody, webRequest.Headers.ToString());
 
                     }
 
+                    Debug.Info($"GetHttpWebResponse - Showing browser dialog", LogCategory);
                     App.myLB.ShowDialog();
+                    Debug.Info($"GetHttpWebResponse - Browser dialog closed", LogCategory);
                 }
 
                 if (App.tofCaptcha)
                 {
+                    Debug.Info($"GetHttpWebResponse - Processing captcha flow result | HTML_Result empty: {string.IsNullOrEmpty(App.myLB.strHTML_Result)}", LogCategory);
                     if (App.myLB.strHTML_Result == "")
+                    {
+                        Debug.Error($"GetHttpWebResponse - Captcha flow returned empty result", LogCategory);
                         return LoginResult.Error;
+                    }
                     if (webRequest.Method == "GET")
                     {
+                        Debug.Info($"GetHttpWebResponse - Creating response from captcha flow (RequestVerificationToken)", LogCategory);
                         response = new Response(webRequest, WebRequestType.RequestVerificationToken);
                     }
                     else
                     {
+                        Debug.Info($"GetHttpWebResponse - Creating response from captcha flow (Result)", LogCategory);
                         response = new Response(webRequest, WebRequestType.Result);
                     }
                 }
 
                 if (updateCookies != null)
                 {
+                    Debug.Info($"GetHttpWebResponse - Updating cookies", LogCategory);
                     updateCookies();
                 }
             }
             catch (System.Net.WebException ex)
             {
+                Debug.Error($"GetHttpWebResponse - WebException: Status={ex.Status}, Message={ex.Message}", LogCategory);
                 switch (ex.Status)
                 {
                     case WebExceptionStatus.Timeout:
                         {
-
+                            Debug.Error($"GetHttpWebResponse - Request timed out", LogCategory);
                             return LoginResult.Timeout;
                         }
                     case WebExceptionStatus.ProtocolError:
                         {
+                            Debug.Error($"GetHttpWebResponse - Protocol error", LogCategory);
                             return LoginResult.Error;
                         }
                     default:
@@ -313,6 +348,7 @@ namespace ISBoxerEVELauncher.Web
                 }
             }
 
+            Debug.Info($"GetHttpWebResponse - Success | Response URI: {response?.ResponseUri}", LogCategory);
             return LoginResult.Success;
         }
 

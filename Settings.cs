@@ -359,6 +359,21 @@ namespace ISBoxerEVELauncher
                 OnPropertyChanged(nameof(ManualLoginAutofill));
             }
         }
+        
+        private bool _useRefreshhTokens = true;
+        
+        /// <summary>
+        /// If Manual Login Autofill is enabled
+        /// </summary>
+        public bool UseRefreshTokens
+        {
+            get => _useRefreshhTokens;
+            set
+            {
+                _useRefreshhTokens = value;
+                OnPropertyChanged(nameof(UseRefreshTokens));
+            }
+        }
 
         /// <summary>
         /// This is used to generate the Master Key Check, along with an IV and the Master Key
@@ -496,6 +511,8 @@ namespace ISBoxerEVELauncher
             {
                 account.EncryptPassword();
                 account.EncryptCharacterName();
+                account.EncryptTranquilityRefreshToken();
+                account.EncryptSisiRefreshToken();
             }
             Store();
         }

@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -228,20 +229,19 @@ namespace ISBoxerEVELauncher.Games.EVE
             }
         }
 
-        string _WebView2CookieStorage;
         /// <summary>
         /// WebView2 cookie storage (JSON format) - separate from HttpWebRequest cookies
         /// </summary>
+        [XmlIgnore]
         public string WebView2CookieStorage
         {
             get
             {
-                return _WebView2CookieStorage;
+                return ISBoxerEVELauncher.Web.CookieStorage.GetWebViewCookies(this);
             }
             set
             {
-                _WebView2CookieStorage = value;
-                OnPropertyChanged("WebView2CookieStorage");
+                ISBoxerEVELauncher.Web.CookieStorage.SetWebViewCookies(this, value);
             }
         }
 
@@ -367,6 +367,14 @@ namespace ISBoxerEVELauncher.Games.EVE
             if (SecureCharacterName != null)
             {
                 EncryptCharacterName();
+            }
+            if (SecureTranquilityRefreshToken != null)
+            {
+                EncryptTranquilityRefreshToken();
+            }
+            if (SecureSisiRefreshToken != null)
+            {
+                EncryptSisiRefreshToken();
             }
         }
 
@@ -609,7 +617,8 @@ namespace ISBoxerEVELauncher.Games.EVE
         #endregion
 
 
-        Token _TranquilityToken;
+        #region tokens
+        private Token _TranquilityToken;
         /// <summary>
         /// AccessToken for Tranquility. Lasts up to 11 hours?
         /// </summary>
@@ -623,11 +632,13 @@ namespace ISBoxerEVELauncher.Games.EVE
             set
             {
                 _TranquilityToken = value;
+                if (value != null) 
+                    SetEncryptedTranquilityRefreshToken(value.RefreshToken.ToSecureString());
                 OnPropertyChanged("TranquilityToken");
             }
         }
 
-        Token _SisiToken;
+        private Token _SisiToken;
         /// <summary>
         /// AccessToken for Singularity. Lasts up to 11 hours?
         /// </summary>
@@ -641,222 +652,426 @@ namespace ISBoxerEVELauncher.Games.EVE
             set
             {
                 _SisiToken = value;
+                if (value != null)
+                    SetEncryptedSisiRefreshToken(value.RefreshToken.ToSecureString());
                 OnPropertyChanged("SisiToken");
             }
         }
-
-        #region Refresh Tokens
-        /* This section is for experimental implemtnation using Refresh Tokens, which are used by the official EVE Launcher and described as insecure.
-         * They ultimately need the same encrypted storage care as a Password. May or may not be worth implementing. 
-         * The code will not compile at this time if enabled.
-         */
-#if REFRESH_TOKENS
-        string _SisiRefreshToken;
-        public string SisiRefreshToken { get { return _SisiRefreshToken; } set { _SisiRefreshToken = value; OnPropertyChanged("SisiRefreshToken"); } }
-
-        string _TranquilityRefreshToken;
-        public string TranquilityRefreshToken { get { return _TranquilityRefreshToken; } set { _TranquilityRefreshToken = value; OnPropertyChanged("TranquilityRefreshToken"); } }
-
-        public void GetTokensFromCode(bool sisi, string code)
+        
+        private System.Security.SecureString _secureTranquilityRefreshToken; 
+        
+        /// <summary>
+        /// Secure Refresh Token for Tranquility
+        /// </summary>
+        [XmlIgnore]
+        public System.Security.SecureString SecureTranquilityRefreshToken
         {
-            string uri = "https://client.eveonline.com/launcher/en/SSOVerifyUser";
-            if (sisi)
+            get
             {
-                uri = "https://testclient.eveonline.com/launcher/en/SSOVerifyUser";
+                return _secureTranquilityRefreshToken;
             }
-
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
-            req.AllowAutoRedirect = true;
-            /*
-            if (!sisi)
+            set
             {
-                req.Headers.Add("Origin", "https://login.eveonline.com");
+                _secureTranquilityRefreshToken = value;
+                OnPropertyChanged("SecureTranquilityRefreshToken");
             }
-            else
+        }
+        
+
+        private string _encryptedTranquilityRefreshToken;
+        
+        /// <summary>
+        /// Encrypted Refresh Token for Tranquility
+        /// </summary>
+        public string EncryptedTranquilityRefreshToken
+        {
+            get
             {
-                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
+                return _encryptedTranquilityRefreshToken;
             }
-            /**/
-            //req.Referer = uri;
-            //req.CookieContainer = Cookies;
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
-            byte[] body = Encoding.ASCII.GetBytes(String.Format("authCode={0}", Uri.EscapeDataString(code)));
-            req.ContentLength = body.Length;
-            using (Stream reqStream = req.GetRequestStream())
+            set
             {
-                reqStream.Write(body, 0, body.Length);
+                _encryptedTranquilityRefreshToken = value;
+                OnPropertyChanged("EncryptedTranquilityRefreshToken");
             }
+        }
+        
+        private string _encryptedTranquilityRefreshTokenIV;
 
-            string refreshCode;
-            using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+        /// <summary>
+        /// Encrypted Refresh Token IV for Tranquility
+        /// </summary>
+        public string EncryptedTranquilityRefreshTokenIV
+        {
+            get
             {
-                // https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=...&token_type=Bearer&expires_in=43200
-                string responseBody = null;
-                using (Stream stream = resp.GetResponseStream())
-                {
-                    using (StreamReader sr = new StreamReader(stream))
-                    {
-                        responseBody = sr.ReadToEnd();
-                    }
-                }
-
-                /*
-<span id="ValidationContainer"><div class="validation-summary-errors"><span>Login failed. Possible reasons can be:</span>
-<ul><li>Invalid username / password</li>
-</ul></div></span>
-                 */
-
-                //                https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=l4nGki1CTUI7pCQZoIdnARcCLqL6ZGJM1X1tPf1bGKSJxEwP8lk_shS19w3sjLzyCbecYAn05y-Vbs-Jm1d1cw2&token_type=Bearer&expires_in=43200
-                //accessToken = new Token(resp.ResponseUri);
-                //refreshCode = HttpUtility.ParseQueryString(resp.ResponseUri.Query).Get("code");
-
-                // String expires_in = HttpUtility.ParseQueryString(fromUri.Fragment).Get("expires_in");
-
-                throw new NotImplementedException();
-                // responseBody should now be JSON containing the needed tokens.
+                return _encryptedTranquilityRefreshTokenIV;
             }
+            set
+            {
+                _encryptedTranquilityRefreshTokenIV = value;
+                OnPropertyChanged("EncryptedTranquilityRefreshTokenIV");
+            }
+        }
+        
+        private DateTime? _tranquilityRefreshTokenCreatedAt;
+        
+        /// <summary>
+        /// When the Tranquility Refresh Token was created
+        /// </summary>
+        public DateTime? TranquilityRefreshTokenCreatedAt
+        {
+            get
+            {
+                return _tranquilityRefreshTokenCreatedAt;
+            }
+            set
+            {
+                _tranquilityRefreshTokenCreatedAt = value;
+                OnPropertyChanged("TranquilityRefreshTokenCreatedAt");
+            }
+        }
+        
 
+        private System.Security.SecureString _secureSisiRefreshToken;
+
+        /// <summary>
+        /// Secure Refresh Token for Sisi (Singularity)
+        /// </summary>
+        [XmlIgnore]
+        public System.Security.SecureString SecureSisiRefreshToken
+        {
+            get
+            {
+                return _secureSisiRefreshToken;
+            }
+            set
+            {
+                _secureSisiRefreshToken = value;
+                OnPropertyChanged("SecureSisiRefreshToken");
+            }
         }
 
-        public LoginResult GetRefreshToken(bool sisi, out string refreshToken)
+        private string _encryptedSisiRefreshToken;
+
+        /// <summary>
+        /// Encrypted Refresh Token for Sisi (Singularity)
+        /// </summary>
+        public string EncryptedSisiRefreshToken
         {
-            string checkToken = sisi ? SisiRefreshToken : TranquilityRefreshToken;
-            if (!string.IsNullOrEmpty(checkToken))
+            get
             {
-                refreshToken = checkToken;
-                return LoginResult.Success;
+                return _encryptedSisiRefreshToken;
             }
-
-            // need PlaintextPassword.
-            if (SecurePassword == null || SecurePassword.Length == 0)
+            set
             {
-                Windows.EVELogin el = new Windows.EVELogin(this, false);
-                bool? result = el.ShowDialog();
-
-                if (SecurePassword == null || SecurePassword.Length == 0)
-                {
-                    // password is required, sorry dude
-                    refreshToken = null;
-                    return LoginResult.InvalidUsernameOrPassword;
-                }
+                _encryptedSisiRefreshToken = value;
+                OnPropertyChanged("EncryptedSisiRefreshToken");
             }
-
-            string uri = "https://login.eveonline.com/Account/LogOn?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dcode%26redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken%2520user";
-            if (sisi)
-            {
-                uri = "https://sisilogin.testeveonline.com/Account/LogOn?ReturnUrl=%2Foauth%2Fauthorize%2F%3Fclient_id%3DeveLauncherTQ%26lang%3Den%26response_type%3Dcode%26redirect_uri%3Dhttps%3A%2F%2Fsisilogin.testeveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken%2520user";
-            }
-
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
-            req.Timeout = 5000;
-            req.AllowAutoRedirect = true;
-            if (!sisi)
-            {
-                req.Headers.Add("Origin", "https://login.eveonline.com");
-            }
-            else
-            {
-                req.Headers.Add("Origin", "https://sisilogin.testeveonline.com");
-            }
-            req.Referer = uri;
-            req.CookieContainer = Cookies;
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
-            using (SecureBytesWrapper body = new SecureBytesWrapper())
-            {
-                byte[] body1 = Encoding.ASCII.GetBytes(String.Format("UserName={0}&Password=", Uri.EscapeDataString(Username)));
-                using (SecureStringWrapper ssw = new SecureStringWrapper(SecurePassword, Encoding.ASCII))
-                {
-                    using (SecureBytesWrapper escapedPassword = new SecureBytesWrapper())
-                    {
-                        escapedPassword.Bytes = System.Web.HttpUtility.UrlEncodeToBytes(ssw.ToByteArray());
-
-                        body.Bytes = new byte[body1.Length + escapedPassword.Bytes.Length];
-                        System.Buffer.BlockCopy(body1, 0, body.Bytes, 0, body1.Length);
-                        System.Buffer.BlockCopy(escapedPassword.Bytes, 0, body.Bytes, body1.Length, escapedPassword.Bytes.Length);
-                    }
-                }
-
-                req.ContentLength = body.Bytes.Length;
-                using (Stream reqStream = req.GetRequestStream())
-                {
-                    reqStream.Write(body.Bytes, 0, body.Bytes.Length);
-                }
-            }
-
-            string refreshCode;
-            using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
-            {
-                // https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=...&token_type=Bearer&expires_in=43200
-                string responseBody = null;
-                using (Stream stream = resp.GetResponseStream())
-                {
-                    using (StreamReader sr = new StreamReader(stream))
-                    {
-                        responseBody = sr.ReadToEnd();
-                    }
-                }
-
-                if (responseBody.Contains("Invalid username / password"))
-                {
-                    refreshToken = null;
-                    return LoginResult.InvalidUsernameOrPassword;
-                }
-
-
-                /*
-<span id="ValidationContainer"><div class="validation-summary-errors"><span>Login failed. Possible reasons can be:</span>
-<ul><li>Invalid username / password</li>
-</ul></div></span>
-                 */
-
-                //                https://login.eveonline.com/launcher?client_id=eveLauncherTQ#access_token=l4nGki1CTUI7pCQZoIdnARcCLqL6ZGJM1X1tPf1bGKSJxEwP8lk_shS19w3sjLzyCbecYAn05y-Vbs-Jm1d1cw2&token_type=Bearer&expires_in=43200
-                //accessToken = new Token(resp.ResponseUri);
-                refreshCode = HttpUtility.ParseQueryString(resp.ResponseUri.Query).Get("code");
-
-                    // String expires_in = HttpUtility.ParseQueryString(fromUri.Fragment).Get("expires_in");
-            }
-
-            GetTokensFromCode(sisi,refreshCode);
-            throw new NotImplementedException();
-
-            if (!sisi)
-            {
-                TranquilityRefreshToken = refreshToken;
-            }
-            else
-            {
-                SisiRefreshToken = refreshToken;
-            }
-
-            return LoginResult.Success;
         }
-#endif
+
+        private string _encryptedSisiRefreshTokenIV;
+
+        /// <summary>
+        /// Encrypted Refresh Token IV for Sisi (Singularity)
+        /// </summary>
+        public string EncryptedSisiRefreshTokenIV
+        {
+            get
+            {
+                return _encryptedSisiRefreshTokenIV;
+            }
+            set
+            {
+                _encryptedSisiRefreshTokenIV = value;
+                OnPropertyChanged("EncryptedSisiRefreshTokenIV");
+            }
+        }
+        
+        private DateTime? _sisiRefreshTokenCreatedAt;
+        
+        /// <summary>
+        /// When the Sisi (Singularity) Refresh Token was created
+        /// </summary>
+        public DateTime? SisiRefreshTokenCreatedAt
+        {
+            get
+            {
+                return _sisiRefreshTokenCreatedAt;
+            }
+            set
+            {
+                _sisiRefreshTokenCreatedAt = value;
+                OnPropertyChanged("SisiRefreshTokenCreatedAt");
+            }
+        }
+
+        /// <summary>
+        /// Attempts to prepare the encrypted version of the currently active SecureTranquilityRefreshToken
+        /// </summary>
+        public void EncryptTranquilityRefreshToken()
+        {
+            SetEncryptedTranquilityRefreshToken(SecureTranquilityRefreshToken);
+        }
+
+        /// <summary>
+        /// Removes the encrypted Tranquility refresh token and IV
+        /// </summary>
+        public void ClearEncryptedTranquilityRefreshToken()
+        {
+            EncryptedTranquilityRefreshToken = null;
+            EncryptedTranquilityRefreshTokenIV = null;
+            TranquilityRefreshTokenCreatedAt = null;
+        }
+
+        /// <summary>
+        /// Sets the encrypted Tranquility refresh token to the given SecureString, if possible
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        void SetEncryptedTranquilityRefreshToken(System.Security.SecureString refreshToken)
+        {
+            if (!App.Settings.UseMasterKey || !App.Settings.UseRefreshTokens || refreshToken == null)
+            {
+                ClearEncryptedTranquilityRefreshToken();
+                return;
+            }
+
+            if (!App.Settings.RequestMasterPassword())
+            {
+                System.Windows.MessageBox.Show("Your configured Master Password is required in order to save refresh tokens. It can be reset or disabled by un-checking 'Save passwords (securely)', and then all currently saved refresh tokens will be lost.");
+                return;
+            }
+
+            using (RijndaelManaged rjm = new RijndaelManaged())
+            {
+                if (string.IsNullOrEmpty(EncryptedTranquilityRefreshTokenIV))
+                {
+                    rjm.GenerateIV();
+                    EncryptedTranquilityRefreshTokenIV = Convert.ToBase64String(rjm.IV);
+                }
+                else
+                    rjm.IV = Convert.FromBase64String(EncryptedTranquilityRefreshTokenIV);
+
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                {
+                    rjm.Key = sbwKey.Bytes;
+
+                    using (ICryptoTransform encryptor = rjm.CreateEncryptor())
+                    {
+                        using (SecureStringWrapper ssw2 = new SecureStringWrapper(refreshToken, Encoding.Unicode))
+                        {
+                            byte[] inblock = ssw2.ToByteArray();
+                            byte[] encrypted = encryptor.TransformFinalBlock(inblock, 0, inblock.Length);
+                            EncryptedTranquilityRefreshToken = Convert.ToBase64String(encrypted);
+                            SecureTranquilityRefreshToken = refreshToken;
+                            TranquilityRefreshTokenCreatedAt = DateTime.Now;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Decrypts the currently EncryptedTranquilityRefreshToken if possible, populating SecureTranquilityRefreshToken
+        /// </summary>
+        public void DecryptTranquilityRefreshToken(bool allowPopup)
+        {
+            if (string.IsNullOrEmpty(EncryptedTranquilityRefreshToken) || string.IsNullOrEmpty(EncryptedTranquilityRefreshTokenIV))
+            {
+                // no refresh token stored to decrypt.
+                return;
+            }
+
+            if (!App.Settings.HasPasswordMasterKey)
+            {
+                // Master Password not yet entered
+                if (!allowPopup)
+                {
+                    // can't ask for it right now
+                    return;
+                }
+
+                // ok, ask for it
+                if (!App.Settings.RequestMasterPassword())
+                {
+                    // not entered. can't decrypt.
+                    return;
+                }
+            }
+            using (RijndaelManaged rjm = new RijndaelManaged())
+            {
+                rjm.IV = Convert.FromBase64String(EncryptedTranquilityRefreshTokenIV);
+
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                {
+                    rjm.Key = sbwKey.Bytes;
+                    using (ICryptoTransform decryptor = rjm.CreateDecryptor())
+                    {
+                        byte[] pass = Convert.FromBase64String(EncryptedTranquilityRefreshToken);
+
+                        using (SecureBytesWrapper sbw = new SecureBytesWrapper())
+                        {
+                            sbw.Bytes = decryptor.TransformFinalBlock(pass, 0, pass.Length);
+
+                            SecureTranquilityRefreshToken = new System.Security.SecureString();
+                            foreach (char c in Encoding.Unicode.GetChars(sbw.Bytes))
+                            {
+                                SecureTranquilityRefreshToken.AppendChar(c);
+                            }
+                            SecureTranquilityRefreshToken.MakeReadOnly();
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to prepare the encrypted version of the currently active SecureSisiRefreshToken
+        /// </summary>
+        public void EncryptSisiRefreshToken()
+        {
+            SetEncryptedSisiRefreshToken(SecureSisiRefreshToken);
+        }
+
+        /// <summary>
+        /// Removes the encrypted Sisi refresh token and IV
+        /// </summary>
+        public void ClearEncryptedSisiRefreshToken()
+        {
+            EncryptedSisiRefreshToken = null;
+            EncryptedSisiRefreshTokenIV = null;
+            SisiRefreshTokenCreatedAt = null;
+        }
+
+        /// <summary>
+        /// Sets the encrypted Sisi refresh token to the given SecureString, if possible
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        void SetEncryptedSisiRefreshToken(System.Security.SecureString refreshToken)
+        {
+            if (!App.Settings.UseMasterKey || !App.Settings.UseRefreshTokens || refreshToken == null)
+            {
+                ClearEncryptedSisiRefreshToken();
+                return;
+            }
+
+            if (!App.Settings.RequestMasterPassword())
+            {
+                System.Windows.MessageBox.Show("Your configured Master Password is required in order to save refresh tokens. It can be reset or disabled by un-checking 'Save passwords (securely)', and then all currently saved refresh tokens will be lost.");
+                return;
+            }
+
+            using (RijndaelManaged rjm = new RijndaelManaged())
+            {
+                if (string.IsNullOrEmpty(EncryptedSisiRefreshTokenIV))
+                {
+                    rjm.GenerateIV();
+                    EncryptedSisiRefreshTokenIV = Convert.ToBase64String(rjm.IV);
+                }
+                else
+                    rjm.IV = Convert.FromBase64String(EncryptedSisiRefreshTokenIV);
+
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                {
+                    rjm.Key = sbwKey.Bytes;
+
+                    using (ICryptoTransform encryptor = rjm.CreateEncryptor())
+                    {
+                        using (SecureStringWrapper ssw2 = new SecureStringWrapper(refreshToken, Encoding.Unicode))
+                        {
+                            byte[] inblock = ssw2.ToByteArray();
+                            byte[] encrypted = encryptor.TransformFinalBlock(inblock, 0, inblock.Length);
+                            EncryptedSisiRefreshToken = Convert.ToBase64String(encrypted);
+                            SecureSisiRefreshToken = refreshToken;
+                            SisiRefreshTokenCreatedAt = DateTime.Now;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Decrypts the currently EncryptedSisiRefreshToken if possible, populating SecureSisiRefreshToken
+        /// </summary>
+        public void DecryptSisiRefreshToken(bool allowPopup)
+        {
+            if (string.IsNullOrEmpty(EncryptedSisiRefreshToken) || string.IsNullOrEmpty(EncryptedSisiRefreshTokenIV))
+            {
+                // no refresh token stored to decrypt.
+                return;
+            }
+
+            if (!App.Settings.HasPasswordMasterKey)
+            {
+                // Master Password not yet entered
+                if (!allowPopup)
+                {
+                    // can't ask for it right now
+                    return;
+                }
+
+                // ok, ask for it
+                if (!App.Settings.RequestMasterPassword())
+                {
+                    // not entered. can't decrypt.
+                    return;
+                }
+            }
+            using (RijndaelManaged rjm = new RijndaelManaged())
+            {
+                rjm.IV = Convert.FromBase64String(EncryptedSisiRefreshTokenIV);
+
+                using (SecureBytesWrapper sbwKey = new SecureBytesWrapper(App.Settings.PasswordMasterKey, true))
+                {
+                    rjm.Key = sbwKey.Bytes;
+                    using (ICryptoTransform decryptor = rjm.CreateDecryptor())
+                    {
+                        byte[] pass = Convert.FromBase64String(EncryptedSisiRefreshToken);
+
+                        using (SecureBytesWrapper sbw = new SecureBytesWrapper())
+                        {
+                            sbw.Bytes = decryptor.TransformFinalBlock(pass, 0, pass.Length);
+
+                            SecureSisiRefreshToken = new System.Security.SecureString();
+                            foreach (char c in Encoding.Unicode.GetChars(sbw.Bytes))
+                            {
+                                SecureSisiRefreshToken.AppendChar(c);
+                            }
+                            SecureSisiRefreshToken.MakeReadOnly();
+                        }
+                    }
+                }
+            }
+        }
+
+
         #endregion
-
-
-
 
         public LoginResult GetSecurityWarningChallenge(bool sisi, string responseBody, Uri referer, out Token accessToken)
         {
+            Utils.Debug.Info($"GetSecurityWarningChallenge - Starting security warning challenge | Sisi: {sisi} | Referer: {referer}", LogCategory);
             var uri = RequestResponse.GetSecurityWarningChallenge(sisi, state.ToString(), challengeHash);
+            Utils.Debug.Info($"GetSecurityWarningChallenge - URI: {uri}", LogCategory);
             var req = RequestResponse.CreateGetRequest(uri, sisi, true, referer.ToString(), Cookies);
-            return GetAccessToken(sisi, req, out accessToken);
+            var result = GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetSecurityWarningChallenge - Result: {result}", LogCategory);
+            return result;
 
         }
 
         public LoginResult GetEmailChallenge(bool sisi, string responseBody, out Token accessToken)
         {
+            Utils.Debug.Info($"GetEmailChallenge - Starting email challenge | Sisi: {sisi}", LogCategory);
             Windows.EmailChallengeWindow emailWindow = new Windows.EmailChallengeWindow(responseBody);
             emailWindow.ShowDialog();
             if (!emailWindow.DialogResult.HasValue || !emailWindow.DialogResult.Value)
             {
+                Utils.Debug.Info($"GetEmailChallenge - Email challenge dialog cancelled or failed", LogCategory);
                 SecurePassword = null;
                 accessToken = null;
                 return LoginResult.EmailVerificationRequired;
             }
+            Utils.Debug.Info($"GetEmailChallenge - Email verification required", LogCategory);
             SecurePassword = null;
             accessToken = null;
             return LoginResult.EmailVerificationRequired;
@@ -865,15 +1080,18 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetEULAChallenge(bool sisi, string responseBody, Uri referer, out Token accessToken)
         {
+            Utils.Debug.Info($"GetEULAChallenge - Starting EULA challenge | Sisi: {sisi} | Referer: {referer}", LogCategory);
             Windows.EVEEULAWindow eulaWindow = new Windows.EVEEULAWindow(responseBody);
             eulaWindow.ShowDialog();
             if (!eulaWindow.DialogResult.HasValue || !eulaWindow.DialogResult.Value)
             {
+                Utils.Debug.Info($"GetEULAChallenge - EULA declined by user", LogCategory);
                 SecurePassword = null;
                 accessToken = null;
                 return LoginResult.EULADeclined;
             }
 
+            Utils.Debug.Info($"GetEULAChallenge - EULA accepted, proceeding with login", LogCategory);
             //string uri = "https://login.eveonline.com/OAuth/Eula";
             //if (sisi)
             //{
@@ -881,6 +1099,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             //}
 
             var uri = RequestResponse.GetEulaUri(sisi, state.ToString(), challengeHash);
+            Utils.Debug.Info($"GetEULAChallenge - EULA URI: {uri}", LogCategory);
             HttpWebRequest req = RequestResponse.CreatePostRequest(uri, sisi, true, referer.ToString(), Cookies);
 
 
@@ -917,17 +1136,21 @@ namespace ISBoxerEVELauncher.Games.EVE
             LoginResult result;
             try
             {
+                Utils.Debug.Info($"GetEULAChallenge - Attempting to get access token", LogCategory);
                 result = GetAccessToken(sisi, req, out accessToken);
             }
-            catch (System.Net.WebException)
+            catch (System.Net.WebException ex)
             {
+                Utils.Debug.Warning($"GetEULAChallenge - WebException during first GetAccessToken attempt: {ex.Message}", LogCategory);
                 result = GetAccessToken(sisi, out accessToken);
             }
 
             result = GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetEULAChallenge - Final result: {result}", LogCategory);
             if (result == LoginResult.Success)
             {
                 // successful verification code challenge, make sure we save the cookies.
+                Utils.Debug.Info($"GetEULAChallenge - Success, storing settings", LogCategory);
                 App.Settings.Store();
             }
             return result;
@@ -936,17 +1159,21 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetEmailCodeChallenge(bool sisi, string responseBody, out Token accessToken)
         {
+            Utils.Debug.Info($"GetEmailCodeChallenge - Starting email code challenge | Sisi: {sisi}", LogCategory);
 
             Windows.VerificationCodeChallengeWindow acw = new Windows.VerificationCodeChallengeWindow(this);
             acw.ShowDialog();
             if (!acw.DialogResult.HasValue || !acw.DialogResult.Value)
             {
+                Utils.Debug.Info($"GetEmailCodeChallenge - Dialog cancelled or failed", LogCategory);
                 SecurePassword = null;
                 accessToken = null;
                 return LoginResult.InvalidEmailVerificationChallenge;
             }
 
+            Utils.Debug.Info($"GetEmailCodeChallenge - Verification code entered, proceeding", LogCategory);
             var uri = RequestResponse.GetVerifyTwoFactorUri(sisi, state.ToString(), challengeHash);
+            Utils.Debug.Info($"GetEmailCodeChallenge - Two-factor URI: {uri}", LogCategory);
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, null, Cookies);
 
             using (SecureBytesWrapper body = new SecureBytesWrapper())
@@ -976,10 +1203,13 @@ namespace ISBoxerEVELauncher.Games.EVE
                     }
                 }
             }
+            Utils.Debug.Info($"GetEmailCodeChallenge - Sending verification code request", LogCategory);
             LoginResult result = GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetEmailCodeChallenge - Result: {result}", LogCategory);
             if (result == LoginResult.Success)
             {
                 // successful verification code challenge, make sure we save the cookies.
+                Utils.Debug.Info($"GetEmailCodeChallenge - Success, storing settings", LogCategory);
                 App.Settings.Store();
             }
             return result;
@@ -987,17 +1217,20 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetAuthenticatorChallenge(bool sisi, out Token accessToken)
         {
+            Utils.Debug.Info($"GetAuthenticatorChallenge - Starting authenticator challenge | Sisi: {sisi}", LogCategory);
             Windows.AuthenticatorChallengeWindow acw = new Windows.AuthenticatorChallengeWindow(this);
             acw.ShowDialog();
             if (!acw.DialogResult.HasValue || !acw.DialogResult.Value)
             {
+                Utils.Debug.Info($"GetAuthenticatorChallenge - Dialog cancelled or failed", LogCategory);
                 SecurePassword = null;
                 accessToken = null;
                 return LoginResult.InvalidAuthenticatorChallenge;
             }
 
-
+            Utils.Debug.Info($"GetAuthenticatorChallenge - Authenticator code entered, proceeding", LogCategory);
             var uri = RequestResponse.GetAuthenticatorUri(sisi, state.ToString(), challengeHash);
+            Utils.Debug.Info($"GetAuthenticatorChallenge - Authenticator URI: {uri}", LogCategory);
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, uri.ToString(), Cookies);
 
             using (SecureBytesWrapper body = new SecureBytesWrapper())
@@ -1026,10 +1259,13 @@ namespace ISBoxerEVELauncher.Games.EVE
                     }
                 }
             }
+            Utils.Debug.Info($"GetAuthenticatorChallenge - Sending authenticator code request", LogCategory);
             LoginResult result = GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetAuthenticatorChallenge - Result: {result}", LogCategory);
             if (result == LoginResult.Success)
             {
                 // successful authenticator challenge, make sure we save the cookies.
+                Utils.Debug.Info($"GetAuthenticatorChallenge - Success, storing settings", LogCategory);
                 App.Settings.Store();
             }
             return result;
@@ -1037,18 +1273,21 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         public LoginResult GetCharacterChallenge(bool sisi, out Token accessToken)
         {
+            Utils.Debug.Info($"GetCharacterChallenge - Starting character challenge | Sisi: {sisi}", LogCategory);
             // need SecureCharacterName.
             if (SecureCharacterName == null || SecureCharacterName.Length == 0)
             {
+                Utils.Debug.Info($"GetCharacterChallenge - No SecureCharacterName, attempting to decrypt", LogCategory);
                 DecryptCharacterName(true);
                 if (SecureCharacterName == null || SecureCharacterName.Length == 0)
                 {
-
+                    Utils.Debug.Info($"GetCharacterChallenge - Showing character challenge window", LogCategory);
                     Windows.CharacterChallengeWindow ccw = new Windows.CharacterChallengeWindow(this);
                     bool? result = ccw.ShowDialog();
 
                     if (string.IsNullOrWhiteSpace(ccw.CharacterName))
                     {
+                        Utils.Debug.Info($"GetCharacterChallenge - Character name not provided", LogCategory);
                         // CharacterName is required, sorry dude
                         accessToken = null;
                         //  SecurePassword = null;
@@ -1056,6 +1295,7 @@ namespace ISBoxerEVELauncher.Games.EVE
                         return LoginResult.InvalidCharacterChallenge;
                     }
 
+                    Utils.Debug.Info($"GetCharacterChallenge - Character name provided, encrypting", LogCategory);
                     SecureCharacterName = new System.Security.SecureString();
                     foreach (char c in ccw.CharacterName)
                     {
@@ -1068,6 +1308,7 @@ namespace ISBoxerEVELauncher.Games.EVE
             }
 
             var uri = RequestResponse.GetCharacterChallengeUri(sisi, state.ToString(), challengeHash);
+            Utils.Debug.Info($"GetCharacterChallenge - Character challenge URI: {uri}", LogCategory);
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, uri.ToString(), Cookies);
             using (SecureBytesWrapper body = new SecureBytesWrapper())
             {
@@ -1106,35 +1347,43 @@ namespace ISBoxerEVELauncher.Games.EVE
                     }
                 }
             }
-            return GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetCharacterChallenge - Sending character challenge request", LogCategory);
+            var characterResult = GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetCharacterChallenge - Result: {characterResult}", LogCategory);
+            return characterResult;
         }
 
         public LoginResult GetAccessToken(bool sisi, HttpWebRequest req, out Token accessToken)
         {
-            Utils.Debug.Info($"GetAccessToken - Request URI: {req.RequestUri} | Sisi: {sisi}", LogCategory);
+            Utils.Debug.Info($"GetAccessToken(request) - Starting | Request URI: {req.RequestUri} | Method: {req.Method} | Sisi: {sisi}", LogCategory);
 
             accessToken = null;
             Response response = null;
 
             try
             {
+                Utils.Debug.Info($"GetAccessToken(request) - RequestVerificationToken is {(string.IsNullOrEmpty(App.myLB.strHTML_RequestVerificationToken) ? "empty" : "present")}", LogCategory);
                 if (App.myLB.strHTML_RequestVerificationToken == "")
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Creating Response from HttpWebRequest directly", LogCategory);
                     response = new Response(req);
                 }
                 else
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Creating Response with WebRequestType.Result (captcha flow)", LogCategory);
                     response = new Response(req, WebRequestType.Result);
                 }
 
 
                 string responseBody = response.Body;
+                Utils.Debug.Info($"GetAccessToken(request) - Response body length: {responseBody?.Length ?? 0}", LogCategory);
                 UpdateCookieStorage();
 
-                Utils.Debug.Info($"GetAccessToken - Response:{Environment.NewLine}{response.ToString()}", LogCategory);
+                Utils.Debug.Info($"GetAccessToken(request) - Full Response:{Environment.NewLine}{response.ToString()}", LogCategory);
 
                 if (responseBody.Contains("Incorrect character name entered"))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Incorrect character name entered", LogCategory);
                     accessToken = null;
                     SecurePassword = null;
                     SecureCharacterName = null;
@@ -1143,6 +1392,7 @@ namespace ISBoxerEVELauncher.Games.EVE
 
                 if (responseBody.Contains("Invalid username / password"))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Invalid username / password", LogCategory);
                     accessToken = null;
                     SecurePassword = null;
                     return LoginResult.InvalidUsernameOrPassword;
@@ -1153,6 +1403,7 @@ namespace ISBoxerEVELauncher.Games.EVE
                     || (responseBody.Contains("Verification code mismatch") && responseBody.Contains("/account/authenticator"))
                     )
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Invalid authenticator challenge", LogCategory);
                     accessToken = null;
                     SecurePassword = null;
                     return LoginResult.InvalidAuthenticatorChallenge;
@@ -1161,50 +1412,76 @@ namespace ISBoxerEVELauncher.Games.EVE
                 //Coming up during 2FA challenge
                 if (responseBody.Contains("Character challenge") && !responseBody.Contains("visuallyhidden"))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Character challenge required", LogCategory);
                     return GetCharacterChallenge(sisi, out accessToken);
                 }
 
                 if (responseBody.Contains("Email verification required"))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Email verification required", LogCategory);
                     return GetEmailChallenge(sisi, responseBody, out accessToken);
                 }
 
                 if (responseBody.Contains("Authenticator is enabled"))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Authenticator is enabled (2FA required)", LogCategory);
                     return GetAuthenticatorChallenge(sisi, out accessToken);
                 }
 
                 if (responseBody.Contains("Please enter the verification code "))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Email verification code required", LogCategory);
                     return GetEmailCodeChallenge(sisi, responseBody, out accessToken);
                 }
 
                 if (responseBody.Contains("Security Warning"))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Security Warning", LogCategory);
                     return GetSecurityWarningChallenge(sisi, responseBody, response.ResponseUri, out accessToken);
                 }
 
                 if (responseBody.ToLower().Contains("form action=\"/oauth/eula\""))
                 {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: EULA acceptance required", LogCategory);
                     return GetEULAChallenge(sisi, responseBody, response.ResponseUri, out accessToken);
+                }
+
+                if (response.ResponseUri.OriginalString.Contains("/v2/oauth/token"))
+                {
+                    Utils.Debug.Info($"GetAccessToken(request) - Detected: Token response URI, parsing token directly", LogCategory);
+                    accessToken = new Token(JsonConvert.DeserializeObject<authObj>(response.Body));
+                    Utils.Debug.Info($"GetAccessToken(request) - Token parsed, expiration: {accessToken.Expiration}, has refresh token: {!string.IsNullOrEmpty(accessToken.RefreshToken)}", LogCategory);
+                    if (!sisi)
+                    {
+                        TranquilityToken = accessToken;
+                    }
+                    else
+                    {
+                        SisiToken = accessToken;
+                    }
+                    Utils.Debug.Info($"GetAccessToken(request) - Success (direct token)", LogCategory);
+                    return LoginResult.Success;
                 }
 
                 try
                 {
-
+                    Utils.Debug.Info($"GetAccessToken(request) - Attempting to extract auth code from response URI: {response.ResponseUri.OriginalString}", LogCategory);
                     code = HttpUtility.ParseQueryString(response.ResponseUri.OriginalString).Get("code");
-
 
                     if (code == null)
                     {
-
+                        Utils.Debug.Warning($"GetAccessToken(request) - No auth code found in response URI", LogCategory);
                         return LoginResult.Error;
                     }
+                    Utils.Debug.Info($"GetAccessToken(request) - Auth code extracted (length: {code.Length}), exchanging for token", LogCategory);
                     GetAccessToken(sisi, code, out response);
+                    Utils.Debug.Info($"GetAccessToken(request) - Token exchange response received", LogCategory);
                     accessToken = new Token(JsonConvert.DeserializeObject<authObj>(response.Body));
+                    Utils.Debug.Info($"GetAccessToken(request) - Token parsed, expiration: {accessToken.Expiration}, has refresh token: {!string.IsNullOrEmpty(accessToken.RefreshToken)}", LogCategory);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Utils.Debug.Error($"GetAccessToken(request) - Exception during token parsing: {ex.Message}", LogCategory);
                     Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(responseBody);
                     urw.ShowDialog();
 
@@ -1223,17 +1500,20 @@ namespace ISBoxerEVELauncher.Games.EVE
                     SisiToken = accessToken;
                 }
 
+                Utils.Debug.Info($"GetAccessToken(request) - Success (code exchange)", LogCategory);
                 return LoginResult.Success;
             }
             catch (System.Net.WebException we)
             {
+                Utils.Debug.Error($"GetAccessToken(request) - WebException: Status={we.Status}, Message={we.Message}", LogCategory);
                 switch (we.Status)
                 {
                     case WebExceptionStatus.Timeout:
+                        Utils.Debug.Error($"GetAccessToken(request) - Timeout occurred", LogCategory);
                         return LoginResult.Timeout;
                     default:
-
-                        Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(response.ToString());
+                        Utils.Debug.Error($"GetAccessToken(request) - Unhandled WebException, showing error window", LogCategory);
+                        Windows.UnhandledResponseWindow urw = new Windows.UnhandledResponseWindow(response?.ToString() ?? we.Message);
                         urw.ShowDialog();
                         return LoginResult.Error;
                 }
@@ -1279,16 +1559,20 @@ namespace ISBoxerEVELauncher.Games.EVE
 
         private LoginResult GetAccessToken(bool sisi, string authCode, out Response response)
         {
+            Utils.Debug.Info($"GetAccessToken(authCode) - Exchanging auth code for token | Sisi: {sisi} | Auth code length: {authCode?.Length ?? 0}", LogCategory);
             HttpWebRequest req2 = RequestResponse.CreatePostRequest(new Uri(RequestResponse.token, UriKind.Relative), sisi, true, RequestResponse.refererUri, Cookies);
 
             req2.SetBody(RequestResponse.GetSsoTokenRequestBody(sisi, authCode, challengeCode));
 
-            return RequestResponse.GetHttpWebResponse(req2, UpdateCookieStorage, out response);
+            var result = RequestResponse.GetHttpWebResponse(req2, UpdateCookieStorage, out response);
+            Utils.Debug.Info($"GetAccessToken(authCode) - Token exchange result: {result}", LogCategory);
+            return result;
 
         }
 
         public LoginResult GetRequestVerificationToken(Uri uri, bool sisi, out string verificationToken)
         {
+            Utils.Debug.Info($"GetRequestVerificationToken - Starting | URI: {uri} | Sisi: {sisi}", LogCategory);
             Response response;
             verificationToken = null;
 
@@ -1296,68 +1580,185 @@ namespace ISBoxerEVELauncher.Games.EVE
             req.ContentLength = 0;
 
             var result = RequestResponse.GetHttpWebResponse(req, UpdateCookieStorage, out response);
+            Utils.Debug.Info($"GetRequestVerificationToken - HTTP response result: {result}", LogCategory);
 
             if (result == LoginResult.Success)
             {
                 verificationToken = RequestResponse.GetRequestVerificationTokenResponse(response);
+                Utils.Debug.Info($"GetRequestVerificationToken - Token extracted: {(string.IsNullOrEmpty(verificationToken) ? "null/empty" : $"length {verificationToken.Length}")}", LogCategory);
             }
 
             return result;
         }
-
-
-        public LoginResult GetAccessToken(bool sisi, out Token accessToken)
+        
+        private bool TryGetExistingAccessToken(bool sisi, out Token accessToken)
         {
+            Utils.Debug.Info($"TryGetExistingAccessToken - Checking for existing token | Sisi: {sisi}", LogCategory);
             Token checkToken = sisi ? SisiToken : TranquilityToken;
             if (checkToken != null && !checkToken.IsExpired)
             {
+                Utils.Debug.Info($"TryGetExistingAccessToken - Found valid existing token, expiration: {checkToken.Expiration}", LogCategory);
                 accessToken = checkToken;
+                return true;
+            }
+
+            Utils.Debug.Info($"TryGetExistingAccessToken - No valid existing token found (token null: {checkToken == null}, expired: {checkToken?.IsExpired})", LogCategory);
+            accessToken = null;
+            return false;
+        }
+
+        private bool TryGetFromRefreshToken(bool sisi, out Token accessToken)
+        {
+            Utils.Debug.Info($"TryGetFromRefreshToken - Starting | Sisi: {sisi}", LogCategory);
+            try
+            {
+                if (!App.Settings.UseRefreshTokens)
+                {
+                    Utils.Debug.Info($"TryGetFromRefreshToken - Refresh tokens disabled in settings", LogCategory);
+                    accessToken = null;
+                    return false;
+                }
+
+                Utils.Debug.Info($"TryGetFromRefreshToken - Decrypting refresh tokens", LogCategory);
+                DecryptTranquilityRefreshToken(true);
+                DecryptSisiRefreshToken(true);
+                SecureString refreshToken = sisi ? SecureSisiRefreshToken : SecureTranquilityRefreshToken;
+                if (refreshToken == null || refreshToken.Length == 0)
+                {
+                    Utils.Debug.Info($"TryGetFromRefreshToken - No refresh token available (null: {refreshToken == null}, length: {refreshToken?.Length ?? 0})", LogCategory);
+                    accessToken = null;
+                    return false;
+                }
+
+                Utils.Debug.Info($"TryGetFromRefreshToken - Refresh token found (length: {refreshToken.Length}), exchanging for access token", LogCategory);
+                var uri = RequestResponse.GetTokenUri(sisi);
+                var req = RequestResponse.CreatePostRequest(uri, sisi, true, "URL", Cookies);
+
+                using (SecureBytesWrapper body = new SecureBytesWrapper())
+                {
+                    byte[] body1 = Encoding.ASCII.GetBytes(String.Format("client_id=eveLauncherTQ&grant_type=refresh_token&refresh_token="));
+                    using (SecureStringWrapper ssw = new SecureStringWrapper(refreshToken, Encoding.ASCII))
+                    {
+                        using (SecureBytesWrapper escapedRefreshToken = new SecureBytesWrapper())
+                        {
+                            escapedRefreshToken.Bytes = System.Web.HttpUtility.UrlEncodeToBytes(ssw.ToByteArray());
+
+                            body.Bytes = new byte[body1.Length + escapedRefreshToken.Bytes.Length];
+                            System.Buffer.BlockCopy(body1, 0, body.Bytes, 0, body1.Length);
+                            System.Buffer.BlockCopy(escapedRefreshToken.Bytes, 0, body.Bytes, body1.Length, escapedRefreshToken.Bytes.Length);
+                            req.SetBody(body);
+                        }
+                    }
+                }
+                Utils.Debug.Info($"TryGetFromRefreshToken - Sending refresh token request", LogCategory);
+                LoginResult result = GetAccessToken(sisi, req, out accessToken);
+                Utils.Debug.Info($"TryGetFromRefreshToken - Refresh token exchange result: {result}", LogCategory);
+                if (result == LoginResult.Success)
+                {
+                    Utils.Debug.Info($"TryGetFromRefreshToken - Success, storing settings", LogCategory);
+                    App.Settings.Store();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.Debug.Error($"TryGetFromRefreshToken exception: {e}", LogCategory);
+                throw;
+            }
+            Utils.Debug.Info($"TryGetFromRefreshToken - Failed to get token from refresh token", LogCategory);
+            accessToken = null;
+            return false;
+        }
+
+        public LoginResult GetAccessToken(bool sisi, out Token accessToken)
+        {
+            Utils.Debug.Info($"GetAccessToken - Starting login flow | Username: {Username} | Sisi: {sisi}", LogCategory);
+
+            // first check for an existing, valid token
+            Utils.Debug.Info($"GetAccessToken - Checking for existing valid token", LogCategory);
+            if (TryGetExistingAccessToken(sisi, out accessToken))
+            {
+                Utils.Debug.Info($"GetAccessToken - Using existing valid token", LogCategory);
                 return LoginResult.Success;
             }
 
             // need SecurePassword.
+            Utils.Debug.Info($"GetAccessToken - Checking for SecurePassword", LogCategory);
             if (SecurePassword == null || SecurePassword.Length == 0)
             {
+                Utils.Debug.Info($"GetAccessToken - No SecurePassword, attempting to decrypt", LogCategory);
                 DecryptPassword(true);
                 if (SecurePassword == null || SecurePassword.Length == 0)
                 {
-
+                    Utils.Debug.Info($"GetAccessToken - Showing login dialog", LogCategory);
                     Windows.EVELogin el = new Windows.EVELogin(this, true);
                     bool? dialogResult = el.ShowDialog();
 
                     if (SecurePassword == null || SecurePassword.Length == 0)
                     {
+                        Utils.Debug.Info($"GetAccessToken - Password not provided, returning InvalidUsernameOrPassword", LogCategory);
                         // password is required, sorry dude
                         accessToken = null;
                         return LoginResult.InvalidUsernameOrPassword;
                     }
 
+                    Utils.Debug.Info($"GetAccessToken - Password provided, storing settings", LogCategory);
                     App.Settings.Store();
                 }
             }
 
+            Utils.Debug.Info($"GetAccessToken - Attempting refresh token login", LogCategory);
+            if (TryGetFromRefreshToken(sisi, out accessToken))
+            {
+                Utils.Debug.Info($"GetAccessToken - Refresh token login successful", LogCategory);
+                return LoginResult.Success;
+            }
+
+            Utils.Debug.Info($"GetAccessToken - Setting App.strUserName and App.strPassword for legacy flow", LogCategory);
             App.strUserName = Username;
             App.strPassword = new System.Net.NetworkCredential(string.Empty, SecurePassword).Password;
 
             if (App.Settings.ManualLogin)
             {
+                Utils.Debug.Info($"GetAccessToken - Manual login mode enabled, opening WebView2 login window", LogCategory);
                 var manualLoginWindow = new EVEManualLogin(this, sisi);
                 manualLoginWindow.ShowDialog();
                 accessToken = manualLoginWindow.AccessToken;
-                return manualLoginWindow.LoginResult;
+                var manualResult = manualLoginWindow.LoginResult;
+                Utils.Debug.Info($"GetAccessToken - Manual login result: {manualResult}", LogCategory);
+                // save the token if we got one.
+                if (manualResult == LoginResult.Success && accessToken != null)
+                {
+                    Utils.Debug.Info($"GetAccessToken - Manual login successful, storing token", LogCategory);
+                    if (!sisi)
+                    {
+                        TranquilityToken = accessToken;
+                    }
+                    else
+                    {
+                        SisiToken = accessToken;
+                    }
+                    App.Settings.Store();
+                }
+                return manualResult;
             }
-            
+
+            Utils.Debug.Info($"GetAccessToken - Automatic login mode, getting login URI", LogCategory);
             var uri = RequestResponse.GetLoginUri(sisi, state.ToString(), challengeHash);
+            Utils.Debug.Info($"GetAccessToken - Login URI: {uri}", LogCategory);
 
             string RequestVerificationToken = string.Empty;
+            Utils.Debug.Info($"GetAccessToken - Getting request verification token", LogCategory);
             var result = GetRequestVerificationToken(uri, sisi, out RequestVerificationToken);
 
             if (result == LoginResult.Error)
             {
+                Utils.Debug.Error($"GetAccessToken - Failed to get request verification token", LogCategory);
                 accessToken = null;
                 return result;
             }
 
+            Utils.Debug.Info($"GetAccessToken - Got verification token, creating login POST request", LogCategory);
             var req = RequestResponse.CreatePostRequest(uri, sisi, true, "URL", Cookies);
 
             using (SecureBytesWrapper body = new SecureBytesWrapper())
@@ -1378,37 +1779,59 @@ namespace ISBoxerEVELauncher.Games.EVE
                 }
             }
 
-            return GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetAccessToken - Sending login request", LogCategory);
+            var loginResult = GetAccessToken(sisi, req, out accessToken);
+            Utils.Debug.Info($"GetAccessToken - Login result: {loginResult}", LogCategory);
+            return loginResult;
         }
 
         public LoginResult GetSSOToken(bool sisi, out Token ssoToken)
         {
+            Utils.Debug.Info($"GetSSOToken - Starting | Username: {Username} | Sisi: {sisi}", LogCategory);
             LoginResult lr = this.GetAccessToken(sisi, out ssoToken);
-
+            Utils.Debug.Info($"GetSSOToken - Result: {lr} | Token obtained: {ssoToken != null}", LogCategory);
             return lr;
         }
 
         public LoginResult Launch(string sharedCachePath, bool sisi, DirectXVersion dxVersion, long characterID)
         {
+            Utils.Debug.Info($"Launch(sharedCache) - Starting | Username: {Username} | SharedCachePath: {sharedCachePath} | Sisi: {sisi} | DX: {dxVersion} | CharacterID: {characterID}", LogCategory);
             Token ssoToken;
             LoginResult lr = GetSSOToken(sisi, out ssoToken);
             if (lr != LoginResult.Success)
+            {
+                Utils.Debug.Warning($"Launch(sharedCache) - GetSSOToken failed with result: {lr}", LogCategory);
                 return lr;
+            }
+            Utils.Debug.Info($"Launch(sharedCache) - Got SSO token, launching game", LogCategory);
             if (!App.Launch(sharedCachePath, sisi, dxVersion, characterID, ssoToken))
+            {
+                Utils.Debug.Error($"Launch(sharedCache) - App.Launch returned false", LogCategory);
                 return LoginResult.Error;
+            }
 
+            Utils.Debug.Info($"Launch(sharedCache) - Success", LogCategory);
             return LoginResult.Success;
         }
 
         public LoginResult Launch(string gameName, string gameProfileName, bool sisi, DirectXVersion dxVersion, long characterID)
         {
+            Utils.Debug.Info($"Launch(gameProfile) - Starting | Username: {Username} | GameName: {gameName} | Profile: {gameProfileName} | Sisi: {sisi} | DX: {dxVersion} | CharacterID: {characterID}", LogCategory);
             Token ssoToken;
             LoginResult lr = GetSSOToken(sisi, out ssoToken);
             if (lr != LoginResult.Success)
+            {
+                Utils.Debug.Warning($"Launch(gameProfile) - GetSSOToken failed with result: {lr}", LogCategory);
                 return lr;
+            }
+            Utils.Debug.Info($"Launch(gameProfile) - Got SSO token, launching game", LogCategory);
             if (!App.Launch(gameName, gameProfileName, sisi, dxVersion, characterID, ssoToken))
+            {
+                Utils.Debug.Error($"Launch(gameProfile) - App.Launch returned false", LogCategory);
                 return LoginResult.Error;
+            }
 
+            Utils.Debug.Info($"Launch(gameProfile) - Success", LogCategory);
             return LoginResult.Success;
         }
 
@@ -1447,8 +1870,14 @@ namespace ISBoxerEVELauncher.Games.EVE
             }
             this.EncryptedCharacterName = null;
             this.EncryptedCharacterNameIV = null;
+            
+            this.EncryptedTranquilityRefreshToken = null;
+            this.EncryptedTranquilityRefreshTokenIV = null;
+            this.EncryptedSisiRefreshToken = null;
+            this.EncryptedSisiRefreshTokenIV = null;
 
             ISBoxerEVELauncher.Web.CookieStorage.DeleteCookies(this);
+            ISBoxerEVELauncher.Web.CookieStorage.DeleteWebViewCookies(this);
             this.Username = null;
             this.Cookies = null;
             //this.NewCookieStorage = null;
@@ -1473,6 +1902,12 @@ namespace ISBoxerEVELauncher.Games.EVE
             {
                 return 0;
             }
+        }
+
+        public void ClearRefreshToken()
+        {
+            SetEncryptedTranquilityRefreshToken(null);
+            SetEncryptedSisiRefreshToken(null);
         }
     }
 }
